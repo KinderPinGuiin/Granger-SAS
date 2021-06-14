@@ -2,9 +2,36 @@
     box-sizing: border-box;
 }
 
+@font-face {
+    font-family: "Maven_Pro_Bold";
+    src: url("/fonts/Maven_Pro/static/MavenPro-Bold.ttf");
+}
+
 body {
     margin: 0;
     padding: 0;
-    background-image: url("../img/all/arrow.svg");
+    background-color: #FBFBFB;
+    background-image: url("../img/all/arrow_background.svg");
+    background-size: 85%;
     background-repeat: no-repeat;
+}
+
+header {
+    display: flex;
+    width: 100%;
+}
+
+.logo_tittle {
+    font-family: "Maven_Pro_Bold";
+    color: #434343;
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    margin-left: 9rem;
+    margin-top: 1.5rem;
+    text-decoration: none;
+}
+
+.logo_n {
+    width: 37px;
 }

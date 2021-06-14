@@ -5,4 +5,6 @@
 body {
     margin: 0;
     padding: 0;
+    background-image: url("../img/all/arrow.svg");
+    background-repeat: no-repeat;
 }

@@ -30,6 +30,7 @@ header {
     margin-left: 9rem;
     margin-top: 1.5rem;
     text-decoration: none;
+    user-select: none;
 }
 
 .logo_n {

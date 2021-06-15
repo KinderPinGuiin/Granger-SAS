@@ -1,9 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Accueil{% endblock %}
+{% block stylesheets %}
+    <link href="css/home/style.css" rel="stylesheet">
+{% endblock %}
 
 {% block body %}
     {% if message is not null %}
         <p>{{ message }}</p>
     {% endif %}
+    <div class=" home_container">
+        <p class="home_title">Faites partie de <br>notre équipe</p>
+        <p class="home_paragraph">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nec laoreet ante, nec lacinia augue. 
+            Suspendisse potenti. Pellentesque in libero eget elit porta efficitur fringilla nec felis. Vivamus leo sem, 
+            convallis ac magna sit amet... <a class="home_more_info" href="{{ path("about") }}" alt="En savoir plus">En savoir plus</a>.
+        </p>
+    </div>
 {% endblock %}

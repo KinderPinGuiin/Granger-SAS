@@ -1,3 +1,7 @@
+# Configuration
+
+Ajoutez un fichier nommé Constants.php dans le dossier *src/Utils/* et collez-y le code suivant :
+```php
 <?php
 
 namespace App\Utils;
@@ -14,7 +18,7 @@ class Constants {
     const GOOGLE_FOLDER = self::ROOT . "google/";
 
     // ID du dossier racine Google Drive
-    const DRIVE_ROOT = "1D3vgBSlyekKEDwEAQ5C4KVYwWOOVnL-g";
+    const DRIVE_ROOT = "Identifiant de votre dossier";
 
     // Nom du dossier de CV
     const CV_FOLDER_NAME = "CV";
@@ -29,3 +33,6 @@ class Constants {
     const LETTER_FILE_NAME = "Lettre de motivation";
 
 }
+```
+
+Remplacez la ligne 17 ("*Identifiant de votre dossier*") par l'ID de votre dossier Google Drive.

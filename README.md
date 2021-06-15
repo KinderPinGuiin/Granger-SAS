@@ -35,4 +35,4 @@ class Constants {
 }
 ```
 
-Remplacez la ligne 17 par l'ID de votre dossier Google Drive.
+Remplacez la ligne 17 ("*Identifiant de votre dossier*") par l'ID de votre dossier Google Drive.

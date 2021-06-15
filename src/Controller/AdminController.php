@@ -54,6 +54,20 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/candidature/{id}", name="_candidature")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function adminCandidature()
+    {
+        if (!$this->checkAccess()) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/candidature.html.twig");
+    }
+
+    /**
      * @Route("/edit", name="_edit")
      * 
      * @return mixed RedirectResponse ou Response

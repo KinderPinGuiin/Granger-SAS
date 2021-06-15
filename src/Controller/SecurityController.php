@@ -33,22 +33,4 @@ class SecurityController extends AbstractController
     public function logout()
     {
     }
-
-    /**
-     * @Route("/admin", name="admin")
-     */
-    public function admin() {
-        /**
-         * Si l'utilisateur n'est pas connecté ou s'il n'est pas admin on le
-         * redirige
-         */
-        if (
-            empty($this->getUser()) 
-            || !in_array("ROLE_ADMIN", $this->getUser()->getRoles())
-        ) {
-            return $this->redirectToRoute('home');
-        }
-
-        return $this->render("security/admin.html.twig");
-    }
 }

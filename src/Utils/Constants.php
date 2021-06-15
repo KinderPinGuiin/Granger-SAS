@@ -11,7 +11,7 @@ class Constants {
     const ROOT = __DIR__ . "/../../";
 
     // Dossier Google
-    const GOOGLE_FOLDER = self::ROOT . "/google/";
+    const GOOGLE_FOLDER = self::ROOT . "google/";
 
     // ID du dossier racine Google Drive
     const DRIVE_ROOT = "1D3vgBSlyekKEDwEAQ5C4KVYwWOOVnL-g";

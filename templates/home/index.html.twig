@@ -3,4 +3,7 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
+    {% if message is not null %}
+        <p>{{ message }}</p>
+    {% endif %}
 {% endblock %}

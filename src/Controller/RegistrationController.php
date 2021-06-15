@@ -4,18 +4,18 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use Constants;
+use App\Utils\Constants;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Utils\GoogleDriveManager;
+use App\Utils\GoogleDriveManager;
 
 class RegistrationController extends AbstractController
 {
     /**
-     * @Route("/register", name="app_register")
+     * @Route("/register", name="register")
      */
     public function register(Request $request, UserPasswordHasherInterface $passwordEncoder): Response
     {
@@ -62,7 +62,7 @@ class RegistrationController extends AbstractController
         );
         $user->setDriveID($folder["id"]);
         $driveManager->goTo($folder["id"]);
-        $driveManager->createFolder(Constants::LETTRE_FOLDER_NAME);
+        $driveManager->createFolder(Constants::LETTER_FOLDER_NAME);
         $driveManager->createFolder(Constants::CV_FOLDER_NAME);
     }
 }

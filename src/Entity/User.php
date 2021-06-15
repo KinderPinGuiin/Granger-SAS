@@ -25,6 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180)
+     * @Assert\Email(message="Adresse email invalide")
      */
     private $email;
 
@@ -41,11 +42,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Regex(pattern="/[a-z]+/i")
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Regex(pattern="/[a-z]+/i")
      */
     private $prenom;
 
@@ -60,6 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Regex(pattern="/[a-z ]+/i")
      */
     private $ville;
 

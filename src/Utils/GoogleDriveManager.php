@@ -142,16 +142,43 @@ class GoogleDriveManager {
     }
 
     /**
-     * Apply a function to each files in the folder getCurrentFolder()
+     * Apply a callback to each files in the folder getCurrentFolder()
      * 
-     * @param callback $callback Function to apply for each files
+     * @param  callback $callback   Callback to apply for each files
+     * @param  mixed    $acc        An accumulator for callback
+     * @param  bool     $mapFolders True if you want to apply function to 
+     *                              folders or false otherwise
+     * 
+     * @return mixed                The accumulator or null if it's not set
      */
-    public function mapFiles(callable $callback)
+    public function mapFiles(callable $callback, $acc = null, bool $mapFolders = false)
     {
         $files = $this->relativeList()["files"];
         foreach ($files as $file) {
-            callback($file);
+            if ($mapFolders || $file["mimeType"] !== self::FILTER["folder"]) {
+                $acc = $callback($file, $acc);
+            }
         }
+
+        return $acc;
+    }
+
+    /**
+     * Return true if file exists in getCurrentFolder() or false otherwise
+     * 
+     * @param  string   $name         File name or regex
+     * @param  bool     $checkFolders True if you want to apply this function to
+     *                                folders or false otherwise
+     * @return bool
+     */
+    public function fileExists($name, $checkFolders = false): bool
+    {
+        return $this->mapFiles(function ($file) use ($name) {
+            if (preg_match("#" . $name . "#", $file["name"])) {
+                return true;
+            }
+            return false;
+        }, false, $checkFolders);
     }
 
     /**

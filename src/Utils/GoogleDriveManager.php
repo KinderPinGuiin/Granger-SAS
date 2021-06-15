@@ -154,7 +154,16 @@ class GoogleDriveManager {
         }
     }
 
-    
+    /**
+     * Renvoie true si le fichier passé en paramètre est un dossier et false 
+     * sinon
+     * 
+     * @return bool
+     */
+    public function isFolder(\Google_Service_Drive_DriveFile $file): bool
+    {
+        return $file["mimeType"] === self::FILTER["folder"];
+    }
 
     /**
      * Define the new current folder

@@ -20,6 +20,11 @@ class UploadController extends AbstractController
     private $req;
 
     /**
+     * @var GoogleDriveManager
+     */
+    private $driveManager;
+
+    /**
      * Indique si des fichiers ont été déposés sur le drive ou non
      * @var bool
      */
@@ -64,7 +69,7 @@ class UploadController extends AbstractController
      */
     private function handleUpload(): FormInterface
     {
-        $driveManager = new GoogleDriveManager(
+        $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
             Constants::DRIVE_ROOT
         );
@@ -73,16 +78,22 @@ class UploadController extends AbstractController
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
             // Si tout est bon on upload les fichiers sur le drive
-            $driveManager->goTo($this->getUser()->getDriveID());
-            $driveManager->goToName(Constants::CV_FOLDER_NAME);
-            $driveManager->upload(
-                "CV", $form->get("cv")->getData()->getPathname()
+            $this->driveManager->goTo($this->getUser()->getDriveID());
+            $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
+            // Si un CV a déjà été déposé par l'utilisateur on le supprime
+            $this->deleteDuplicate(Constants::CV_FILE_NAME);
+            $this->driveManager->upload(
+                Constants::CV_FILE_NAME,
+                $form->get("cv")->getData()->getPathname()
             );
-            $driveManager->back();
-            $driveManager->goToName(Constants::LETTRE_FOLDER_NAME);
+            $this->driveManager->back();
+            $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
+            // Si une lettre a déjà été déposée par l'utilisateur on la supprime
+            $this->deleteDuplicate(Constants::LETTER_FOLDER_NAME);
             try {
-                $driveManager->upload(
-                    "Lettre", $form->get("lettre")->getData()->getPathname()
+                $this->driveManager->upload(
+                    Constants::LETTER_FILE_NAME,
+                    $form->get("lettre")->getData()->getPathname()
                 );
             } catch (Exception $e) {
                 // En cas d'erreur on l'ajoute au formulaire
@@ -95,5 +106,17 @@ class UploadController extends AbstractController
         
         // On renvoie le formulaire
         return $form;
+    }
+
+    /**
+     * Supprime le fichier demandé s'il existe déjà
+     * 
+     * @param string $name Le nom du fichier
+     */
+    private function deleteDuplicate(string $name)
+    {
+        if (count($this->driveManager->relativeList()["files"]) > 0) {
+            $this->driveManager->deleteByName($name);
+        }
     }
 }

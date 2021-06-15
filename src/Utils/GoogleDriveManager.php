@@ -427,7 +427,7 @@ class GoogleDriveManager {
      */
     private function getID(string $name)
     {
-        $folders = $this->relativeList("folder");
+        $folders = $this->relativeList();
         $id = null;
         foreach ($folders["files"] as $folder) {
             if (preg_match("#" . $name . "#", $folder["name"]) === 1) {

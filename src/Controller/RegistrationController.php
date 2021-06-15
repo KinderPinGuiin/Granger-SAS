@@ -62,7 +62,7 @@ class RegistrationController extends AbstractController
         );
         $user->setDriveID($folder["id"]);
         $driveManager->goTo($folder["id"]);
-        $driveManager->createFolder(Constants::LETTRE_FOLDER_NAME);
+        $driveManager->createFolder(Constants::LETTER_FOLDER_NAME);
         $driveManager->createFolder(Constants::CV_FOLDER_NAME);
     }
 }

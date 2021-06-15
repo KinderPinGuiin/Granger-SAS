@@ -20,6 +20,12 @@ class Constants {
     const CV_FOLDER_NAME = "CV";
 
     // Nom du dossier lettre de motivation
-    const LETTRE_FOLDER_NAME = "Lettre de motivation";
+    const LETTER_FOLDER_NAME = "Lettre de motivation";
+
+    // Nom du fichier du CV
+    const CV_FILE_NAME = "CV";
+
+    // Nom du fichier de la lettre de motivation
+    const LETTER_FILE_NAME = "Lettre de motivation";
 
 }

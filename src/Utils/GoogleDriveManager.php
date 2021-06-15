@@ -5,6 +5,8 @@ namespace App\Utils;
 use Exception;
 use Google\Client;
 
+use function PHPUnit\Framework\callback;
+
 /**
  * A simple Google Drive manager able to list / create / update / delete folders 
  * and files
@@ -137,6 +139,30 @@ class GoogleDriveManager {
         }
 
         return $this->service->files->listFiles($options);
+    }
+
+    /**
+     * Apply a function to each files in the folder getCurrentFolder()
+     * 
+     * @param callback $callback Function to apply for each files
+     */
+    public function mapFiles(callable $callback)
+    {
+        $files = $this->relativeList()["files"];
+        foreach ($files as $file) {
+            callback($file);
+        }
+    }
+
+    /**
+     * Renvoie true si le fichier passé en paramètre est un dossier et false 
+     * sinon
+     * 
+     * @return bool
+     */
+    public function isFolder(\Google_Service_Drive_DriveFile $file): bool
+    {
+        return $file["mimeType"] === self::FILTER["folder"];
     }
 
     /**

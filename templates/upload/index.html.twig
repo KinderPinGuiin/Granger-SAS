@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Déposer vos pièces{% endblock %}
+
+{% block body %}
+    {{ form_start(uploadForm) }}
+        {# Affiche les erreurs si nécessaire #}
+        {% for error in formErrors %}
+            <div>
+                {{ error }}
+            </div>
+        {% endfor %}
+        {{ form_row(uploadForm.cv) }}
+        {{ form_row(uploadForm.lettre) }}
+        <input type="submit" value="Déposer" />
+    {{ form_end(uploadForm) }}
+{% endblock %}

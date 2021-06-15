@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Utils\Constants;
+use App\Utils\GoogleDriveManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -9,6 +11,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  * @Route("/admin", name="admin")
  */
 class AdminController extends AbstractController {
+
+    /**
+     * @var GoogleDriveManager
+     */
+    private $driveManager;
+
+    public function __construct()
+    {
+        $this->driveManager = new GoogleDriveManager(
+            Constants::GOOGLE_FOLDER . "credentials.json",
+            Constants::DRIVE_ROOT
+        );
+    }
 
     /**
      * @Route("/", name="")
@@ -20,6 +35,7 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
+
         return $this->render("admin/index.html.twig");
     }
 
@@ -33,6 +49,7 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
+
         return $this->render("admin/candidatures.html.twig");
     }
 
@@ -46,6 +63,7 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
+
         return $this->render("admin/edit.html.twig");
     }
 

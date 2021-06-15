@@ -15,36 +15,39 @@ class AdminController extends AbstractController {
     /**
      * @Route("/", name="")
      * 
-     * @return RedirectResponse
-     * @return Response
+     * @return mixed RedirectResponse ou Response
      */
-    public function admin(): RedirectResponse
+    public function admin()
     {
-        $this->checkAccess();
+        if (!$this->checkAccess()) {
+            return $this->redirectToRoute("home");
+        }
         return $this->render("admin/index.html.twig");
     }
 
     /**
      * @Route("/candidatures", name="_candidatures")
      * 
-     * @return RedirectResponse
-     * @return Response
+     * @return mixed RedirectResponse ou Response
      */
-    public function adminCandidatures(): RedirectResponse
+    public function adminCandidatures()
     {
-        $this->checkAccess();
+        if (!$this->checkAccess()) {
+            return $this->redirectToRoute("home");
+        }
         return $this->render("admin/candidatures.html.twig");
     }
 
     /**
      * @Route("/edit", name="_edit")
      * 
-     * @return RedirectResponse
-     * @return Response
+     * @return mixed RedirectResponse ou Response
      */
-    public function adminEdit(): RedirectResponse
+    public function adminEdit()
     {
-        $this->checkAccess();
+        if (!$this->checkAccess()) {
+            return $this->redirectToRoute("home");
+        }
         return $this->render("admin/edit.html.twig");
     }
 
@@ -52,20 +55,12 @@ class AdminController extends AbstractController {
      * Redirige l'utilisateur à l'accueil s'il n'est pas autorisé à accéder
      * à la oage d'administration
      * 
-     * @return RedirectResponse
-     * @return Response
+     * @return bool true si l'utilisateur a accès et false sinon
      */
-    private function checkAccess(): RedirectResponse
+    private function checkAccess(): bool
     {
-        /**
-         * Si l'utilisateur n'est pas connecté ou s'il n'est pas admin on le
-         * redirige
-         */
-        if (
-            empty($this->getUser()) 
-            || !in_array("ROLE_ADMIN", $this->getUser()->getRoles())
-        ) {
-            return $this->redirectToRoute('home');
-        }
+        return !empty($this->getUser()) 
+               && in_array("ROLE_ADMIN", $this->getUser()->getRoles());
     }
+
 }

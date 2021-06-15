@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Utils;
+
 /**
  * Classe contenant les constantes de l'application
  */

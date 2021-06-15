@@ -15,7 +15,7 @@ use App\Utils\GoogleDriveManager;
 class RegistrationController extends AbstractController
 {
     /**
-     * @Route("/register", name="app_register")
+     * @Route("/register", name="register")
      */
     public function register(Request $request, UserPasswordHasherInterface $passwordEncoder): Response
     {

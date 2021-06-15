@@ -63,8 +63,26 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
+        // On cherche le dossier correspondant au driveId
+        $dontExist = false;
+        $didntUpload = false;
+        if (!$this->driveManager->goTo($driveId)) {
+            // Si on ne le trouve pas on définit la variable dontExist à true
+            $dontExist = true;
+        } else {
+            // Si on le trouve on vérifie s'il a déjà déposé des fichiers
+            $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
+            if (empty($this->driveManager->relativeList()["files"])) {
+                $didntUpload = true;
+            } else {
+                dump($this->driveManager->relativeList()["files"][0]);
+            }
+        }
 
-        return $this->render("admin/candidature.html.twig");
+        return $this->render("admin/candidature.html.twig", [
+            "dontExist" => $dontExist,
+            "didntUpload" => $didntUpload
+        ]);
     }
 
     /**

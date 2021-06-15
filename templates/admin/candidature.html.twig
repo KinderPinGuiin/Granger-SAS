@@ -6,5 +6,11 @@
 {% endblock %}
 
 {% block body %}
-
+    {% if dontExist %}
+        <p>Ce profil n'existe pas</p>
+    {% elseif didntUpload %}
+        <p>Cet utilisateur n'a pas déposé de pièces</p>
+    {% else %}
+        <p>Test</p>
+    {% endif %}
 {% endblock %}

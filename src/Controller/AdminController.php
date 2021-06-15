@@ -54,11 +54,11 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * @Route("/candidature/{id}", name="_candidature")
+     * @Route("/candidature/{driveId}", name="_candidature")
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function adminCandidature()
+    public function adminCandidature(string $driveId)
     {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");

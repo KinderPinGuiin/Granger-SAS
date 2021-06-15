@@ -4,7 +4,11 @@
 {% block stylesheets %}
     <link href="css/home/style.css" rel="stylesheet">
 {% endblock %}
+
 {% block body %}
+    {% if message is not null %}
+        <p>{{ message }}</p>
+    {% endif %}
     <div class=" home_container">
         <p class="home_title">Faites partie de <br>notre équipe</p>
         <p class="home_paragraph">

@@ -106,6 +106,12 @@
     "google/auth": {
         "version": "v1.15.1"
     },
+    "gregwar/captcha": {
+        "version": "v1.1.9"
+    },
+    "gregwar/captcha-bundle": {
+        "version": "v2.1.5"
+    },
     "guzzlehttp/guzzle": {
         "version": "7.3.0"
     },

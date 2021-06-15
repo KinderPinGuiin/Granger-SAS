@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 
 class RegistrationFormType extends AbstractType
 {
@@ -45,7 +46,7 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('telephone')
+            ->add('telephone', TelType::class)
             ->add('ville')
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,

@@ -155,8 +155,8 @@ class GoogleDriveManager {
     {
         $files = $this->relativeList()["files"];
         foreach ($files as $file) {
-            if (!$mapFolders || $file["mimeType"] !== self::FILTER["folder"]) {
-                $acc = $callback($file);
+            if ($mapFolders || $file["mimeType"] !== self::FILTER["folder"]) {
+                $acc = $callback($file, $acc);
             }
         }
 
@@ -166,16 +166,19 @@ class GoogleDriveManager {
     /**
      * Return true if file exists in getCurrentFolder() or false otherwise
      * 
-     * @param  string   $name         File name
+     * @param  string   $name         File name or regex
      * @param  bool     $checkFolders True if you want to apply this function to
      *                                folders or false otherwise
      * @return bool
      */
     public function fileExists($name, $checkFolders = false): bool
     {
-        $files = $this->relativeList()["files"];
-
-        return false;
+        return $this->mapFiles(function ($file) use ($name) {
+            if (preg_match("#" . $name . "#", $file["name"])) {
+                return true;
+            }
+            return false;
+        }, false, $checkFolders);
     }
 
     /**

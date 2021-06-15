@@ -15,12 +15,6 @@ class HomeController extends AbstractController
      */
     public function index(): Response
     {
-        $driveManager = new GoogleDriveManager(
-            Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::DRIVE_ROOT
-        );
-        $driveManager->mapFiles(function() {});
-
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
         ]);

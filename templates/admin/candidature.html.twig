@@ -28,7 +28,7 @@
                 <tbody>
                     {% for candidature in candidatures %}
                         <tr>
-                            <td>{{ candidature.date|date("d/m/Y h:m:s") }}</td>
+                            <td>{{ candidature.date|date("d/m/Y") }}</td>
                             <td>{% if candidature.acceptee %} Acceptée {% else %} Refusée {% endif %}</td>
                         </tr>
                     {% endfor %}

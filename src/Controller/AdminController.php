@@ -69,13 +69,18 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function adminCandidatures()
+    public function adminCandidatures(Request $req)
     {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
         // On liste les candidatures non traitées
-        $candidatures = $this->candidRepository->getNotHandled();
+        $candidatures = [];
+        if ($req->get("show") === "all") {
+            $candidatures = $this->candidRepository->findAll();
+        } else {
+            $candidatures = $this->candidRepository->getNotHandled();
+        }
 
         return $this->render("admin/candidatures.html.twig", [
             "candidatures" => $candidatures
@@ -94,6 +99,12 @@ class AdminController extends AbstractController {
         }
         // On charge le candidat
         $candidat = $this->userRepository->getByDriveId($driveId);
+        $candidaturesNonTraitees = $this->candidRepository->getNotHandled("user = " . $candidat->getId());
+        if (empty($candidaturesNonTraitees)) {
+            // Si l'utilisateur n'a pas de candidature en cours on affiche une 
+            // page avec l'historique des candidatures de l'utilisateur
+            
+        }
         // On cherche le dossier correspondant au driveId
         $dontExist = false;
         $didntUpload = false;
@@ -102,7 +113,6 @@ class AdminController extends AbstractController {
             $dontExist = true;
         } else {
             // Si on le trouve on vérifie s'il a déjà déposé des fichiers
-            dump($this->driveManager->relativeList("folder")["files"]);
             $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
             if (empty($this->driveManager->relativeList()["files"])) {
                 $didntUpload = true;

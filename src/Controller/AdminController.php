@@ -6,6 +6,7 @@ use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use Symfony\Component\Mime\Email;
 use App\Form\CandidatureHandlingType;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,12 +22,18 @@ class AdminController extends AbstractController {
      */
     private $driveManager;
 
-    public function __construct()
+    /**
+     * @var UserRepository
+     */
+    private $repository;
+
+    public function __construct(UserRepository $repository)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
             Constants::ID_DRIVE_ROOT
         );
+        $this->repository = $repository;
     }
 
     /**
@@ -110,7 +117,7 @@ class AdminController extends AbstractController {
             // Rédaction du mail
             $email = (new Email())
                 ->from("noreply@grangersas.com")
-                ->to("jordan.elie.2001@gmail.com")
+                ->to($this->repository->getByDriveId($driveId)->getEmail())
                 ->subject("Votre candidature")
                 ->html(
                     "<h1>Votre candidature chez Granger SAS</h1>" 

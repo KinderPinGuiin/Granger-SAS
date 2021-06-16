@@ -19,6 +19,21 @@ class CandidatureRepository extends ServiceEntityRepository
         parent::__construct($registry, Candidature::class);
     }
 
+    /**
+     * Renvoie les candidatures qui n'ont pas été traitées
+     * 
+     * @param string $where Condition supplémentaire
+     */
+    public function getNotHandled($where = null)
+    {
+        $query = $this->createQueryBuilder('c')
+            ->andWhere("c.acceptee is NULL");
+        if ($where !== null) {
+            $query->andWhere("c." . $where);
+        }
+        return $query->getQuery()->getResult();
+    }
+
     // /**
     //  * @return Candidature[] Returns an array of Candidature objects
     //  */

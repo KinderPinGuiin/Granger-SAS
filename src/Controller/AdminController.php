@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Candidature;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use Symfony\Component\Mime\Email;
 use App\Form\CandidatureHandlingType;
+use App\Repository\CandidatureRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -25,15 +27,21 @@ class AdminController extends AbstractController {
     /**
      * @var UserRepository
      */
-    private $repository;
+    private $userRepository;
 
-    public function __construct(UserRepository $repository)
+    /**
+     * @var CandidatureRepository
+     */
+    private $candidRepository;
+
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
             Constants::ID_DRIVE_ROOT
         );
-        $this->repository = $repository;
+        $this->userRepository = $repository;
+        $this->candidRepository = $cRepository;
     }
 
     /**
@@ -60,8 +68,12 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
+        // On liste les candidatures non traitées
+        $candidatures = $this->candidRepository->getNotHandled();
 
-        return $this->render("admin/candidatures.html.twig");
+        return $this->render("admin/candidatures.html.twig", [
+            "candidatures" => $candidatures
+        ]);
     }
 
     /**
@@ -108,17 +120,24 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function sendMail(string $driveId, MailerInterface $mailer, Request $req)
+    public function handleCandidature(string $driveId, MailerInterface $mailer, Request $req)
     {
-        $form = $this->createForm(CandidatureHandlingType::class);
+        if (!$this->checkAccess()) {
+            return $this->redirectToRoute("home");
+        }
+        $em = $this->getDoctrine()->getManager();
+        $candidat = $this->userRepository->getByDriveId($driveId);
+        $candidature = $this->candidRepository->getNotHandled("user = " . $candidat->getId())[0];
+        $form = $this->createForm(CandidatureHandlingType::class, $candidature);
         $form->handleRequest($req);
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
             // Rédaction du mail
             $email = (new Email())
                 ->from("noreply@grangersas.com")
-                ->to($this->repository->getByDriveId($driveId)->getEmail())
-                ->subject("Votre candidature")
+                ->to($candidat->getEmail())
+                ->subject("Votre candidature pour Granger SAS")
                 ->html(
                     "<h1>Votre candidature chez Granger SAS</h1>" 
                     . "<p>" . $form->get("message")->getData() . "</p>");

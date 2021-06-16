@@ -28,6 +28,11 @@ class Candidature
      */
     private $acceptee;
 
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $date;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -53,6 +58,18 @@ class Candidature
     public function setAcceptee(bool $acceptee): self
     {
         $this->acceptee = $acceptee;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(?\DateTimeInterface $date): self
+    {
+        $this->date = $date;
 
         return $this;
     }

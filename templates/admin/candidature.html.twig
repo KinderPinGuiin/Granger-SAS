@@ -11,10 +11,29 @@
     {% elseif didntUpload is defined and didntUpload %}
         <p>Cet utilisateur n'a pas déposé de pièces</p>
     {% else %}
-        <h1>Candidature de {{ candidat.prenom }} {{ candidat.nom }}</h1>
-        {{ form_start(form) }}
-            {{ form_rest(form) }}
-            <input type="submit" value="Envoyer la réponse" />
-        {{ form_end(form) }}
+        {% if view == "candidature" %}            
+            <h1>Candidature de {{ candidat.prenom }} {{ candidat.nom }}</h1>
+            {{ form_start(form) }}
+                {{ form_rest(form) }}
+                <input type="submit" value="Envoyer la réponse" />
+            {{ form_end(form) }}
+        {% elseif view == "history" %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for candidature in candidatures %}
+                        <tr>
+                            <td>{{ candidature.date|date("d/m/Y h:m:s") }}</td>
+                            <td>{% if candidature.acceptee %} Acceptée {% else %} Refusée {% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
     {% endif %}
 {% endblock %}

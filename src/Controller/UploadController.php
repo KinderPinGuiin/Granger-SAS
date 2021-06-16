@@ -7,6 +7,7 @@ use App\Form\UploadType;
 use App\Repository\CandidatureRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
+use DateTime;
 use Exception;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -91,6 +92,7 @@ class UploadController extends AbstractController
     {
         $candidature = new Candidature();
         $candidature->setUser($this->getUser());
+        $candidature->setDate(new DateTime());
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
         $entityManager->flush();

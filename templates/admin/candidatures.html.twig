@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Candidatures{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    {% for candidature in candidatures %}
+        <div>
+            <a href="{{ path("admin_candidature", { "driveId": candidature.user.driveId }) }}">
+                Candidature de {{ candidature.user.prenom }} {{ candidature.user.nom }}
+            </a>
+        </div>
+    {% endfor %}
+{% endblock %}

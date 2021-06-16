@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Candidatures{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    {% if dontExist is defined and dontExist %}
+        <p>Ce profil n'existe pas</p>
+    {% elseif didntUpload is defined and didntUpload %}
+        <p>Cet utilisateur n'a pas déposé de pièces</p>
+    {% else %}
+        <h1>Candidature de {{ candidat.prenom }} {{ candidat.nom }}</h1>
+        {{ form_start(form) }}
+            {{ form_rest(form) }}
+            <input type="submit" value="Envoyer la réponse" />
+        {{ form_end(form) }}
+    {% endif %}
+{% endblock %}

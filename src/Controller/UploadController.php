@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Candidature;
 use App\Form\UploadType;
+use App\Repository\CandidatureRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use Exception;
@@ -25,6 +27,11 @@ class UploadController extends AbstractController
     private $driveManager;
 
     /**
+     * @var CandidatureRepository
+     */
+    private $candRepository;
+
+    /**
      * Indique si des fichiers ont été déposés sur le drive ou non
      * @var bool
      */
@@ -36,6 +43,11 @@ class UploadController extends AbstractController
      */
     private $formErrors = [];
 
+    public function __construct(CandidatureRepository $c)
+    {
+        $this->candRepository = $c;
+    }
+
     /**
      * @Route("/upload", name="upload")
      */
@@ -45,20 +57,43 @@ class UploadController extends AbstractController
         if (empty($this->getUser())) {
             return $this->redirectToRoute("home");
         }
+        // Si l'utilisateur a déjà une candidature en cours on lui affiche un message
+        if (!empty(
+            $this->candRepository
+                 ->getNotHandled("id = " . $this->getUser()->getId())
+        )) {
+            $hasCandidature = true;
+            return $this->render('upload/index.html.twig', [
+                "hasCandidature" => true
+            ]);
+        }
         // On regarde si des fichiers ont été déposés
         $this->req = $req;
         $uploadForm = $this->handleUpload();
         // Si les fichiers ont été déposés on redirige l'utilisateur à l'accueil
         if ($this->isUploaded) {
+            // On ajoute la candidature en base de données
+            $this->addCandidature();
+            // Et on renvoie l'utilisateur sur la page d'accueil
             return $this->redirectToRoute("home", [
                 "message" => "Fichiers déposés avec succès"
             ]);
         }
 
         return $this->render('upload/index.html.twig', [
+            "hasCandidature" => false,
             "uploadForm" => $uploadForm->createView(),
             "formErrors" => $this->formErrors
         ]);
+    }
+
+    private function addCandidature()
+    {
+        $candidature = new Candidature();
+        $candidature->setUser($this->getUser());
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($candidature);
+        $entityManager->flush();
     }
 
     /**
@@ -71,7 +106,7 @@ class UploadController extends AbstractController
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::DRIVE_ROOT
+            Constants::ID_DRIVE_ROOT
         );
         $form = $this->createForm(UploadType::class);
         $form->handleRequest($this->req);

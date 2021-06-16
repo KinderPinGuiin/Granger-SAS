@@ -3,21 +3,28 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\RegistrationFormType;
 use App\Utils\Constants;
+use App\Utils\GoogleDriveManager;
+use App\Form\RegistrationFormType;
+use App\Security\UserAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Utils\GoogleDriveManager;
+use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class RegistrationController extends AbstractController
 {
     /**
      * @Route("/register", name="register")
      */
-    public function register(Request $request, UserPasswordHasherInterface $passwordEncoder): Response
+    public function register(
+        Request $request, 
+        UserPasswordHasherInterface $passwordEncoder,
+        UserAuthenticatorInterface $authenticator,
+        UserAuthenticator $formAuthenticator
+    ): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('home');
@@ -41,7 +48,9 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('home');
+            return $authenticator->authenticateUser(
+                $user, $formAuthenticator, $request
+            );
         }
 
         return $this->render('registration/register.html.twig', [
@@ -59,7 +68,7 @@ class RegistrationController extends AbstractController
     {
         $driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::DRIVE_ROOT
+            Constants::ID_DRIVE_ROOT
         );
         $folder = $driveManager->createFolder(
             $user->getPrenom() . " " . $user->getNom() . " | " . $user->getEmail()

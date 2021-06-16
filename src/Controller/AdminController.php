@@ -9,6 +9,7 @@ use Symfony\Component\Mime\Email;
 use App\Form\CandidatureHandlingType;
 use App\Repository\CandidatureRepository;
 use App\Repository\UserRepository;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,7 +35,12 @@ class AdminController extends AbstractController {
      */
     private $candidRepository;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository)
+    /**
+     * @var ObjectManager
+     */
+    private $em;
+
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ObjectManager $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -42,6 +48,7 @@ class AdminController extends AbstractController {
         );
         $this->userRepository = $repository;
         $this->candidRepository = $cRepository;
+        $this->em = $em;
     }
 
     /**
@@ -125,24 +132,17 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
-        $em = $this->getDoctrine()->getManager();
+        // On charge le candidat et sa candidature
         $candidat = $this->userRepository->getByDriveId($driveId);
         $candidature = $this->candidRepository->getNotHandled("user = " . $candidat->getId())[0];
+        // On prend en charge le formulaire
         $form = $this->createForm(CandidatureHandlingType::class, $candidature);
         $form->handleRequest($req);
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->flush();
-            // Rédaction du mail
-            $email = (new Email())
-                ->from("noreply@grangersas.com")
-                ->to($candidat->getEmail())
-                ->subject("Votre candidature pour Granger SAS")
-                ->html(
-                    "<h1>Votre candidature chez Granger SAS</h1>" 
-                    . "<p>" . $form->get("message")->getData() . "</p>");
-            // Envoi du mail
-            $mailer->send($email);
+            // On actualise la candidature et on envoie l'email
+            $this->em->flush();
+            $this->sendMail($mailer, $candidat, $form);
             return $this->redirectToRoute("admin_candidatures");
         }
         // Si elles ne sont pas bonnes on renvoie l'utilisateur sur le 
@@ -154,6 +154,23 @@ class AdminController extends AbstractController {
             "lettre" => $cvLettre["lettre"],
             "form" => $form->createView()
         ]);
+    }
+
+    /**
+     * Envoie l'email de réponse
+     */
+    private function sendMail($mailer, $candidat, $form)
+    {
+        // Rédaction du mail
+        $email = (new Email())
+            ->from("noreply@grangersas.com")
+            ->to($candidat->getEmail())
+            ->subject("Votre candidature pour Granger SAS")
+            ->html(
+                "<h1>Votre candidature chez Granger SAS</h1>" 
+                . "<p>" . $form->get("message")->getData() . "</p>");
+        // Envoi du mail
+        $mailer->send($email);
     }
 
     private function getCVAndLetter(string $driveId)

@@ -6,5 +6,17 @@
 {% endblock %}
 
 {% block body %}
+    {% if dontExist is defined and dontExist %}
+        <p>Ce profil n'existe pas</p>
+    {% elseif didntUpload is defined and didntUpload %}
+        <p>Cet utilisateur n'a pas déposé de pièces</p>
+    {% else %}
+        <p>{{ cv.name }}</p>
+        <p>{{ lettre.name }}</p>
 
+        {{ form_start(form) }}
+            {{ form_rest(form) }}
+            <input type="submit" value="Envoyer la réponse" />
+        {{ form_end(form) }}
+    {% endif %}
 {% endblock %}

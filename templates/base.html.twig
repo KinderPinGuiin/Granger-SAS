@@ -8,8 +8,6 @@
            and uncomment the following Encore helpers to start using Symfony UX #}
         <link href="/img/logo_n.png" rel="icon">
         <link href="/css/base.css" rel="stylesheet">
-        <link href="/css/base.css" rel="stylesheet">
-        <link href="/img/logo_n.png" rel="icon">
         {% block stylesheets %}
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
@@ -19,11 +17,8 @@
         {% endblock %}
     </head>
     <body>
-        <header>
-        <a href="/" class="logo_tittle">GRA<img class="logo_n" src="/img/logo_n.png" alt="N de GRANGER">GER</a>   
-        </header>
+        {% include "header.html.twig" %}
         {% block body %}
-            
         {% endblock %}
     </body>
 </html>

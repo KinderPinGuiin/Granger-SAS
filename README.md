@@ -1,4 +1,8 @@
-# Configuration
+# Ajout du fichier credentials.json
+
+Ajoutez votre fichier credentials.json dans le dossier *google/*
+
+# Configuration des constantes
 
 Ajoutez un fichier nommé Constants.php dans le dossier *src/Utils/* et collez-y le code suivant :
 ```php

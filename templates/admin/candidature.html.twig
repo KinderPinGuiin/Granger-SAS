@@ -11,9 +11,7 @@
     {% elseif didntUpload is defined and didntUpload %}
         <p>Cet utilisateur n'a pas déposé de pièces</p>
     {% else %}
-        <p>{{ cv.name }}</p>
-        <p>{{ lettre.name }}</p>
-
+        <h1>Candidature de {{ candidat.prenom }} {{ candidat.nom }}</h1>
         {{ form_start(form) }}
             {{ form_rest(form) }}
             <input type="submit" value="Envoyer la réponse" />

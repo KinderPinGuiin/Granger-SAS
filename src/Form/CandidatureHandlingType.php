@@ -16,6 +16,7 @@ class CandidatureHandlingType extends AbstractType
     {
         $builder
             ->add("acceptee", ChoiceType::class, [
+                "label" => false,
                 "choices" => [
                     "Accepter la candidature" => true,
                     "Refuser la candidature" => false

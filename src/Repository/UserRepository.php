@@ -36,6 +36,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    /**
+     * Retourne un utilisateur grâce à son driveId
+     * 
+     * @param  string $driveId L'identifiant du drive de l'utilisateur demandé 
+     * @return User L'utilisateur
+     */
+    public function getByDriveId(string $driveId):User
+    {
+        return $this->createQueryBuilder("u")
+            ->where("u.driveID = :driveId")
+            ->setParameter("driveId", $driveId)
+            ->getQuery()
+            ->getResult()[0];
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

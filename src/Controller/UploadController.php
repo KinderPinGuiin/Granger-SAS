@@ -71,7 +71,7 @@ class UploadController extends AbstractController
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::DRIVE_ROOT
+            Constants::ID_DRIVE_ROOT
         );
         $form = $this->createForm(UploadType::class);
         $form->handleRequest($this->req);

@@ -3,8 +3,28 @@
 }
 
 @font-face {
+    font-family: "Inter_Medium";
+    src: url("/fonts/Inter/static/Inter-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Inter_SemiBold";
+    src: url("/fonts/Inter/static/Inter-SemiBold.ttf");
+}
+
+@font-face {
+    font-family: "Inter_Bold";
+    src: url("/fonts/Inter/static/Inter-Bold.ttf");
+}
+
+@font-face {
     font-family: "Maven_Pro_Bold";
     src: url("/fonts/Maven_Pro/static/MavenPro-Bold.ttf");
+}
+
+@font-face {
+    font-family: "Montserrat_Bold";
+    src: url("/fonts/Montserrat/Montserrat-Bold.ttf");
 }
 
 body {
@@ -18,10 +38,11 @@ body {
 
 header {
     display: flex;
+    justify-content: space-between;
     width: 100%;
 }
 
-.logo_tittle {
+.logo_title {
     font-family: "Maven_Pro_Bold";
     color: #383838;
     font-size: 2.2rem;
@@ -35,4 +56,35 @@ header {
 
 .logo_n {
     width: 37px;
+}
+
+.button_container {
+    margin-top: 3rem;
+    margin-right: 2rem;
+    font-family: "Montserrat_Bold";
+    font-size: 1.2rem;
+}
+
+.button_out {
+    text-decoration: none;
+    margin-right: 1.2rem;
+    color: #DF5F36;
+    transition-duration: 0.5s;
+}
+
+.button_out:hover {
+    color: #A32A26;
+}
+
+.button_in {
+    text-decoration: none;
+    color: #FBFBFB;
+    background-color: #DF5F36;
+    padding: 0.65rem 1.5rem;
+    border-radius: 50px;
+    transition-duration: 0.5s;
+}
+
+.button_in:hover {
+    background-color: #A32A26;
 }

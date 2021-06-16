@@ -59,7 +59,7 @@ class RegistrationController extends AbstractController
     {
         $driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::DRIVE_ROOT
+            Constants::ID_DRIVE_ROOT
         );
         $folder = $driveManager->createFolder(
             $user->getPrenom() . " " . $user->getNom() . " | " . $user->getEmail()

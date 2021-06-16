@@ -4,6 +4,10 @@ namespace App\Controller;
 
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
+use Symfony\Component\Mime\Email;
+use App\Form\CandidatureHandlingType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -21,7 +25,7 @@ class AdminController extends AbstractController {
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::DRIVE_ROOT
+            Constants::ID_DRIVE_ROOT
         );
     }
 
@@ -54,11 +58,11 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * @Route("/candidature/{driveId}", name="_candidature")
+     * @Route("/candidature/{driveId}", name="_candidature", methods={"GET"})
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function adminCandidature(string $driveId)
+    public function adminCandidature(string $driveId, Request $request)
     {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
@@ -74,15 +78,69 @@ class AdminController extends AbstractController {
             $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
             if (empty($this->driveManager->relativeList()["files"])) {
                 $didntUpload = true;
-            } else {
-                dump($this->driveManager->relativeList()["files"][0]);
             }
         }
+        // On récupère le CV et la lettre de motivation
+        $cvLettre = $this->getCVAndLetter($driveId);
+        // Création du formulaire de réponse
+        $form = $this->createForm(CandidatureHandlingType::class);
 
         return $this->render("admin/candidature.html.twig", [
             "dontExist" => $dontExist,
-            "didntUpload" => $didntUpload
+            "didntUpload" => $didntUpload,
+            "cv" => $cvLettre["cv"],
+            "lettre" => $cvLettre["lettre"],
+            "form" => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route(
+     *  "/candidature/{driveId}", name="_candidature_mail", methods={"POST"}
+     * )
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function sendMail(string $driveId, MailerInterface $mailer, Request $req)
+    {
+        $form = $this->createForm(CandidatureHandlingType::class);
+        $form->handleRequest($req);
+        // On vérifie les données du formulaire
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Rédaction du mail
+            $email = (new Email())
+                ->from("noreply@grangersas.com")
+                ->to("jordan.elie.2001@gmail.com")
+                ->subject("Votre candidature")
+                ->html(
+                    "<h1>Votre candidature chez Granger SAS</h1>" 
+                    . "<p>" . $form->get("message")->getData() . "</p>");
+            // Envoi du mail
+            $mailer->send($email);
+            return $this->redirectToRoute("admin_candidatures");
+        }
+        // Si elles ne sont pas bonnes on renvoie l'utilisateur sur le 
+        // formulaire
+        $cvLettre = $this->getCVAndLetter($driveId);
+
+        return $this->render("admin/candidature.html.twig", [
+            "cv" => $cvLettre["cv"],
+            "lettre" => $cvLettre["lettre"],
+            "form" => $form->createView()
+        ]);
+    }
+
+    private function getCVAndLetter(string $driveId)
+    {
+        $this->driveManager->clearFolderStack();
+        $this->driveManager->goTo($driveId);
+        $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
+        $cv = $this->driveManager->relativeList()["files"][0];
+        $this->driveManager->back();
+        $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
+        $lettre = $this->driveManager->relativeList()["files"][0];
+
+        return ["cv" => $cv, "lettre" => $lettre];
     }
 
     /**

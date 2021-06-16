@@ -40,3 +40,52 @@ class Constants {
 ```
 
 Remplacez la ligne 17 ("*Identifiant de votre dossier*") par l'ID de votre dossier Google Drive.
+
+# Configuration du fichier .env.local
+
+Créez un fichier **.env.local** à la racine du site web et collez-y le code suivant :
+
+```shell
+###> symfony/framework-bundle ###
+APP_ENV=dev
+APP_SECRET=03b3c2e91608adfe60d4a581ed8fa7de
+###< symfony/framework-bundle ###
+
+###> symfony/mailer ###
+# MAILER_DSN=smtp://localhost
+###< symfony/mailer ###
+
+###> doctrine/doctrine-bundle ###
+# Format described at https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url
+# IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml
+#
+# DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
+DATABASE_URL="mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5.7"
+# DATABASE_URL="postgresql://db_user:db_password@127.0.0.1:5432/db_name?serverVersion=13&charset=utf8"
+###< doctrine/doctrine-bundle ###
+
+###> symfony/google-mailer ###
+# Gmail SHOULD NOT be used on production, use it in development only.
+MAILER_DSN=gmail://USERNAME:PASSWORD@default
+###< symfony/google-mailer ###
+```
+
+Changez la ligne *DATABASE_URL=...* en remplaçant les informations correspondantes à votre base de données :
+
+- db_user : Le nom d\'utilisateur permettant de se connecter à la base de données
+- db_password : Le mot de passe permettant de se connecter à la base de données
+- 127.0.0.1:3306 : L'adresse de connexion (Il n'y a normalement pas besoin d'y toucher)
+- db_name : Le nom de la base de données à utiliser
+
+Changez également la ligne *MAILER_DSN=...* afin de pouvoir envoyer des mails aux candidats via le site :
+
+- USERNAME : Votre adresse email
+- PASSWORD : Votre mot de passe Google **ou** votre mot de passe d\'application (Voir section suivante)
+
+# Configuration du mot de passe des applications
+
+**Cette section est nécessaire si votre compte Google dispose d\'une authentification à double facteur. Dans le cas contraire vous pouvez l'ignorer.**
+
+Rendez-vous sur votre compte Google https://myaccount.google.com/ et cliquer sur la section *Sécurité*, sous *Se connecter à Google*, sélectionnez *Mots de passe des applications*. Séléctionnez une application "Autre" et nommez la "Granger SAS", séléctionnez un appareil (Sans importance) et cliquez sur *Générer*. 
+
+Vous pouvez récupérer le code surligné en jaune et le coller à la place de PASSWORD dans votre fichier **.env.local**.

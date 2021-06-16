@@ -3,24 +3,24 @@
         <a href="/" class="logo_title">GRA<img class="logo_n" src="/img/logo_n.png" alt="N de GRANGER">GER</a>
         {% if app.request.pathinfo == path('login') %}
             <div class="button_container">
-                <a class="button_out" href="{{ path("register") }}" alt="Déconnexion">Inscription</a>
-                <a class="button_in" href="{{ path("home") }}" alt="Postuler">Accueil</a>
+                <a class="button_out" href="{{ path("register") }}" alt="Déconnexion">Inscription</a><!--
+                --><a class="button_in" href="{{ path("home") }}" alt="Postuler">Accueil</a>
             </div>
         {% elseif app.request.pathinfo == path('register') %}
             <div class="button_container">
-                <a class="button_out" href="{{ path("login") }}" alt="Déconnexion">Connexion</a>
-                <a class="button_in" href="{{ path("home") }}" alt="Postuler">Accueil</a>
+                <a class="button_out" href="{{ path("login") }}" alt="Déconnexion">Connexion</a><!--
+                --><a class="button_in" href="{{ path("home") }}" alt="Postuler">Accueil</a>
             </div>
         {% else %}
             {% if app.user %}
                 <div class="button_container">
-                    <a class="button_out" href="{{ path("logout") }}" alt="Déconnexion">Déconnexion</a>
-                    <a class="button_in" href="{{ path("upload") }}" alt="Postuler">Postuler</a>
+                    <a class="button_out" href="{{ path("logout") }}" alt="Déconnexion">Déconnexion</a><!--
+                    --><a class="button_in" href="{{ path("upload") }}" alt="Postuler">Postuler</a>
                 </div>
             {% else %}
                 <div class="button_container">
-                    <a class="button_out" href="{{ path("login") }}" alt="Connexion">Connexion</a>
-                    <a class="button_in" href="{{ path("register") }}" alt="Inscription">Inscription</a>
+                    <a class="button_out" href="{{ path("login") }}" alt="Connexion">Connexion</a><!--
+                    --><a class="button_in" href="{{ path("register") }}" alt="Inscription">Inscription</a>
                 </div>
             {% endif %}
         {% endif %}

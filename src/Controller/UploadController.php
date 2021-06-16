@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Candidature;
 use App\Form\UploadType;
+use App\Repository\CandidatureRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use Exception;
@@ -26,6 +27,11 @@ class UploadController extends AbstractController
     private $driveManager;
 
     /**
+     * @var CandidatureRepository
+     */
+    private $candRepository;
+
+    /**
      * Indique si des fichiers ont été déposés sur le drive ou non
      * @var bool
      */
@@ -37,6 +43,11 @@ class UploadController extends AbstractController
      */
     private $formErrors = [];
 
+    public function __construct(CandidatureRepository $c)
+    {
+        $this->candRepository = $c;
+    }
+
     /**
      * @Route("/upload", name="upload")
      */
@@ -45,6 +56,16 @@ class UploadController extends AbstractController
         // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
         if (empty($this->getUser())) {
             return $this->redirectToRoute("home");
+        }
+        // Si l'utilisateur a déjà une candidature en cours on lui affiche un message
+        if (!empty(
+            $this->candRepository
+                 ->getNotHandled("id = " . $this->getUser()->getId())
+        )) {
+            $hasCandidature = true;
+            return $this->render('upload/index.html.twig', [
+                "hasCandidature" => true
+            ]);
         }
         // On regarde si des fichiers ont été déposés
         $this->req = $req;
@@ -60,6 +81,7 @@ class UploadController extends AbstractController
         }
 
         return $this->render('upload/index.html.twig', [
+            "hasCandidature" => false,
             "uploadForm" => $uploadForm->createView(),
             "formErrors" => $this->formErrors
         ]);

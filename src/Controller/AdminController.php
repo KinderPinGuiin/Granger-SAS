@@ -103,7 +103,10 @@ class AdminController extends AbstractController {
         if (empty($candidaturesNonTraitees)) {
             // Si l'utilisateur n'a pas de candidature en cours on affiche une 
             // page avec l'historique des candidatures de l'utilisateur
-            
+            return $this->render("admin/candidature.html.twig", [
+                "view" => "history",
+                "candidatures" => $this->candidRepository->findAll()
+            ]);
         }
         // On cherche le dossier correspondant au driveId
         $dontExist = false;
@@ -124,6 +127,7 @@ class AdminController extends AbstractController {
         $form = $this->createForm(CandidatureHandlingType::class);
 
         return $this->render("admin/candidature.html.twig", [
+            "view" => "candidature",
             "candidat" => $candidat,
             "dontExist" => $dontExist,
             "didntUpload" => $didntUpload,

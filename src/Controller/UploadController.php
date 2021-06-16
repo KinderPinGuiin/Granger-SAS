@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Candidature;
 use App\Form\UploadType;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
@@ -50,6 +51,9 @@ class UploadController extends AbstractController
         $uploadForm = $this->handleUpload();
         // Si les fichiers ont été déposés on redirige l'utilisateur à l'accueil
         if ($this->isUploaded) {
+            // On ajoute la candidature en base de données
+            $this->addCandidature();
+            // Et on renvoie l'utilisateur sur la page d'accueil
             return $this->redirectToRoute("home", [
                 "message" => "Fichiers déposés avec succès"
             ]);
@@ -59,6 +63,15 @@ class UploadController extends AbstractController
             "uploadForm" => $uploadForm->createView(),
             "formErrors" => $this->formErrors
         ]);
+    }
+
+    private function addCandidature()
+    {
+        $candidature = new Candidature();
+        $candidature->setUser($this->getUser());
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($candidature);
+        $entityManager->flush();
     }
 
     /**

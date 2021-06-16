@@ -3,15 +3,19 @@
 {% block title %}Déposer vos pièces{% endblock %}
 
 {% block body %}
-    {{ form_start(uploadForm) }}
-        {# Affiche les erreurs si nécessaire #}
-        {% for error in formErrors %}
-            <div>
-                {{ error }}
-            </div>
-        {% endfor %}
-        {{ form_row(uploadForm.cv) }}
-        {{ form_row(uploadForm.lettre) }}
-        <input type="submit" value="Déposer" />
-    {{ form_end(uploadForm) }}
+    {% if hasCandidature %}
+        <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
+    {% else %}        
+        {{ form_start(uploadForm) }}
+            {# Affiche les erreurs si nécessaire #}
+            {% for error in formErrors %}
+                <div>
+                    {{ error }}
+                </div>
+            {% endfor %}
+            {{ form_row(uploadForm.cv) }}
+            {{ form_row(uploadForm.lettre) }}
+            <input type="submit" value="Déposer" />
+        {{ form_end(uploadForm) }}
+    {% endif %}
 {% endblock %}

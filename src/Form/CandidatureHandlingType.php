@@ -21,8 +21,7 @@ class CandidatureHandlingType extends AbstractType
                     "placeholder" => "Votre message..."
                 ],
                 "constraints" => [
-                    new NotBlank(),
-                    new NotNull()
+                    new NotBlank()
                 ]
             ])
         ;

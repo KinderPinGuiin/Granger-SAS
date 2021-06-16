@@ -1,24 +1,10 @@
-@font-face {
-    font-family: "Inter_Medium";
-    src: url("/fonts/Inter/static/Inter-Medium.ttf");
-}
-
-@font-face {
-    font-family: "Inter_SemiBold";
-    src: url("/fonts/Inter/static/Inter-SemiBold.ttf");
-}
-
-@font-face {
-    font-family: "Inter_Bold";
-    src: url("/fonts/Inter/static/Inter-Bold.ttf");
-}
-
 .home_container {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     color: #383838;
     margin-right: 6rem;
+    margin-top: 2rem;
 }
 
 .home_title {

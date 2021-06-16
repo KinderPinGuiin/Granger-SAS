@@ -6,8 +6,8 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
-        <link href="img/logo_n.png" rel="icon">
-        <link href="css/base.css" rel="stylesheet">
+        <link href="/img/logo_n.png" rel="icon">
+        <link href="/css/base.css" rel="stylesheet">
         {% block stylesheets %}
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
@@ -17,11 +17,8 @@
         {% endblock %}
     </head>
     <body>
-        <header>
-        <a href="/" class="logo_tittle">GRA<img class="logo_n" src="img/logo_n.png" alt="N de GRANGER">GER</a>   
-        </header>
+        {% include "header.html.twig" %}
         {% block body %}
-            
         {% endblock %}
     </body>
 </html>

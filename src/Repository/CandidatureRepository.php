@@ -21,13 +21,17 @@ class CandidatureRepository extends ServiceEntityRepository
 
     /**
      * Renvoie les candidatures qui n'ont pas été traitées
+     * 
+     * @param string $where Condition supplémentaire
      */
-    public function getNotHandled()
+    public function getNotHandled($where = null)
     {
-        return $this->createQueryBuilder('c')
-            ->where("c.acceptee is NULL")
-            ->getQuery()
-            ->getResult();
+        $query = $this->createQueryBuilder('c')
+            ->andWhere("c.acceptee is NULL");
+        if ($where !== null) {
+            $query->andWhere("c." . $where);
+        }
+        return $query->getQuery()->getResult();
     }
 
     // /**

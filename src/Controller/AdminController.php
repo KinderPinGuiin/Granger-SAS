@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Candidature;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use Symfony\Component\Mime\Email;
@@ -119,17 +120,24 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function sendMail(string $driveId, MailerInterface $mailer, Request $req)
+    public function handleCandidature(string $driveId, MailerInterface $mailer, Request $req)
     {
-        $form = $this->createForm(CandidatureHandlingType::class);
+        if (!$this->checkAccess()) {
+            return $this->redirectToRoute("home");
+        }
+        $em = $this->getDoctrine()->getManager();
+        $candidat = $this->userRepository->getByDriveId($driveId);
+        $candidature = $this->candidRepository->getNotHandled("user = " . $candidat->getId())[0];
+        $form = $this->createForm(CandidatureHandlingType::class, $candidature);
         $form->handleRequest($req);
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
             // Rédaction du mail
             $email = (new Email())
                 ->from("noreply@grangersas.com")
-                ->to($this->userRepository->getByDriveId($driveId)->getEmail())
-                ->subject("Votre candidature")
+                ->to($candidat->getEmail())
+                ->subject("Votre candidature pour Granger SAS")
                 ->html(
                     "<h1>Votre candidature chez Granger SAS</h1>" 
                     . "<p>" . $form->get("message")->getData() . "</p>");

@@ -111,7 +111,7 @@ class AdminController extends AbstractController {
         // On cherche le dossier correspondant au driveId
         $dontExist = false;
         $didntUpload = false;
-        if (!$this->driveManager->goTo($driveId)) {
+        if (!$this->driveManager->goToCheck($driveId)) {
             // Si on ne le trouve pas on définit la variable dontExist à true
             $dontExist = true;
         } else {

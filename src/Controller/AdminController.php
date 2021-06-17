@@ -217,7 +217,7 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * @Route("/edit", name="_edit")
+     * @Route("/edit", name="_edit", methods="GET")
      * 
      * @return mixed RedirectResponse ou Response
      */
@@ -231,6 +231,65 @@ class AdminController extends AbstractController {
         return $this->render("admin/edit.html.twig", [
             "homeContent" => $contenus[0]->getContent(),
             "aboutContent" => $contenus[1]->getContent()
+        ]);
+    }
+
+    /**
+     * @Route("/edit", name="_editPOST", methods="POST")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function editContent()
+    {
+        // On détermine quelle page doit être modifiée
+        $contenu = $this->contentRepository->findBy([
+            "page" => array_key_first($_POST)
+        ]);
+        if (!empty($contenu)) {
+            $contenu = $contenu[0];
+        }
+        // On prépare un tableau d'erreur si besoin
+        $error = [];
+        switch (array_key_first($_POST)) {
+            case "home":
+                if (strlen($_POST["home"]) > 255) {
+                    // Si la chaine est trop longue on définit une erreur
+                    $error["home"] = "Trop de caractères (Maximum : 255)";
+                } else {
+                    // On actualise le contenu si tout va bien
+                    $contenu->setContent($_POST["home"]);
+                    $this->em->flush();
+                    return $this->redirectToRoute("home");
+                }
+                break;
+            
+            case "about":
+                // On actualise le contenu
+                $contenu->setContent($_POST["about"]);
+                $this->em->flush();
+                return $this->redirectToRoute("about");
+                break;
+
+            default:
+                // Si la requête n'est pas valide on définit une erreur
+                $error["global"] = "Requête invalide veuillez réessayer";
+                break;
+        }
+        // En cas d'erreur on charge le contenu
+        $contenus = $this->contentRepository->findAll();
+        
+        return $this->render("admin/edit.html.twig", [
+            "homeContent" => (
+                isset($_POST["home"]) 
+                ? $_POST["home"] 
+                : $contenus[0]->getContent()
+            ),
+            "aboutContent" => (
+                isset($_POST["about"]) 
+                ? $_POST["about"] 
+                : $contenus[1]->getContent()
+            ),
+            "error" => $error
         ]);
     }
 

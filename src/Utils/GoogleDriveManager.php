@@ -209,12 +209,8 @@ class GoogleDriveManager {
      * @param  string $name Folder name
      * @return bool         True if the folder exists and false otherwise 
      */
-    public function goToName(string $name)
+    public function goToCheck(string $id)
     {
-        $id = $this->getID($name);
-        if (empty($id)) {
-            return false;
-        }
         $folders = $this->relativeList("folder");
         // Check if folder exist
         $found = false;
@@ -226,8 +222,22 @@ class GoogleDriveManager {
                 break;
             }
         }
+    }
 
-        return $found;
+    /**
+     * Define the new current folder. Search from getCurrentFolder()
+     * 
+     * @param  string $name Folder name
+     * @return bool         True if the folder exists and false otherwise 
+     */
+    public function goToName(string $name)
+    {
+        $id = $this->getID($name);
+        if (empty($id)) {
+            return false;
+        }
+
+        return $this->goToCheck($id);
     }
 
     /**

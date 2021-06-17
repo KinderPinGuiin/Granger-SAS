@@ -48,9 +48,9 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $authenticator->authenticateUser(
-                $user, $formAuthenticator, $request
-            );
+            // return $authenticator->authenticateUser(
+            //     $user, $formAuthenticator, $request
+            // );
         }
 
         return $this->render('registration/register.html.twig', [
@@ -71,10 +71,11 @@ class RegistrationController extends AbstractController
             Constants::ID_DRIVE_ROOT
         );
         $folder = $driveManager->createFolder(
-            $user->getPrenom() . " " . $user->getNom() . " | " . $user->getEmail()
+            $user->getPrenom() . " " . $user->getNom() . " | " 
+            . $user->getEmail()
         );
         $user->setDriveID($folder["id"]);
-        $driveManager->goTo($folder["id"]);
+        while (!$driveManager->goTo($folder["id"])) {}
         $driveManager->createFolder(Constants::LETTER_FOLDER_NAME);
         $driveManager->createFolder(Constants::CV_FOLDER_NAME);
     }

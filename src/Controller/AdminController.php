@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use App\Form\CandidatureHandlingType;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use App\Repository\ContenuRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,11 +36,16 @@ class AdminController extends AbstractController {
     private $candidRepository;
 
     /**
+     * @var ContenuRepository
+     */
+    private $contentRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -47,6 +53,7 @@ class AdminController extends AbstractController {
         );
         $this->userRepository = $repository;
         $this->candidRepository = $cRepository;
+        $this->contentRepository = $coRepository;
         $this->em = $em;
     }
 
@@ -219,8 +226,12 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess()) {
             return $this->redirectToRoute("home");
         }
+        $contenus = $this->contentRepository->findAll();
 
-        return $this->render("admin/edit.html.twig");
+        return $this->render("admin/edit.html.twig", [
+            "homeContent" => $contenus[0]->getContent(),
+            "aboutContent" => $contenus[1]->getContent()
+        ]);
     }
 
     /**

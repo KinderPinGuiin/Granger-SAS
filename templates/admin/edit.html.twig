@@ -18,6 +18,7 @@
             <a href="{{ path("home") }}">d'accueil</a> :
         </h1>
         <div class="WYSIWYG WYSIWYG_accueil"></div>
+        <div class="hidden homeContent">{{ homeContent }}</div>
     </section>
 
     <section>
@@ -26,5 +27,6 @@
             <a href="{{ path("about") }}">à propos</a> :
         </h1>
         <div class="WYSIWYG WYSIWYG_about"></div>
+        <div class="hidden aboutContent">{{ aboutContent }}</div>
     </section>
 {% endblock %}

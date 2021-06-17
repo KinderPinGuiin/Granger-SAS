@@ -3,8 +3,45 @@
 {% block title %}Admin - Editer le contenu{% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="/css/admin/edit.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/class/WYSIWYG/WYSIWYG.js"></script>
+    <script src="/js/admin/index.js"></script>
 {% endblock %}
 
 {% block body %}
+    {% if error.global is defined %}
+        <div>{{ error.global }}</div>
+    {% endif %}
 
+    <section>
+        <h1>
+            Modifier le texte de la page 
+            <a href="{{ path("home") }}">d'accueil</a> :
+        </h1>
+        <form action="#" method="POST" class="edit_form">
+            <div class="WYSIWYG WYSIWYG_accueil"></div>
+            <div class="hidden homeContent">{{ homeContent|raw }}</div>
+                {% if error.global is defined %}
+                    <div>{{ error.global }}</div>
+                {% endif %}
+            <input type="hidden" name="home" class="editedContent" value="" />
+            <input type="submit" value="Modifier la page" />
+        </form>
+    </section>
+
+    <section>
+        <h1>
+            Modifier le texte de la page 
+            <a href="{{ path("about") }}">à propos</a> :
+        </h1>
+        <form action="#" method="POST" class="edit_form">
+            <div class="WYSIWYG WYSIWYG_about"></div>
+            <div class="hidden aboutContent">{{ aboutContent|raw }}</div>
+            <input type="hidden" name="about" class="editedContent" value="" />
+            <input type="submit" value="Modifier la page" />
+        </form>
+    </section>
 {% endblock %}

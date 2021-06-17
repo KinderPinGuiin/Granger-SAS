@@ -36,6 +36,10 @@ body {
     background-repeat: no-repeat;
 }
 
+.hidden {
+    display: none;
+}
+
 header {
     display: flex;
     justify-content: space-between;

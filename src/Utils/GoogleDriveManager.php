@@ -193,13 +193,28 @@ class GoogleDriveManager {
     }
 
     /**
-     * Define the new current folder
+     * Define the new current folder. Be careful, this function will not check
+     * if the folder exists.
      * 
      * @param  string $id ID of the new folder
-     * @return bool       True if the folder exists and false otherwise
      */
     public function goTo(string $id) 
     {
+        $this->folderStack[] = $id;
+    }
+
+    /**
+     * Define the new current folder. Search from getCurrentFolder()
+     * 
+     * @param  string $name Folder name
+     * @return bool         True if the folder exists and false otherwise 
+     */
+    public function goToName(string $name)
+    {
+        $id = $this->getID($name);
+        if (empty($id)) {
+            return false;
+        }
         $folders = $this->relativeList("folder");
         // Check if folder exist
         $found = false;
@@ -213,21 +228,6 @@ class GoogleDriveManager {
         }
 
         return $found;
-    }
-
-    /**
-     * Define the new current folder
-     * 
-     * @param  string $name Folder name
-     * @return bool         True if the folder exists and false otherwise 
-     */
-    public function goToName(string $name)
-    {
-        $id = $this->getID($name);
-        if (empty($id)) {
-            return false;
-        }
-        return $this->goTo($id);
     }
 
     /**

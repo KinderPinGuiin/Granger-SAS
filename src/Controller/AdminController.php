@@ -77,7 +77,7 @@ class AdminController extends AbstractController {
         // On liste les candidatures non traitées
         $candidatures = [];
         if ($req->get("show") === "all") {
-            $candidatures = $this->candidRepository->findAll();
+            $candidatures = $this->candidRepository->findBy([], ["id" => "DESC"]);
         } else {
             $candidatures = $this->candidRepository->getNotHandled();
         }
@@ -99,19 +99,24 @@ class AdminController extends AbstractController {
         }
         // On charge le candidat
         $candidat = $this->userRepository->getByDriveId($driveId);
-        $candidaturesNonTraitees = $this->candidRepository->getNotHandled("user = " . $candidat->getId());
+        dump($candidat, $candidat->getId());
+        $candidaturesNonTraitees = $this->candidRepository->getNotHandled(
+            "user = " . $candidat->getId()
+        );
         if (empty($candidaturesNonTraitees)) {
             // Si l'utilisateur n'a pas de candidature en cours on affiche une 
             // page avec l'historique des candidatures de l'utilisateur
             return $this->render("admin/candidature.html.twig", [
                 "view" => "history",
-                "candidatures" => $this->candidRepository->findAll()
+                "candidatures" => $this->candidRepository->findBy(
+                    ["user" => $candidat->getId()], ["id" => "DESC"]
+                )
             ]);
         }
         // On cherche le dossier correspondant au driveId
         $dontExist = false;
         $didntUpload = false;
-        if (!$this->driveManager->goTo($driveId)) {
+        if (!$this->driveManager->goToCheck($driveId)) {
             // Si on ne le trouve pas on définit la variable dontExist à true
             $dontExist = true;
         } else {

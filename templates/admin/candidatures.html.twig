@@ -18,7 +18,7 @@
         {% for candidature in candidatures %}
             <div>
                 <a href="{{ path("admin_candidature", { "driveId": candidature.user.driveId }) }}">
-                    Candidature de {{ candidature.user.prenom }} {{ candidature.user.nom }}
+                    Candidature de {{ candidature.user.prenom }} {{ candidature.user.nom }} | {{ candidature.user.email }}
                 </a>
             </div>
         {% endfor %}

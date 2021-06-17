@@ -3,8 +3,28 @@
 {% block title %}Admin - Editer le contenu{% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="/css/admin/edit.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/class/WYSIWYG/WYSIWYG.js"></script>
+    <script src="/js/admin/index.js"></script>
 {% endblock %}
 
 {% block body %}
+    <section>
+        <h1>
+            Modifier le texte de la page 
+            <a href="{{ path("home") }}">d'accueil</a> :
+        </h1>
+        <div class="WYSIWYG WYSIWYG_accueil"></div>
+    </section>
 
+    <section>
+        <h1>
+            Modifier le texte de la page 
+            <a href="{{ path("about") }}">à propos</a> :
+        </h1>
+        <div class="WYSIWYG WYSIWYG_about"></div>
+    </section>
 {% endblock %}

@@ -146,7 +146,6 @@ class WYSIWYG {
             _button.addEventListener("click", (e) => {
                 e.preventDefault()
                 this.buttonList[0][button]["apply"]()
-                this.editor.focus()
             })
 
             _button.addEventListener("mousedown", () => {

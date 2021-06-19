@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/js/admin/candidatures_script.js" defer></script>
+    <script src="/js/admin/search_bar.js" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -18,12 +18,12 @@
             Afficher les candidatures en cours
         </a>
     </div>
-    <input class="search_bar" type="search" placeholder="Rechercher..." />
+    {% include "require/admin/search_bar.html.twig" %}
     {% if candidatures is empty %}
         <h1>Il n'y a pas de candidatures pour le moment</h1>
     {% else %}  
         {% for candidature in candidatures %}
-            <div class="candidature">
+            <div data-search="true">
                 <a href="{{ path("admin_candidature", { "driveId": candidature.user.driveId }) }}">
                     Candidature de {{ candidature.user.prenom }} {{ candidature.user.nom }} | {{ candidature.user.email }}
                 </a>

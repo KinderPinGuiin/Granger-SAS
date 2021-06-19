@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Constraints;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -121,6 +120,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
+    }
+
+    /**
+     * Renvoie le vrai rôle de l'utilisateur
+     * 
+     * @return string Le rôle de l'utilisateur
+     */
+    public function getRealRole(): string
+    {
+        return $this->getRoles()[0];
     }
 
     public function setRoles(array $roles): self

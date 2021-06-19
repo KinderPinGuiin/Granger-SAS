@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Utilisateurs{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/admin/search_bar.js" defer></script>
+{% endblock %}
+
+{% block body %}
+    {% include "require/admin/search_bar.html.twig" %}
+    {% if error is defined %}
+        <p>{{ error }}</p>
+    {% endif %}
+    {% for user in users %}
+        <div data-search="true">
+            <span class="user-info">{{ user.prenom }} {{ user.nom }} | {{ user.email }}</span>
+            <form method="POST" action="#">
+                <select name="role">
+                    <option {% if user.realRole == "ROLE_USER" %}selected{% endif %} value="user">Utilisateur</option>
+                    <option {% if user.realRole == "ROLE_EDITOR" %}selected{% endif %} value="editor">Editeur</option>
+                    <option {% if user.realRole == "ROLE_RH" %}selected{% endif %} value="rh">Ressources humaines</option>
+                    <option {% if user.realRole == "ROLE_ADMIN" %}selected{% endif %} value="admin">Administrateur</option>
+                </select>
+                <input type="hidden" name="user_id" value="{{ user.id }}" />
+                <input type="submit" value="Valider" />
+            </form>
+        </div>
+    {% endfor %}
+{% endblock %}

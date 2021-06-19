@@ -1,5 +1,5 @@
 const searchBar = document.querySelector(".search_bar")
-const candidatures = document.querySelectorAll(".candidature")
+const searchIn = document.querySelectorAll("[data-search='true']")
 
 searchBar.addEventListener("keyup", e => {
     if (
@@ -8,14 +8,14 @@ searchBar.addEventListener("keyup", e => {
         || e.key.toLowerCase() === "backspace" && searchBar.value !== ""
         || searchBar.value === ""
     ) {
-        candidatures.forEach(candidature => {
+        searchIn.forEach(element => {
             if (
-                candidature.querySelector("a").innerHTML.toLowerCase()
+                element.innerHTML.toLowerCase()
                     .includes(searchBar.value.toLowerCase().trim())
             ) {
-                candidature.style.display = "block"
+                element.style.display = "block"
             } else {
-                candidature.style.display = "none"
+                element.style.display = "none"
             }
         })
     }

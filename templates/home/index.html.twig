@@ -10,9 +10,14 @@
         <p>{{ message }}</p>
     {% endif %}
     <div class=" home_container">
-        <p class="home_title">Faites partie de <br>notre équipe</p>
+        <h1 class="home_title">Faites partie de<br>notre équipe</h1>
         <p class="home_paragraph">
             {{ content|raw }} <a class="home_more_info" href="{{ path("about") }}" alt="En savoir plus">En savoir plus</a>.
+        </p>
+        {# Responsive #}
+        <h1 class="home_title_responsive">Espace candidat</h1>
+        <p class="about_responsive">
+            <a class="home_more_info" href="{{ path("about") }}" alt="En savoir plus">À propos de nous</a>
         </p>
     </div>
 {% endblock %}

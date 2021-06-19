@@ -18,11 +18,9 @@ class ProfilController extends AbstractController
         if (!$this->getUser()) {
             return $this->redirectToRoute("home");
         }
-        // Sinon on récupère ses candidatures
-        $candidatures = $this->getUser()->getCandidatures();
 
         return $this->render('profil/index.html.twig', [
-            "candidatures" => $candidatures,
+            "candidatures" => $this->getUser()->getCandidatures(),
             "user" => $this->getUser()
         ]);
     }

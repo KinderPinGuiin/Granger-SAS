@@ -62,9 +62,9 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function admin()
+    public function admin(Request $req)
     {
-        if (!$this->checkAccess()) {
+        if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
 
@@ -78,7 +78,7 @@ class AdminController extends AbstractController {
      */
     public function adminCandidatures(Request $req)
     {
-        if (!$this->checkAccess()) {
+        if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
         // On liste les candidatures non traitées
@@ -99,9 +99,9 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function adminCandidature(string $driveId)
+    public function adminCandidature(string $driveId, Request $req)
     {
-        if (!$this->checkAccess()) {
+        if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
         // On charge le candidat
@@ -158,7 +158,7 @@ class AdminController extends AbstractController {
      */
     public function handleCandidature(string $driveId, MailerInterface $mailer, Request $req)
     {
-        if (!$this->checkAccess()) {
+        if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
         // On charge le candidat et sa candidature
@@ -221,9 +221,9 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function adminEdit()
+    public function adminEdit(Request $req)
     {
-        if (!$this->checkAccess()) {
+        if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
         $contenus = $this->contentRepository->findAll();
@@ -235,12 +235,15 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * @Route("/edit", name="_editPOST", methods="POST")
+     * @Route("/edit", name="_edit_POST", methods="POST")
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function editContent()
+    public function editContent(Request $req)
     {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
         // On détermine quelle page doit être modifiée
         $contenu = $this->contentRepository->findBy([
             "page" => array_key_first($_POST)
@@ -294,15 +297,106 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * Redirige l'utilisateur à l'accueil s'il n'est pas autorisé à accéder
-     * à la oage d'administration
+     * @Route("/users", name="_users", methods="GET")
      * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function users(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/users.html.twig", [
+            "users" => $this->userRepository->findAll()
+        ]);
+    }
+
+    /**
+     * @Route("/users", name="_users_POST", methods="POST")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function setUserRole(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On récupère l'utilisateur à modifier
+        $user = $this->userRepository->findBy(["id" => $_POST["user_id"]])[0];
+        // S'il n'existe pas on affiche une erreur
+        if ($user === null) {
+            return $this->render("admin/users.html.twig", [
+                "users" => $this->userRepository->findAll(),
+                "error" => "Utilisateur inconnu"
+            ]);
+        }
+        // On définit son nouveau rôle
+        switch ($_POST["role"]) {
+            case "user":
+                $user->setRoles(["ROLE_USER"]);
+                break;
+
+            case "editor":
+                $user->setRoles(["ROLE_EDITOR"]);
+                break;
+
+            case "rh":
+                $user->setRoles(["ROLE_RH"]);
+                break;
+
+            case "admin":
+                $user->setRoles(["ROLE_ADMIN"]);
+                break;
+            
+            default:
+                // Si le rôle n'existe pas on affiche une erreur
+                return $this->render("admin/users.html.twig", [
+                    "users" => $this->userRepository->findAll(),
+                    "error" => "Rôle inconnu"
+                ]);
+                break;
+        }
+        // On sauvegarde les modifications
+        $this->em->flush();
+
+        return $this->render("admin/users.html.twig", [
+            "users" => $this->userRepository->findAll()
+        ]);
+    }
+
+    /**
+     * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
+     * d'administration et true sinon
+     * 
+     * @param Request $req The request
      * @return bool true si l'utilisateur a accès et false sinon
      */
-    private function checkAccess(): bool
+    private function checkAccess(Request $req): bool
     {
-        return !empty($this->getUser()) 
-               && in_array("ROLE_ADMIN", $this->getUser()->getRoles());
+        if (!$this->getUser())
+            return false;
+        $userRoles = $this->getUser()->getRoles();
+        switch ($req->attributes->get("_route")) {
+            case "admin_candidatures":
+            case "admin_candidature":
+            case "admin_candidature_mail":
+                return in_array("ROLE_ADMIN", $userRoles)
+                    || in_array("ROLE_RH", $userRoles);
+            
+            case "admin_edit":
+            case "admin_edit_POST":
+                return in_array("ROLE_ADMIN", $userRoles)
+                    || in_array("ROLE_EDITOR", $userRoles);
+            
+            case "admin_users":
+                return in_array("ROLE_ADMIN", $userRoles);
+
+            default:
+                return in_array("ROLE_ADMIN", $userRoles)
+                    || in_array("ROLE_EDITOR", $userRoles)
+                    || in_array("ROLE_RH", $userRoles);
+        }
     }
 
 }

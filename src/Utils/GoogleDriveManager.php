@@ -5,8 +5,6 @@ namespace App\Utils;
 use Exception;
 use Google\Client;
 
-use function PHPUnit\Framework\callback;
-
 /**
  * A simple Google Drive manager able to list / create / update / delete folders 
  * and files

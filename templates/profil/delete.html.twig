@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil - Suppression{% endblock %}
+
+{% block body %}
+    <h1>Attention, toutes vos données seront supprimées</h1>
+    <p>
+        Êtes-vous sûr de vouloir supprimer votre profil ? Si oui cliquez 
+        <a href="{{ path("profil_delete") }}?accept=true">ici</a>
+    </p>
+{% endblock %}

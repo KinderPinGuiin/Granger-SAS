@@ -5,18 +5,25 @@
 {% block stylesheets %}
 {% endblock %}
 
+{% block javascripts %}
+    <script src="/js/admin/candidatures_script.js" defer></script>
+{% endblock %}
+
 {% block body %}
-    <a href="{{ path("admin_candidatures") }}?show=all">
-        Afficher toutes les candidatures
-    </a>
-    <a href="{{ path("admin_candidatures") }}">
-        Afficher les candidatures en cours
-    </a>
+    <div class="buttons">
+        <a href="{{ path("admin_candidatures") }}?show=all">
+            Afficher toutes les candidatures
+        </a>
+        <a href="{{ path("admin_candidatures") }}">
+            Afficher les candidatures en cours
+        </a>
+    </div>
+    <input class="search_bar" type="search" placeholder="Rechercher..." />
     {% if candidatures is empty %}
         <h1>Il n'y a pas de candidatures pour le moment</h1>
     {% else %}  
         {% for candidature in candidatures %}
-            <div>
+            <div class="candidature">
                 <a href="{{ path("admin_candidature", { "driveId": candidature.user.driveId }) }}">
                     Candidature de {{ candidature.user.prenom }} {{ candidature.user.nom }} | {{ candidature.user.email }}
                 </a>

@@ -1,26 +1,42 @@
 {% block header %}
     <header>
-        <a href="/" class="logo_title">GRA<img class="logo_n" src="/img/logo_n.png" alt="N de GRANGER">GER</a>
+        <a href="/" class="logo_title">GRA<img class="logo_n" src="/img/header/logo_n.png" alt="N de GRANGER">GER</a>
         {% if app.request.pathinfo == path('login') %}
             <div class="button_container">
-                <a class="button_out" href="{{ path("register") }}" alt="Déconnexion">Inscription</a><!--
-                --><a class="button_in" href="{{ path("home") }}" alt="Postuler">Accueil</a>
+                <a class="button_out" href="{{ path("register") }}">Inscription</a><!--
+                --><a class="button_in" href="{{ path("home") }}">Accueil</a>
+            </div>
+            <div class="button_container_responsive">
+                <a href="{{ path("register") }}"><img src="/img/header/register.png" alt="Bouton d'inscription"/></a><!--
+                --><a href="{{ path("home") }}"><img src="/img/header/home.png" alt="Bouton pour retourner à l'accueil"/></a>
             </div>
         {% elseif app.request.pathinfo == path('register') %}
             <div class="button_container">
-                <a class="button_out" href="{{ path("login") }}" alt="Déconnexion">Connexion</a><!--
+                <a class="button_out" href="{{ path("login") }}">Connexion</a><!--
                 --><a class="button_in" href="{{ path("home") }}" alt="Postuler">Accueil</a>
+            </div>
+            <div class="button_container_responsive">
+                <a href="{{ path("login") }}"><img src="/img/header/login.png" alt="Bouton de connexion"/></a><!--
+                --><a href="{{ path("home") }}"><img src="/img/header/home.png" alt="Bouton pour retourner à l'accueil"/></a>
             </div>
         {% else %}
             {% if app.user %}
                 <div class="button_container">
-                    <a class="button_out" href="{{ path("logout") }}" alt="Déconnexion">Déconnexion</a><!--
-                    --><a class="button_in" href="{{ path("upload") }}" alt="Postuler">Postuler</a>
+                    <a class="button_out" href="{{ path("logout") }}">Déconnexion</a><!--
+                    --><a class="button_in" href="{{ path("upload") }}">Postuler</a>
+                </div>
+                <div class="button_container_responsive">
+                    <a href="{{ path("logout") }}"><img src="/img/header/logout.png" alt="Bouton de déconnexion"/></a><!--
+                    --><a href="{{ path("upload") }}"><img src="/img/header/cv.png" alt="Bouton pour postuler"/></a>
                 </div>
             {% else %}
                 <div class="button_container">
-                    <a class="button_out" href="{{ path("login") }}" alt="Connexion">Connexion</a><!--
-                    --><a class="button_in" href="{{ path("register") }}" alt="Inscription">Inscription</a>
+                    <a class="button_out" href="{{ path("login") }}">Connexion</a><!--
+                    --><a class="button_in" href="{{ path("register") }}">Inscription</a>
+                </div>
+                <div class="button_container_responsive">
+                    <a href="{{ path("login") }}"><img src="/img/header/login.png" alt="Bouton de connexion"/></a><!--
+                    --><a href="{{ path("register") }}"><img src="/img/header/register.png" alt="Bouton d'inscription"/></a>
                 </div>
             {% endif %}
         {% endif %}

@@ -43,7 +43,9 @@ body {
 header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
+    height: 12vh;
 }
 
 .logo_title {
@@ -52,8 +54,7 @@ header {
     font-size: 2.2rem;
     display: flex;
     align-items: center;
-    margin-left: 9rem;
-    margin-top: 1.5rem;
+    margin-left: 10%;
     text-decoration: none;
     user-select: none;
 }
@@ -63,17 +64,23 @@ header {
 }
 
 .button_container {
-    margin-top: 3rem;
     margin-right: 2rem;
     font-family: "Montserrat_Bold";
     font-size: 1.2rem;
 }
 
-.button_out {
+.button_container_responsive {
+    display: none;
+}
+
+.button_container a {
+    transition-duration: 0.5s;
     text-decoration: none;
+}
+
+.button_out {
     margin-right: 2rem;
     color: #DF5F36;
-    transition-duration: 0.5s;
 }
 
 .button_out:hover {
@@ -81,14 +88,36 @@ header {
 }
 
 .button_in {
-    text-decoration: none;
     color: #FBFBFB;
     background-color: #DF5F36;
     padding: 0.65rem 1.5rem;
     border-radius: 50px;
-    transition-duration: 0.5s;
 }
 
 .button_in:hover {
     background-color: #A32A26;
+}
+
+/* Responsive */
+
+@media only screen and (max-width: 650px) {
+    header .logo_title, header .button_container_responsive img {
+        margin: 0 5px;
+    }
+
+    .logo_title {
+        margin: 0;
+    }
+
+    .button_container {
+        display: none;
+    }
+
+    .button_container_responsive {
+        display: block;
+    }
+
+    .button_container_responsive img {
+        width: 30px;
+    }
 }

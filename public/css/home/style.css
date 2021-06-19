@@ -9,10 +9,10 @@
 
 .home_title, .home_title_responsive {
     font-family: "Inter_Bold";
-    font-size: 4.5rem;
 }
 
 .home_title {
+    font-size: 4.5rem;
     text-align: right;
 }
 
@@ -34,6 +34,7 @@
     display: none;
     text-align: center;
     margin: 0;
+    font-size: 4rem;
 }
 
 .about_responsive {

@@ -18,7 +18,7 @@
         {{ form_start(uploadForm) }}
             {# Affiche les erreurs si nécessaire #}
             {% for error in formErrors %}
-                <div>
+                <div class="error">
                     {{ error }}
                 </div>
             {% endfor %}

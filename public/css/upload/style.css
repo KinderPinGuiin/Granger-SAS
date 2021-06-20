@@ -44,12 +44,13 @@ form select {
 }
 
 .upload-area label {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 40vw;
     height: 50vh;
     border: 3px dashed gray;
     border-radius: 5px;
-    line-height: 50vh;
     text-align: center;
     cursor: pointer;
     font-family: "Montserrat", sans-serif;
@@ -60,7 +61,7 @@ form input[type="submit"] {
     position: absolute;
     top: 100%;
     left: 80%;
-    margin-top: 15px;
+    margin: 15px;
     padding: 15px;
     background-color: #DA3832;
     color: white;
@@ -74,4 +75,36 @@ form input[type="submit"] {
 
 form input[type="submit"]:hover {
     transform: translateY(-15%);
+}
+
+/* Responsive */
+
+@media only screen and (max-width: 800px) {
+    form {
+        position: static;
+        width: 100%;
+        transform: unset;
+    }
+
+    .form_row {
+        width: 90%;
+    }
+
+    form select {
+        width: 100%;
+    }
+
+    .upload-area {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .upload-area label {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    form input[type="submit"] {
+        position: static;
+    }
 }

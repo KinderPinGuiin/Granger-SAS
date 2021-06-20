@@ -8,6 +8,7 @@ use App\Repository\CandidatureRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use DateTime;
+use Doctrine\ORM\Query\AST\Functions\CurrentTimestampFunction;
 use Exception;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,7 +75,7 @@ class UploadController extends AbstractController
         // Si les fichiers ont été déposés on redirige l'utilisateur à l'accueil
         if ($this->isUploaded) {
             // On ajoute la candidature en base de données
-            $this->addCandidature();
+            $this->addCandidature($uploadForm);
             // Et on renvoie l'utilisateur sur la page d'accueil
             return $this->redirectToRoute("home", [
                 "message" => "Fichiers déposés avec succès"
@@ -88,11 +89,12 @@ class UploadController extends AbstractController
         ]);
     }
 
-    private function addCandidature()
+    private function addCandidature($uploadForm)
     {
         $candidature = new Candidature();
         $candidature->setUser($this->getUser());
         $candidature->setDate(new DateTime());
+        $candidature->setPoste($uploadForm->get("poste")->getData());
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
         $entityManager->flush();

@@ -33,6 +33,11 @@ class Candidature
      */
     private $date;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $poste;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +75,18 @@ class Candidature
     public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getPoste(): ?string
+    {
+        return $this->poste;
+    }
+
+    public function setPoste(string $poste): self
+    {
+        $this->poste = $poste;
 
         return $this;
     }

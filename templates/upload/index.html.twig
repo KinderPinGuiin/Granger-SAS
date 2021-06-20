@@ -5,7 +5,8 @@
 {% block body %}
     {% if hasCandidature %}
         <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
-    {% else %}        
+    {% else %}
+        {% form_theme uploadForm "forms/global/form_template.html.twig" %}
         {{ form_start(uploadForm) }}
             {# Affiche les erreurs si nécessaire #}
             {% for error in formErrors %}

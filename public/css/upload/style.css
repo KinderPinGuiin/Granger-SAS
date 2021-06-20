@@ -57,6 +57,10 @@ form select {
     cursor: pointer;
     font-family: "Montserrat", sans-serif;
     font-size: 2rem;
+    z-index: 0;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .upload-areas .area * {
@@ -96,6 +100,7 @@ form input[type="submit"]:hover {
         position: static;
         width: 100%;
         transform: unset;
+        padding: 5px;
     }
 
     .form_row {
@@ -114,6 +119,7 @@ form input[type="submit"]:hover {
     .upload-areas .area {
         width: 100%;
         margin: 5px 0;
+        font-size: 1.5rem;
     }
 
     form input[type="submit"] {

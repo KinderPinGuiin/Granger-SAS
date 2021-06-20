@@ -44,7 +44,7 @@ class ProfilController extends AbstractController
             return $this->redirectToRoute("home");
         }
         // Si l'utilisateur a confirmé la suppression on supprime son compte
-        if ($req->get("accept") !== null && $req->get("accept") === "true") {
+        if ($req->get("accept") === "true") {
             // On récupère l'utilisateur et on le supprime
             $user = $userRepository->findBy(
                 ["id" => $this->getUser()->getId()]

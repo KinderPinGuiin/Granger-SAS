@@ -71,7 +71,6 @@ class UploadController extends AbstractController
             $this->candRepository
                  ->getNotHandled("id = " . $this->getUser()->getId())
         )) {
-            $hasCandidature = true;
             return $this->render('upload/index.html.twig', [
                 "hasCandidature" => true
             ]);

@@ -12,13 +12,23 @@
             <tr>
                 <th>Date</th>
                 <th>Statut</th>
+                <th>Poste</th>
             </tr>
         </thead>
         <tbody>
             {% for candidature in candidatures %}
                 <tr>
                     <td>{{ candidature.date|date("d/m/Y") }}</td>
-                    <td>{% if candidature.acceptee %} Acceptée {% else %} Refusée {% endif %}</td>
+                    <td>
+                        {% if candidature.acceptee == true %} 
+                            Acceptée
+                        {% elseif candidature.acceptee is null %} 
+                            En cours de traitement
+                        {% elseif candidature.acceptee == false %} 
+                            Refusée
+                        {% endif %}
+                    </td>
+                    <td>{{ candidature.poste.name }}</td>
                 </tr>
             {% endfor %}
         </tbody>

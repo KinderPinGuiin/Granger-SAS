@@ -5,7 +5,8 @@
 {% block body %}
     <h1>Attention, toutes vos données seront supprimées</h1>
     <p>
-        Êtes-vous sûr de vouloir supprimer votre profil ? Si oui cliquez 
-        <a href="{{ path("profil_delete") }}?accept=true">ici</a>
+        Êtes-vous sûr de vouloir supprimer votre profil ? 
     </p>
+    <a href="{{ path("profil_delete") }}?accept=true">Oui</a>
+    <a href="{{ path("profil") }}?accept=true">Non</a>
 {% endblock %}

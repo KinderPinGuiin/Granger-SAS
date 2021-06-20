@@ -34,7 +34,8 @@ class Candidature
     private $date;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\ManyToOne(targetEntity=Poste::class)
+     * @ORM\JoinColumn(nullable=false)
      */
     private $poste;
 
@@ -79,12 +80,12 @@ class Candidature
         return $this;
     }
 
-    public function getPoste(): ?string
+    public function getPoste(): ?Poste
     {
         return $this->poste;
     }
 
-    public function setPoste(string $poste): self
+    public function setPoste(?Poste $poste): self
     {
         $this->poste = $poste;
 

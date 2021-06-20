@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Candidature;
 use App\Form\UploadType;
 use App\Repository\CandidatureRepository;
+use App\Repository\PosteRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use DateTime;
@@ -34,6 +35,11 @@ class UploadController extends AbstractController
     private $candRepository;
 
     /**
+     * @var PosteRepository
+     */
+    private $posteRepository;
+
+    /**
      * Indique si des fichiers ont été déposés sur le drive ou non
      * @var bool
      */
@@ -45,9 +51,10 @@ class UploadController extends AbstractController
      */
     private $formErrors = [];
 
-    public function __construct(CandidatureRepository $c)
+    public function __construct(CandidatureRepository $c, PosteRepository $pRep)
     {
         $this->candRepository = $c;
+        $this->posteRepository = $pRep;
     }
 
     /**
@@ -94,7 +101,9 @@ class UploadController extends AbstractController
         $candidature = new Candidature();
         $candidature->setUser($this->getUser());
         $candidature->setDate(new DateTime());
-        $candidature->setPoste($uploadForm->get("poste")->getData());
+        $candidature->setPoste($this->posteRepository->findBy([
+            "slug" => $uploadForm->get("poste")->getData()
+        ])[0]);
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
         $entityManager->flush();

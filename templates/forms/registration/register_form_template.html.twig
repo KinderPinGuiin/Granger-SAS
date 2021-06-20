@@ -10,3 +10,11 @@
         {{ form_label(form) }} {{ form_widget(form) }}
     </div>
 {% endblock %}
+
+{% block form_errors %}
+    <span class="error">                
+        {% for error in errors %}
+            {{ error.message }}
+        {% endfor %}
+    </span>
+{% endblock %}

@@ -32,29 +32,40 @@ form select {
     font-family: "Montserrat", sans-serif;
 }
 
-.upload-area {
+.upload-areas {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-.upload-area input[type="file"] {
+.upload-areas input[type="file"] {
     display: none;
 }
 
-.upload-area label {
+.upload-areas .area {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 40vw;
     height: 50vh;
+    margin: 5px;
     border: 3px dashed gray;
     border-radius: 5px;
     text-align: center;
     cursor: pointer;
     font-family: "Montserrat", sans-serif;
     font-size: 2rem;
+}
+
+.upload-areas .area * {
+    cursor: pointer;
+}
+
+.upload-areas .area .error {
+    color: red;
+    font-size: 1rem;
 }
 
 form input[type="submit"] {
@@ -94,12 +105,12 @@ form input[type="submit"]:hover {
         width: 100%;
     }
 
-    .upload-area {
+    .upload-areas {
         flex-direction: column;
         align-items: center;
     }
 
-    .upload-area label {
+    .upload-areas .area {
         width: 100%;
         margin: 5px 0;
     }

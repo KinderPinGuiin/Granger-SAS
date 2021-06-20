@@ -43,11 +43,12 @@ class UploadType extends AbstractType
                 "mapped" => false,
                 "constraints" => [
                     new File([
-                        "maxSize" => "3072k",
+                        "maxSize" => "3M",
                         "mimeTypes" => [
                             "application/pdf",
                             "application/x-pdf"
                         ],
+                        "maxSizeMessage" => "Fichier trop volumineux (3Mo Max.)",
                         "mimeTypesMessage" => "Format invalide"
                     ])
                 ]
@@ -57,11 +58,12 @@ class UploadType extends AbstractType
                 "mapped" => false,
                 "constraints" => [
                     new File([
-                        "maxSize" => "3072k",
+                        "maxSize" => "3M",
                         "mimeTypes" => [
                             "application/pdf",
                             "application/x-pdf"
                         ],
+                        "maxSizeMessage" => "Fichier trop volumineux (3Mo Max.)",
                         "mimeTypesMessage" => "Format invalide"
                     ])
                 ]

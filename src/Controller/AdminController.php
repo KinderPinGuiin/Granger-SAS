@@ -106,7 +106,6 @@ class AdminController extends AbstractController {
         }
         // On charge le candidat
         $candidat = $this->userRepository->getByDriveId($driveId);
-        dump($candidat, $candidat->getId());
         $candidaturesNonTraitees = $this->candidRepository->getNotHandled(
             "user = " . $candidat->getId()
         );
@@ -141,6 +140,7 @@ class AdminController extends AbstractController {
         return $this->render("admin/candidature.html.twig", [
             "view" => "candidature",
             "candidat" => $candidat,
+            "candidature" => $candidaturesNonTraitees[0],
             "dontExist" => $dontExist,
             "didntUpload" => $didntUpload,
             "cv" => $cvLettre["cv"],

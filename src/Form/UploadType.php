@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,6 +14,15 @@ class UploadType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add("poste", ChoiceType::class, [
+                "label" => "Choisissez un poste",
+                "mapped" => false,
+                "invalid_message" => "Valeur séléctionnée invalide",
+                "choices" => [
+                    "Chauffeur" => "chauffeur",
+                    "Ressources humaines" => "ressources_humaines"
+                ]
+            ])
             ->add('cv', FileType::class, [
                 "label" => "Déposer un CV",
                 "mapped" => false,

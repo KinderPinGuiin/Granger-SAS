@@ -2,14 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Poste;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use Symfony\Component\Mime\Email;
 use App\Repository\UserRepository;
+use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
+use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
-use App\Repository\ContenuRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,11 +43,16 @@ class AdminController extends AbstractController {
     private $contentRepository;
 
     /**
+     * @var PosteRepository
+     */
+    private $posteRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -54,6 +61,7 @@ class AdminController extends AbstractController {
         $this->userRepository = $repository;
         $this->candidRepository = $cRepository;
         $this->contentRepository = $coRepository;
+        $this->posteRepository = $pRep;
         $this->em = $em;
     }
 
@@ -366,6 +374,158 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/postes", name="_postes", methods="GET")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function postes(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        
+        return $this->render("admin/postes.html.twig", [
+            "postes" => $this->posteRepository->findAll()
+        ]);
+    }
+
+    /**
+     * @Route("/postes/edit", name="_postes_edit", methods="POST")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function editPoste(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On récupère le poste à modifier
+        $poste = $this->posteRepository->findBy(["id" => $_POST["id"]])[0];
+        if ($poste === null) {
+            // Si le poste n'existe pas on affiche une erreur
+            return $this->render("admin/postes.html.twig", [
+                "postes" => $this->posteRepository->findAll(),
+                "error" => "Poste invalide"
+            ]);
+        } else if (($posteError = $this->checkPoste($_POST["name"])) !== 0) {
+            // On vérifie également les erreurs du nom
+            return $this->render("admin/postes.html.twig", [
+                "postes" => $this->posteRepository->findAll(),
+                "error" => (
+                    $posteError == 1 
+                    ? "Le poste " . $_POST["name"] . " existe déjà"
+                    : "Le nom du poste doit contenir entre 1 et 255 caractères"
+                )
+            ]);
+        }
+        // On le modifie
+        $poste->setName($_POST["name"]);
+        $poste->setSlug(str_replace(" ", "_", strtolower($_POST["name"])));
+        $this->em->flush();
+
+        return $this->redirectToRoute("admin_postes");
+    }
+
+
+    /**
+     * @Route("/postes/add", name="_postes_add_GET", methods="GET")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function addPosteRedirect(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        
+        // Si cette page est appellée en GET on redirige l'utilisateur
+        return $this->redirectToRoute("admin_postes");
+    }
+
+    /**
+     * @Route("/postes/add", name="_postes_add", methods="POST")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function addPoste(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On vérifie que le poste n'existe pas déjà
+        if (($posteError = $this->checkPoste($_POST["name"])) !== 0) {
+            return $this->render("admin/postes.html.twig", [
+                "postes" => $this->posteRepository->findAll(),
+                "error" => (
+                    $posteError == 1 
+                    ? "Le poste " . $_POST["name"] . " existe déjà"
+                    : "Le nom du poste doit contenir entre 1 et 255 caractères"
+                )
+            ]);
+        }
+        
+        // On créé le poste
+        $poste = new Poste();
+        $poste->setName($_POST["name"]);
+        $poste->setSlug(str_replace(" ", "_", strtolower($_POST["name"])));
+        $this->em->persist($poste);
+        $this->em->flush();
+
+        return $this->redirectToRoute("admin_postes");
+    }
+
+    /**
+     * @Route("/postes/delete", name="_postes_delete")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function deletePoste(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // Si la suppression est confirmée on execute
+        if($req->get("confirm") !== null && $req->get("id") !== null) {
+            $poste = $this->posteRepository->findBy(
+                ["id" => $req->get("id")]
+            )[0];
+            if ($poste === null) {
+                // Si le poste n'existe pas on affiche une erreur
+                return $this->render("admin/postes.html.twig", [
+                    "postes" => $this->posteRepository->findAll(),
+                    "error" => "Poste invalide"
+                ]);
+            }
+            $this->em->remove($poste);
+            $this->em->flush();
+            return $this->redirectToRoute("admin_postes");
+        } else {
+            return $this->render("admin/postes.html.twig", [
+                "delete_confirm" => true,
+                "poste_id" => $req->get("id")
+            ]);
+        }
+    }
+
+    /**
+     * Retourne 0 si le poste passé en paramètre est valide, 1 s'il existe déjà
+     * et -1 si sa syntaxe est invalide
+     */
+    private function checkPoste(string $postName): int
+    {
+        // On vérifie que le poste n'existe pas déjà
+        if (in_array(trim($postName), $this->posteRepository->names())) {
+            return 1;
+        }
+        // On vérifie sa longueur
+        if (strlen($postName) > 255 || strlen($postName) == 0) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -390,6 +550,12 @@ class AdminController extends AbstractController {
                     || in_array("ROLE_EDITOR", $userRoles);
             
             case "admin_users":
+            case "admin_users_POST":
+            case "admin_postes":
+            case "admin_postes_edit":
+            case "admin_postes_add":
+            case "admin_postes_add_GET":
+            case "admin_postes_delete":
                 return in_array("ROLE_ADMIN", $userRoles);
 
             default:

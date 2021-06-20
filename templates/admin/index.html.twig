@@ -14,5 +14,6 @@
     {% endif %}
     {% if app.user.realRole == "ROLE_ADMIN" %}
         <a href="{{ path("admin_users") }}">Gérer les utilisateurs</a>
+        <a href="{{ path("admin_postes") }}">Gérer les postes</a>
     {% endif %}
 {% endblock %}

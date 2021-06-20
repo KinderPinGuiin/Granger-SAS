@@ -13,8 +13,7 @@
                     {{ error }}
                 </div>
             {% endfor %}
-            {{ form_row(uploadForm.cv) }}
-            {{ form_row(uploadForm.lettre) }}
+            {{ form_rest(uploadForm) }}
             <input type="submit" value="Déposer" />
         {{ form_end(uploadForm) }}
     {% endif %}

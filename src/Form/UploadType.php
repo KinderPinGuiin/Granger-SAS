@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Repository\PosteRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -11,17 +12,30 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class UploadType extends AbstractType
 {
+    /**
+     * @var PosteRepository
+     */
+    private $posteRepository;
+
+    public function __construct(PosteRepository $pRep)
+    {
+        $this->posteRepository = $pRep;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // On récupère tous les postes
+        $choices = [];
+        foreach ($this->posteRepository->findAll() as $poste) {
+            $choices[$poste->getName()] = $poste->getSlug();
+        }
+        // Et on construit le formulaire
         $builder
             ->add("poste", ChoiceType::class, [
                 "label" => "Choisissez un poste",
                 "mapped" => false,
                 "invalid_message" => "Valeur séléctionnée invalide",
-                "choices" => [
-                    "Chauffeur" => "chauffeur",
-                    "Ressources humaines" => "ressources_humaines"
-                ]
+                "choices" => $choices
             ])
             ->add('cv', FileType::class, [
                 "label" => "Déposer un CV",

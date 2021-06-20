@@ -69,7 +69,7 @@ class UploadController extends AbstractController
         // Si l'utilisateur a déjà une candidature en cours on lui affiche un message
         if (!empty(
             $this->candRepository
-                 ->getNotHandled("id = " . $this->getUser()->getId())
+                 ->getNotHandled("user = " . $this->getUser()->getId())
         )) {
             return $this->render('upload/index.html.twig', [
                 "hasCandidature" => true

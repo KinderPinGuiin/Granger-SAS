@@ -180,7 +180,7 @@ class AdminController extends AbstractController {
         if ($form->isSubmitted() && $form->isValid()) {
             // On actualise la candidature et on envoie l'email
             $this->em->flush();
-            $this->sendMail($mailer, $candidat, $form);
+            $this->sendMail($mailer, $candidat, $candidature, $form);
             return $this->redirectToRoute("admin_candidatures");
         }
         // Si elles ne sont pas bonnes on renvoie l'utilisateur sur le 
@@ -198,7 +198,7 @@ class AdminController extends AbstractController {
     /**
      * Envoie l'email de réponse
      */
-    private function sendMail($mailer, $candidat, $form)
+    private function sendMail($mailer, $candidat, $candidature, $form)
     {
         // Rédaction du mail
         $email = (new Email())
@@ -206,7 +206,8 @@ class AdminController extends AbstractController {
             ->to($candidat->getEmail())
             ->subject("Votre candidature pour Granger SAS")
             ->html(
-                "<h1>Votre candidature chez Granger SAS</h1>" 
+                "<h1>Votre candidature chez Granger SAS pour le poste " 
+                . $candidature->getPoste()->getName() . "</h1>" 
                 . "<p>" . $form->get("message")->getData() . "</p>");
         // Envoi du mail
         $mailer->send($email);

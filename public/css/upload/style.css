@@ -1,0 +1,77 @@
+/* Titre annonçant une candidature en cours */
+
+h1 {
+    text-align: center;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+/* Formulaire */
+
+form {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+form select {
+    /* Largeur calculée par 2 fois les zones d'upload + 2 fois leur margin */
+    width: calc(2 * 40vw + 2 * 5px);
+    height: 5vh;
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: white;
+    font-size: 1rem;
+    font-family: "Montserrat", sans-serif;
+}
+
+.upload-area {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upload-area input[type="file"] {
+    display: none;
+}
+
+.upload-area label {
+    display: block;
+    width: 40vw;
+    height: 50vh;
+    border: 3px dashed gray;
+    border-radius: 5px;
+    line-height: 50vh;
+    text-align: center;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-size: 2rem;
+}
+
+form input[type="submit"] {
+    position: absolute;
+    top: 100%;
+    left: 80%;
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #DA3832;
+    color: white;
+    border: none;
+    border-radius: calc(1.5rem + 15px * 2);
+    font-size: 1.5rem;
+    font-family: "Montserrat", sans-serif;
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+
+form input[type="submit"]:hover {
+    transform: translateY(-15%);
+}

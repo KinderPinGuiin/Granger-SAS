@@ -39,7 +39,7 @@ class UploadType extends AbstractType
                 'placeholder' => 'Choisissez un poste',
             ])
             ->add('cv', FileType::class, [
-                "label" => false,
+                "label" => "Déposer un CV",
                 "mapped" => false,
                 "constraints" => [
                     new File([
@@ -53,7 +53,7 @@ class UploadType extends AbstractType
                 ]
             ])
             ->add('lettre', FileType::class, [
-                "label" => false,
+                "label" => "Déposer une lettre de motivation",
                 "mapped" => false,
                 "constraints" => [
                     new File([

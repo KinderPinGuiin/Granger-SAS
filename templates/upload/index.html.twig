@@ -2,6 +2,10 @@
 
 {% block title %}Déposer vos pièces{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/upload/style.css" />
+{% endblock %}
+
 {% block body %}
     {% if hasCandidature %}
         <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
@@ -14,8 +18,11 @@
                     {{ error }}
                 </div>
             {% endfor %}
-            {{ form_rest(uploadForm) }}
-            <input type="submit" value="Déposer" />
+            {{ form_row(uploadForm.poste) }}
+            <div class="upload-area">
+                {{ form_rest(uploadForm) }}
+            </div>
+            <input type="submit" value="Soumettre" />
         {{ form_end(uploadForm) }}
     {% endif %}
 {% endblock %}

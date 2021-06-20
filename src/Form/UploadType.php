@@ -32,21 +32,23 @@ class UploadType extends AbstractType
         // Et on construit le formulaire
         $builder
             ->add("poste", ChoiceType::class, [
-                "label" => "Choisissez un poste",
+                "label" => false,
                 "mapped" => false,
                 "invalid_message" => "Valeur séléctionnée invalide",
-                "choices" => $choices
+                "choices" => $choices,
+                'placeholder' => 'Choisissez un poste',
             ])
             ->add('cv', FileType::class, [
                 "label" => "Déposer un CV",
                 "mapped" => false,
                 "constraints" => [
                     new File([
-                        "maxSize" => "3072k",
+                        "maxSize" => "3M",
                         "mimeTypes" => [
                             "application/pdf",
                             "application/x-pdf"
                         ],
+                        "maxSizeMessage" => "Fichier trop volumineux (3Mo Max.)",
                         "mimeTypesMessage" => "Format invalide"
                     ])
                 ]
@@ -56,11 +58,12 @@ class UploadType extends AbstractType
                 "mapped" => false,
                 "constraints" => [
                     new File([
-                        "maxSize" => "3072k",
+                        "maxSize" => "3M",
                         "mimeTypes" => [
                             "application/pdf",
                             "application/x-pdf"
                         ],
+                        "maxSizeMessage" => "Fichier trop volumineux (3Mo Max.)",
                         "mimeTypesMessage" => "Format invalide"
                     ])
                 ]

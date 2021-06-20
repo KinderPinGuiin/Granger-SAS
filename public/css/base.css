@@ -27,6 +27,11 @@
     src: url("/fonts/Montserrat/Montserrat-Bold.ttf");
 }
 
+@font-face {
+    font-family: "Montserrat";
+    src: url("/fonts/Montserrat/Montserrat-Medium.ttf");
+}
+
 body {
     margin: 0;
     padding: 0;

@@ -2,11 +2,19 @@
 
 {% block title %}Déposer vos pièces{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/upload/style.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/upload/script.js" defer></script>
+{% endblock %}
+
 {% block body %}
     {% if hasCandidature %}
         <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
     {% else %}
-        {% form_theme uploadForm "forms/global/form_template.html.twig" %}
+        {% form_theme uploadForm "forms/upload/upload_form_template.html.twig" %}
         {{ form_start(uploadForm) }}
             {# Affiche les erreurs si nécessaire #}
             {% for error in formErrors %}
@@ -14,8 +22,16 @@
                     {{ error }}
                 </div>
             {% endfor %}
-            {{ form_rest(uploadForm) }}
-            <input type="submit" value="Déposer" />
+            {{ form_widget(uploadForm.poste) }}
+            <div class="upload-areas">
+                <div class="area">
+                    {{ form_row(uploadForm.cv) }}
+                </div>
+                <div class="area">
+                    {{ form_row(uploadForm.lettre) }}
+                </div>
+            </div>
+            <input type="submit" value="Soumettre" />
         {{ form_end(uploadForm) }}
     {% endif %}
 {% endblock %}

@@ -75,34 +75,47 @@ class UploadController extends AbstractController
                 "hasCandidature" => true
             ]);
         }
-        // On regarde si des fichiers ont été déposés
+        // On créé et gère le formulaire
         $this->req = $req;
-        $uploadForm = $this->handleUpload();
-        // Si les fichiers ont été déposés on redirige l'utilisateur à l'accueil
-        if ($this->isUploaded) {
-            // On ajoute la candidature en base de données
-            $this->addCandidature($uploadForm);
-            // Et on renvoie l'utilisateur sur la page d'accueil
-            return $this->redirectToRoute("home", [
-                "message" => "Fichiers déposés avec succès"
-            ]);
+        $form = $this->createForm(UploadType::class);
+        $form->handleRequest($this->req);
+        // Si le poste est invalide on affiche une erreur
+        $poste = $this->posteRepository->findBy([
+            "slug" => $form->get("poste")->getData()
+        ]);
+        if ($form->isSubmitted() && empty($poste)) {
+            $this->formErrors[] = "Le poste séléctionné est invalide";
+        } else {
+            // Sinon on regarde si des fichiers ont été déposés
+            // Et si oui on les upload
+            $this->handleUpload($form);
+            // Si les fichiers ont été déposés on redirige l'utilisateur à 
+            // l'accueil
+            if ($this->isUploaded) {
+                // Si le poste est valide on ajoute la candidature en base de 
+                // données
+                $this->addCandidature($poste[0]);
+
+                // Et on renvoie l'utilisateur sur la page d'accueil
+                return $this->redirectToRoute("home", [
+                    "message" => "Fichiers déposés avec succès"
+                ]);
+            }
         }
 
         return $this->render('upload/index.html.twig', [
             "hasCandidature" => false,
-            "uploadForm" => $uploadForm->createView(),
+            "uploadForm" => $form->createView(),
             "formErrors" => $this->formErrors
         ]);
     }
 
-    private function addCandidature($uploadForm)
+    private function addCandidature($poste)
     {
         $candidature = new Candidature();
         $candidature->setUser($this->getUser());
         $candidature->setDate(new DateTime());
-        $candidature->setPoste($this->posteRepository->findBy([
-            "slug" => $uploadForm->get("poste")->getData()
-        ])[0]);
+        $candidature->setPoste($poste);
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
         $entityManager->flush();
@@ -114,14 +127,12 @@ class UploadController extends AbstractController
      * 
      * @return FormInterface
      */
-    private function handleUpload(): FormInterface
+    private function handleUpload($form): FormInterface
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
             Constants::ID_DRIVE_ROOT
         );
-        $form = $this->createForm(UploadType::class);
-        $form->handleRequest($this->req);
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
             // Si tout est bon on upload les fichiers sur le drive

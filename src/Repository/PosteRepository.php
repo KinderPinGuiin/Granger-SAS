@@ -19,6 +19,20 @@ class PosteRepository extends ServiceEntityRepository
         parent::__construct($registry, Poste::class);
     }
 
+    /**
+     * Récupère les noms des postes existants
+     */
+    public function names(): array
+    {
+        $postes = $this->findAll();
+        $names = [];
+        foreach ($postes as $poste) {
+            $names[] = $poste->getName();
+        }
+
+        return $names;
+    }
+
     // /**
     //  * @return Poste[] Returns an array of Poste objects
     //  */

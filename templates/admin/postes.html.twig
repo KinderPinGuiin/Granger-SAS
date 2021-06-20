@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Postes{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    {% if delete_confirm is defined %}
+        <h1>Confirmer la suppression</h1>
+        <p>
+            Êtes-vous sûr de vouloir supprimer ce poste, toutes les candidatures
+            en lien avec celui-ci seront supprimées
+        </p>
+        <a href="{{ path("admin_postes_delete") }}?id={{ poste_id }}&confirm=true">
+            Oui
+        </a>
+        <a href="{{ path("admin_postes") }}">Non</a>
+    {% else %}    
+        {% if error is defined %}
+            {{ error }}
+        {% endif %}
+
+        <form method="POST" action="{{ path("admin_postes_add") }}">
+            <input type="text" name="name" placeholder="Ajouter un poste..." />
+            <input type="submit" value="Ajouter" />
+        </form>
+
+        {% for poste in postes %}
+            <form method="POST" action="{{ path("admin_postes_edit") }}" class="poste">
+                <input type="text" name="name" value="{{ poste.name }}" />
+                <input type="hidden" name="id" value="{{ poste.id }}" />
+                <input type="submit" value="Modifier" />
+                <a href="{{ path("admin_postes_delete") }}?id={{ poste.id }}">
+                    Supprimer le poste
+                </a>
+            </form>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -32,13 +32,14 @@ class UploadType extends AbstractType
         // Et on construit le formulaire
         $builder
             ->add("poste", ChoiceType::class, [
-                "label" => "Choisissez un poste",
+                "label" => false,
                 "mapped" => false,
                 "invalid_message" => "Valeur séléctionnée invalide",
-                "choices" => $choices
+                "choices" => $choices,
+                'placeholder' => 'Choisissez un poste',
             ])
             ->add('cv', FileType::class, [
-                "label" => "Déposer un CV",
+                "label" => false,
                 "mapped" => false,
                 "constraints" => [
                     new File([
@@ -52,7 +53,7 @@ class UploadType extends AbstractType
                 ]
             ])
             ->add('lettre', FileType::class, [
-                "label" => "Déposer une lettre de motivation",
+                "label" => false,
                 "mapped" => false,
                 "constraints" => [
                     new File([

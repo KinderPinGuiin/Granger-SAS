@@ -16,7 +16,10 @@
     {% endif %}
     {% for user in users %}
         <div data-search="true">
-            <span class="user-info">{{ user.prenom }} {{ user.nom }} | {{ user.email }}</span>
+            <span class="user-info">
+                {{ user.prenom }} {{ user.nom }} | {{ user.email }} 
+                (<a href="{{ path("admin_candidature", {driveId: user.driveId}) }}">Candidatures</a>)
+            </span>
             <form method="POST" action="#">
                 <select name="role">
                     <option {% if user.realRole == "ROLE_USER" %}selected{% endif %} value="user">Utilisateur</option>

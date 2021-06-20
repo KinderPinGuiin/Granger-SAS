@@ -124,7 +124,8 @@ class AdminController extends AbstractController {
                 "view" => "history",
                 "candidatures" => $this->candidRepository->findBy(
                     ["user" => $candidat->getId()], ["id" => "DESC"]
-                )
+                ),
+                "candidat" => $candidat
             ]);
         }
         // On cherche le dossier correspondant au driveId

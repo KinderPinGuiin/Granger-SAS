@@ -24,10 +24,10 @@
             {% endfor %}
             {{ form_widget(uploadForm.poste) }}
             <div class="upload-areas">
-                <div class="area">
+                <div class="area" data-original-message="Déposer un cv">
                     {{ form_row(uploadForm.cv) }}
                 </div>
-                <div class="area">
+                <div class="area" data-original-message="Déposer une lettre de motivation">
                     {{ form_row(uploadForm.lettre) }}
                 </div>
             </div>

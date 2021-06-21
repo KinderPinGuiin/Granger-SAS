@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}E-mail envoyé{% endblock %}
+
+{% block body %}
+    <p>
+        Un e-mail a été envoyé, il vous suffira de cliquer sur le lien.
+        Ce lien expirera dans 1 heure.
+    </p>
+    <p>Si vous ne recevez pas de mail vérifiez vos spams ou <a href="{{ path('app_forgot_password_request') }}">essayez de renvoyer le mail</a>.</p>
+{% endblock %}

@@ -172,8 +172,10 @@ class GoogleDriveManager {
      */
     public function fileExists($name = null, $id = null, $checkFolders = false): bool
     {
-        return $this->mapFiles(function ($file) use ($name, $id) {
-            if (
+        return $this->mapFiles(function ($file, $acc) use ($name, $id) {
+            if ($acc) {
+                return true;
+            } else if (
                 ($name !== null && preg_match("#" . $name . "#", $file["name"]))
                 || $file["id"] === $id
             ) {

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CandidatureRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
@@ -9,8 +10,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/profil", name="profil")
@@ -19,17 +22,41 @@ class ProfilController extends AbstractController
 {
 
     /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
+
+    /**
+     * @var CandidatureRepository
+     */
+    private $candidatureRepository;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository)
+    {
+        $this->urlGenerator = $urlGenerator;
+        $this->candidatureRepository = $candidatureRepository;
+    }
+
+    /**
      * @Route("/", name="")
      */
     public function index(): Response
     {
-        // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
-        if (!$this->getUser()) {
-            return $this->redirectToRoute("home");
+        // Si l'utilisateur n'est pas connecté on le redirige sur la page de
+        // connexion
+        if (empty($this->getUser())) {
+            return new RedirectResponse(
+                $this->urlGenerator->generate("login") . "?redirect=profil"
+            );
         }
+        // On récupère les candidatures de l'utilisateur dans l'ordre 
+        // décroissant
+        $candidatures = $this->candidatureRepository->findBy([
+            "user" => $this->getUser()->getId()
+        ], ["id" => "DESC"]);
 
         return $this->render('profil/index.html.twig', [
-            "candidatures" => $this->getUser()->getCandidatures(),
+            "candidatures" => $candidatures,
             "user" => $this->getUser()
         ]);
     }

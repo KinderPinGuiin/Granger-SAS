@@ -50,7 +50,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('home'));
+        // On redirige l'utilisateur à l'accueil ou la ou il souhaitait aller
+        return new RedirectResponse(
+            $this->urlGenerator->generate($request->get("redirect"))
+            ?? $this->urlGenerator->generate('home')
+        );
     }
 
     protected function getLoginUrl(Request $request): string

@@ -9,8 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/profil", name="profil")
@@ -19,13 +21,26 @@ class ProfilController extends AbstractController
 {
 
     /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+    }
+
+    /**
      * @Route("/", name="")
      */
     public function index(): Response
     {
-        // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
-        if (!$this->getUser()) {
-            return $this->redirectToRoute("home");
+        // Si l'utilisateur n'est pas connecté on le redirige sur la page de
+        // connexion
+        if (empty($this->getUser())) {
+            return new RedirectResponse(
+                $this->urlGenerator->generate("login") . "?redirect=profil"
+            );
         }
 
         return $this->render('profil/index.html.twig', [

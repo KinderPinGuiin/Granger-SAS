@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CandidatureRepository;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
@@ -25,9 +26,15 @@ class ProfilController extends AbstractController
      */
     private $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    /**
+     * @var CandidatureRepository
+     */
+    private $candidatureRepository;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository)
     {
         $this->urlGenerator = $urlGenerator;
+        $this->candidatureRepository = $candidatureRepository;
     }
 
     /**
@@ -42,9 +49,14 @@ class ProfilController extends AbstractController
                 $this->urlGenerator->generate("login") . "?redirect=profil"
             );
         }
+        // On récupère les candidatures de l'utilisateur dans l'ordre 
+        // décroissant
+        $candidatures = $this->candidatureRepository->findBy([
+            "user" => $this->getUser()->getId()
+        ], ["id" => "DESC"]);
 
         return $this->render('profil/index.html.twig', [
-            "candidatures" => $this->getUser()->getCandidatures(),
+            "candidatures" => $candidatures,
             "user" => $this->getUser()
         ]);
     }

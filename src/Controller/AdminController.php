@@ -5,13 +5,13 @@ namespace App\Controller;
 use App\Entity\Poste;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
-use Symfony\Component\Mime\Email;
 use App\Repository\UserRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -172,7 +172,11 @@ class AdminController extends AbstractController {
         }
         // On charge le candidat et sa candidature
         $candidat = $this->userRepository->getByDriveId($driveId);
-        $candidature = $this->candidRepository->getNotHandled("user = " . $candidat->getId())[0];
+        $candidature = $this->candidRepository->getNotHandled("user = " . $candidat->getId());
+        if (empty($candidature)) {
+            return $this->redirectToRoute("admin_candidatures");
+        }
+        $candidature = $candidature[0];
         // On prend en charge le formulaire
         $form = $this->createForm(CandidatureHandlingType::class, $candidature);
         $form->handleRequest($req);
@@ -201,14 +205,16 @@ class AdminController extends AbstractController {
     private function sendMail($mailer, $candidat, $candidature, $form)
     {
         // Rédaction du mail
-        $email = (new Email())
+        $email = (new TemplatedEmail())
             ->from("noreply@grangersas.com")
             ->to($candidat->getEmail())
             ->subject("Votre candidature pour Granger SAS")
-            ->html(
-                "<h1>Votre candidature chez Granger SAS pour le poste " 
-                . $candidature->getPoste()->getName() . "</h1>" 
-                . "<p>" . $form->get("message")->getData() . "</p>");
+            ->htmlTemplate("emails/candidature_mail.html.twig")
+            ->context([
+                "candidat" => $candidat,
+                "poste" => $candidature->getPoste()->getName(),
+                "message" => nl2br($form->get("message")->getData())
+            ]);
         // Envoi du mail
         $mailer->send($email);
     }

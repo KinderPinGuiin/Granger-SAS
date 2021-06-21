@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Image;
+use App\Form\ImageType;
 use App\Repository\ImageRepository;
 use App\Utils\Constants;
 use Doctrine\ORM\EntityManagerInterface;
@@ -93,26 +94,24 @@ class ImagesController extends AbstractController
     /**
      * @Route("/image/upload", name="image_upload", methods="POST")
      */
-    public function uploadImage()
+    public function uploadImage(Request $req)
     {
+        // On traite le formulaire
+        $image = new Image();
+        $form = $this->createForm(ImageType::class, $image);
+        $form->handleRequest($req);
         // On vérifie les informations
-        if (
-            empty($_POST["name"]) 
-            || empty($_POST["alt"]) 
-            || empty($_POST["file"])
-        ) {
+        if (!$form->isSubmitted() || !$form->isValid()) {
             // Si une d'entre elle est invalide on renvoie un code 500
             return new JsonResponse([
-                "error" => "Données invalides"
+                "error" => "Données invalides",
+                "data" => $_POST
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         // Si tout est bon on ajoute l'image dans la base de données
-        $image = new Image();
-        $image->setContent($_POST["file"])
-              ->setName($_POST["name"])
-              ->setAlt($_POST["alt"]);
+        $image->setMime($form->get("content")->getData()->getMimeType());
         $this->em->persist($image);
-        $this->em->flush;
+        $this->em->flush();
 
         return new JsonResponse(["message" => "Uploadé"], Response::HTTP_OK);
     }

@@ -8,6 +8,7 @@ use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
+use App\Form\ImageType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @Route("/admin", name="admin")
@@ -245,6 +247,10 @@ class AdminController extends AbstractController {
         $contenus = $this->contentRepository->findAll();
 
         return $this->render("admin/edit.html.twig", [
+            "uploadImageForm" => $this->createForm(ImageType::class, null, [
+                "action" => $this->generateUrl("image_upload"),
+                "method" => "POST"
+            ])->createView(),
             "homeContent" => $contenus[0]->getContent(),
             "aboutContent" => $contenus[1]->getContent()
         ]);
@@ -298,6 +304,10 @@ class AdminController extends AbstractController {
         $contenus = $this->contentRepository->findAll();
         
         return $this->render("admin/edit.html.twig", [
+            "uploadImageForm" => $this->createForm(ImageType::class, null, [
+                "action" => $this->generateUrl("image_upload"),
+                "method" => "POST"
+            ])->createView(),
             "homeContent" => (
                 isset($_POST["home"]) 
                 ? $_POST["home"] 

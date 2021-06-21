@@ -12,6 +12,11 @@
 {% endblock %}
 
 {% block body %}
+    {{ form_start(uploadImageForm) }}
+        {{ form_rest(uploadImageForm) }}
+        <input type="submit" value="Envoyer" />
+    {{ form_end(uploadImageForm) }}
+
     {% if error.global is defined %}
         <div>{{ error.global }}</div>
     {% endif %}

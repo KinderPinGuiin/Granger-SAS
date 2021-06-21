@@ -12,7 +12,7 @@ window.addEventListener("load", () => {
     )
 
     // On gère la soumission du formulaire pour remplir les input hidden
-    document.querySelectorAll("form").forEach(form => {
+    document.querySelectorAll(".edit_form").forEach(form => {
         form.addEventListener("submit", e => {
             e.preventDefault()
             e.originalTarget.querySelector(".editedContent").value =
@@ -21,3 +21,27 @@ window.addEventListener("load", () => {
         })
     })
 })
+
+// On gère l'upload des images
+// document.querySelector(".upload").addEventListener("submit", e => {
+//     e.preventDefault()
+//     // On récupère les données du formulaire
+//     // const files = e.target.querySelector("input[type='file']").files
+//     let formData = new FormData(document.querySelector(".upload"))
+//     $.ajax({
+//         url: "/image/upload",
+//         enctype: 'multipart/form-data',
+//         type: "POST",
+//         data: formData,
+//         processData: false,
+//         contentType: false,
+//         cache: false,
+//         timeout: 800000,
+//         success: function (data) {
+//             console.log(data)
+//         },
+//         error: function (e) {
+//             console.log(e.responseJSON)
+//         }
+//     })
+// })

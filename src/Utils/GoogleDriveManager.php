@@ -165,14 +165,18 @@ class GoogleDriveManager {
      * Return true if file exists in getCurrentFolder() or false otherwise
      * 
      * @param  string   $name         File name or regex
+     * @param  string   $id            File id
      * @param  bool     $checkFolders True if you want to apply this function to
      *                                folders or false otherwise
      * @return bool
      */
-    public function fileExists($name, $checkFolders = false): bool
+    public function fileExists($name = null, $id = null, $checkFolders = false): bool
     {
-        return $this->mapFiles(function ($file) use ($name) {
-            if (preg_match("#" . $name . "#", $file["name"])) {
+        return $this->mapFiles(function ($file) use ($name, $id) {
+            if (
+                ($name !== null && preg_match("#" . $name . "#", $file["name"]))
+                || $file["id"] === $id
+            ) {
                 return true;
             }
             return false;

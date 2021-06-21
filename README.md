@@ -21,6 +21,9 @@ class Constants {
     // Dossier Google
     const GOOGLE_FOLDER = self::ROOT . "google/";
 
+    // Dossier public
+    const PUBLIC_FOLDER = self::ROOT . "public/";
+
     // ID du dossier racine Google Drive
     const ID_DRIVE_ROOT = "Identifiant de votre dossier";
 
@@ -35,6 +38,9 @@ class Constants {
 
     // Nom du fichier de la lettre de motivation
     const LETTER_FILE_NAME = "Lettre de motivation";
+
+    // Image par défaut en cas de 404
+    const DEFAULT_IMAGE = self::PUBLIC_FOLDER . "img/images/default.png";
 
 }
 ```

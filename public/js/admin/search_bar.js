@@ -10,7 +10,7 @@ searchBar.addEventListener("keyup", e => {
     ) {
         searchIn.forEach(element => {
             if (
-                element.innerHTML.toLowerCase()
+                element.innerText.toLowerCase()
                     .includes(searchBar.value.toLowerCase().trim())
             ) {
                 element.style.display = "block"

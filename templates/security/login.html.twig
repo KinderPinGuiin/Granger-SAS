@@ -1,30 +1,25 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Connexion{% endblock %}
+{% block stylesheets %}<link href="/css/login/style.css" rel="stylesheet">{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <p>Adresse email ou mot de passe invalide</p>
-    {% endif %}
+<form class="login_form" method="post">
+    <input class="login_email" type="email" placeholder="Adresse e-mail" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+    <input type="password" placeholder="Mot de passe" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+    <label class="login_checkbox">
+        <input type="checkbox" name="_remember_me"> Se souvenir de moi
+    </label>
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
-        </label>
-    </div>
-
-    <button class="btn btn-lg btn-primary" type="submit">
+    <button class="login_button" type="submit">
         Connexion
     </button>
+
+    {% if error %}
+        <p class="login_error">Adresse e-mail ou mot de passe invalide</p>
+    {% endif %}
 </form>
 {% endblock %}

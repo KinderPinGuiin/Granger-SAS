@@ -145,20 +145,21 @@ class UploadController extends AbstractController
         );
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
-            // Si tout est bon on upload les fichiers sur le drive
-            $this->driveManager->goTo($this->getUser()->getDriveID());
-            $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
-            // Si un CV a déjà été déposé par l'utilisateur on le supprime
-            $this->deleteDuplicate(Constants::CV_FILE_NAME);
-            $this->driveManager->upload(
-                Constants::CV_FILE_NAME,
-                $form->get("cv")->getData()->getPathname()
-            );
-            $this->driveManager->back();
-            $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
-            // Si une lettre a déjà été déposée par l'utilisateur on la supprime
-            $this->deleteDuplicate(Constants::LETTER_FOLDER_NAME);
             try {
+                // Si tout est bon on upload les fichiers sur le drive
+                $this->driveManager->goTo($this->getUser()->getDriveID());
+                $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
+                // Si un CV a déjà été déposé par l'utilisateur on le supprime
+                $this->deleteDuplicate(Constants::CV_FILE_NAME);
+                $this->driveManager->upload(
+                    Constants::CV_FILE_NAME,
+                    $form->get("cv")->getData()->getPathname()
+                );
+                $this->driveManager->back();
+                $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
+                // Si une lettre a déjà été déposée par l'utilisateur on la 
+                // supprime
+                $this->deleteDuplicate(Constants::LETTER_FOLDER_NAME);
                 $this->driveManager->upload(
                     Constants::LETTER_FILE_NAME,
                     $form->get("lettre")->getData()->getPathname()

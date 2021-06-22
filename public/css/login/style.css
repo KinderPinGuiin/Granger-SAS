@@ -1,11 +1,34 @@
-.login_form {
+.login_container {
     width: 25rem;
-    height: 30rem;
     margin: auto;
+    margin-top: -2rem;
+}
+
+.login_arrow {
+    position: absolute;
+    width: 20rem;
+    margin-top: -72px;
+    margin-left: 12rem;
+    z-index: 1;
+}
+
+.login_title {
+    font-family: "Inter_Bold";
+    font-size: 2rem;
+    font-weight: bold;
+    align-self: flex-start;
+    z-index: 2;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    margin-left: 3rem;
+    color: #DF5F36;
+}
+
+.login_form {
+    height: 30rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 2rem;
     margin-top: 3rem;
     font-family: "Montserrat";
     border-radius: 35px;
@@ -47,6 +70,7 @@ body,
     border: solid 1px rgb(214, 214, 214);
     font-size: 1rem;
     margin: 0.8rem 0;
+    z-index: 2;
 }
 
 .login_email{
@@ -55,21 +79,22 @@ body,
 
 .login_checkbox {
     width: 60%;
-    margin-top: 1rem;
-    font-size: 0.9rem;
+    margin: 1rem 0;
+    font-size: 1rem;
 }
 
 .login_checkbox input {
-    width: 1rem;
-    margin-right: 0.7rem;
+    width: 2rem;
+    margin-right: 0.5rem;
     margin-top: 0;
+    cursor: pointer;
 }
 
 .login_button {
-    margin-top: 2rem;
     color: #FBFBFB;
     background-color: #DF5F36;
-    padding: 1rem 4rem;
+    padding: 1rem 0;
+    width: 70%;
     border-radius: 50px;
     border: none;
     cursor: pointer;

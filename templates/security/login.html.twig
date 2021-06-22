@@ -3,8 +3,12 @@
 {% block title %}Connexion{% endblock %}
 {% block stylesheets %}<link href="/css/login/style.css" rel="stylesheet">{% endblock %}
 
-{% block body %}
+{% block body %}*
+<div class="login_container">
+<img class="login_arrow" src="/img/login/login_arrow.svg" alt="login arrow">
 <form class="login_form" method="post">
+    <p class="login_title">Se connecter</p>
+
     <input class="login_email" type="email" placeholder="Adresse e-mail" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
     <input type="password" placeholder="Mot de passe" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
@@ -19,7 +23,8 @@
     </button>
 
     {% if error %}
-        <p class="login_error">Adresse e-mail ou mot de passe invalide</p>
+        <p class="login_error">⚠️ Adresse e-mail ou mot de passe invalide</p>
     {% endif %}
 </form>
+<div>
 {% endblock %}

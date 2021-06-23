@@ -2,7 +2,7 @@
 
 // On ajoute le WYSIWYG et on focus dedans
 window.addEventListener("load", () => {
-    const wysiwygHome = new WYSIWYG(
+    new WYSIWYG(
         ".WYSIWYG_accueil", CLASS_FOLDER + "WYSIWYG/", 
         [], document.querySelector(".homeContent").innerHTML
     )
@@ -20,6 +20,17 @@ window.addEventListener("load", () => {
             e.target.submit()
         })
     })
+
+    wysiwygAbout.addButton(
+        "image", CLASS_FOLDER + "WYSIWYG/logos/image_button.png", 
+        "Bouton ajouter une image", "Ajouter une image", displayImageManager
+    )
+
+    function displayImageManager() {
+        const container = document.querySelector(".image_manager")
+        container.style.display = "flex"
+        listImage(container.querySelector(".images_container"))
+    }
 
     function uploadImage() {
         // On gère l'upload d'image
@@ -44,43 +55,51 @@ window.addEventListener("load", () => {
         })
     }
 
-    function listImage() {
+    function listImage(container) {
         // Listing des images
-        document.querySelector(".img_display_button").addEventListener("click", () => {
-            let container = document.querySelector(".images_container")
-            container.querySelector(".images").innerHTML = ""
-            container.querySelector(".loader").style.display = "block"
-            $.ajax({
-                type: "POST",
-                url: "/images",
-                success: (data) => {
-                    container.querySelector(".loader").style.display = "none"
-                    let imageContainer, imageElement, deleteButton, i
-                    for (i in data) {
-                        deleteButton = document.createElement("button")
-                        deleteButton.setAttribute("data-id", i)
-                        deleteButton.innerHTML = "Supprimer"
-                        deleteButton.addEventListener("click", e => {
-                            deleteImage(e.target)
-                        })
+        container.setAttribute("data-status", "loading")
+        container.querySelector(".images").innerHTML = ""
+        $.ajax({
+            type: "POST",
+            url: "/images",
+            success: (data) => {
+                let imageContainer, imageElement, deleteButton, i
+                for (i in data) {
+                    deleteButton = document.createElement("div")
+                    deleteButton.classList.add("close_button")
+                    deleteButton.setAttribute("data-id", i)
+                    deleteButton.addEventListener("click", e => {
+                        deleteImage(e.target)
+                    })
 
-                        imageElement = document.createElement("img")
-                        imageElement.setAttribute("src", data[i].url)
-                        imageElement.setAttribute("alt", data[i].alt)
-                        imageElement.setAttribute("width", "100px")
+                    imageElement = document.createElement("img")
+                    imageElement.setAttribute("src", data[i].url)
+                    imageElement.setAttribute("alt", data[i].alt)
+                    imageElement.setAttribute("width", "100px")
 
-                        imageContainer = document.createElement("div")
-                        imageContainer.classList.add("image")
+                    imageContainer = document.createElement("div")
+                    imageContainer.classList.add("image")
 
-                        imageContainer.appendChild(imageElement)
-                        imageContainer.appendChild(deleteButton)
-                        document.querySelector(".images").appendChild(imageContainer)
+                    imageContainer.appendChild(imageElement)
+                    // On adapte la taille de l'image
+                    if (
+                        window.getComputedStyle(imageElement).width
+                        > window.getComputedStyle(imageElement).height
+                    ) {
+                        imageElement.style.width = "100%"
+                        imageElement.style.height = "auto"
+                    } else {
+                        imageElement.style.width = "auto"
+                        imageElement.style.height = "100%"
                     }
-                },
-                error: (e) => {
-                    console.log(e)
+                    imageContainer.appendChild(deleteButton)
+                    document.querySelector(".images").appendChild(imageContainer)
                 }
-            })
+                container.setAttribute("data-status", "show")
+            },
+            error: (e) => {
+                console.log(e)
+            }
         })
     }
 
@@ -96,6 +115,4 @@ window.addEventListener("load", () => {
             }
         })
     }
-
-    listImage()
 })

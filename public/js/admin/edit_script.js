@@ -12,7 +12,7 @@ window.addEventListener("load", () => {
     )
 
     // On gère la soumission du formulaire pour remplir les input hidden
-    document.querySelectorAll("form").forEach(form => {
+    document.querySelectorAll(".edit_form").forEach(form => {
         form.addEventListener("submit", e => {
             e.preventDefault()
             e.originalTarget.querySelector(".editedContent").value =

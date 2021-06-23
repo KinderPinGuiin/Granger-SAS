@@ -21,6 +21,7 @@ class ImageType extends AbstractType
                 "label" => false
             ])
             ->add('content', FileType::class, [
+                "mapped" => false,
                 "label" => false,
                 "constraints" => [
                     new File([

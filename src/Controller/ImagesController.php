@@ -96,6 +96,16 @@ class ImagesController extends AbstractController
      */
     public function uploadImage(Request $req)
     {
+        if (
+            empty($this->getUser()) ||
+            (
+                !in_array("ROLE_ADMIN", $this->getUser()->getRoles())
+                && !in_array("ROLE_EDITOR", $this->getUser()->getRoles())
+            )
+        ) {
+            // Si l'utilisateur n'est pas autorisé on le redirige à l'accueil
+            return $this->redirectToRoute("home");
+        }
         // On créé le formulaire puis on le traite
         $image = new Image();
         $form = $this->createForm(ImageType::class, $image);

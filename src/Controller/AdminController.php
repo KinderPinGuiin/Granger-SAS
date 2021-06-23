@@ -8,6 +8,7 @@ use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
+use App\Form\ImageType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
@@ -243,10 +244,14 @@ class AdminController extends AbstractController {
             return $this->redirectToRoute("home");
         }
         $contenus = $this->contentRepository->findAll();
+        $uploadImageForm = $this->createForm(ImageType::class, null, [
+            "action" => "/image/upload"
+        ]);
 
         return $this->render("admin/edit.html.twig", [
             "homeContent" => $contenus[0]->getContent(),
-            "aboutContent" => $contenus[1]->getContent()
+            "aboutContent" => $contenus[1]->getContent(),
+            "uploadImageForm" => $uploadImageForm->createView()
         ]);
     }
 
@@ -296,6 +301,9 @@ class AdminController extends AbstractController {
         }
         // En cas d'erreur on charge le contenu
         $contenus = $this->contentRepository->findAll();
+        $uploadImageForm = $this->createForm(ImageType::class, null, [
+            "action" => "/image/upload"
+        ]);
         
         return $this->render("admin/edit.html.twig", [
             "homeContent" => (
@@ -308,7 +316,8 @@ class AdminController extends AbstractController {
                 ? $_POST["about"] 
                 : $contenus[1]->getContent()
             ),
-            "error" => $error
+            "error" => $error,
+            "uploadImageForm" => $uploadImageForm->createView()
         ]);
     }
 

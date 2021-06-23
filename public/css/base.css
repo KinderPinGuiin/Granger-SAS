@@ -42,6 +42,14 @@ body {
     background-attachment: fixed;
 }
 
+#swup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 .transition-fade {
     transition: 0.2s;
     opacity: 1;

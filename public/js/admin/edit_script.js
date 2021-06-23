@@ -20,4 +20,25 @@ window.addEventListener("load", () => {
             e.target.submit()
         })
     })
+
+    // On gère l'upload d'image
+    document.querySelector(".upload_image form").addEventListener("submit", e => {
+        e.preventDefault()
+        let data = new FormData(document.querySelector(".upload_image form"))
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "/image/upload",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function (data) {
+                console.log(data)
+            },
+            error: function (e) {
+                console.log(e)
+            }
+        });
+    })
 })

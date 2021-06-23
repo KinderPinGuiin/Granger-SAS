@@ -4,6 +4,7 @@ namespace App\Security;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -51,11 +52,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         // On redirige l'utilisateur à l'accueil ou la ou il souhaitait aller
-        return new RedirectResponse(
-            $request->get("redirect")
-            ? $this->urlGenerator->generate($request->get("redirect"))
-            : $this->urlGenerator->generate('home')
-        );
+        return new RedirectResponse($this->urlGenerator->generate('home'));
     }
 
     protected function getLoginUrl(Request $request): string

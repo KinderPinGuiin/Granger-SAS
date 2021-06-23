@@ -45,9 +45,10 @@ class ProfilController extends AbstractController
         // Si l'utilisateur n'est pas connecté on le redirige sur la page de
         // connexion
         if (empty($this->getUser())) {
-            return new RedirectResponse(
-                $this->urlGenerator->generate("login") . "?redirect=profil"
-            );
+            // On définit les variables de redirection
+            $this->get("session")->set("redirect", "profil");
+            $this->get("session")->set("logged", false);
+            return new RedirectResponse($this->urlGenerator->generate("login"));
         }
         // On récupère les candidatures de l'utilisateur dans l'ordre 
         // décroissant

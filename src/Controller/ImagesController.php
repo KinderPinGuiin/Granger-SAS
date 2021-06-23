@@ -115,7 +115,7 @@ class ImagesController extends AbstractController
         if (!$form->isSubmitted() || !$form->isValid()) {
             // Si une d'entre elle est invalide on renvoie un code 500
             return new JsonResponse([
-                "error" => "Données invalides"
+                "error" => "Fichier trop volumineux ou de mauvais type"
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         // Si tout est bon on ajoute l'image dans la base de données

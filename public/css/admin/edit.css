@@ -25,13 +25,19 @@
     align-items: center;
 }
 
+.image_manager .upload_image_container form * {
+    font-size: 1.3rem;
+    font-family: "Montserrat", "sans-serif";
+}
+
+.image_manager .upload_image_container form .error {
+    color: red;
+}
+
 .image_manager .upload_image_container input {
     margin: 10px;
-    /* width: 70%; */
-    font-size: 1.3rem;
     padding: 10px;
     border-radius: calc(1.3rem + 2 * 10px);
-    font-family: "Montserrat", "sans-serif";
 }
 
 .image_manager .upload_image_container input[type="text"] {
@@ -124,7 +130,7 @@
     height: 15px;
 }
 
-.upload_btn_container, .select_btn_container {
+.upload_btn_container, .select_btn_container, .add_btn_container {
     height: 20%;
     /* Si visible */
     justify-content: center;
@@ -139,7 +145,11 @@
     display: none;
 }
 
-.upload_btn_container button, .select_btn_container button {
+.add_btn_container {
+    display: none;
+}
+
+.upload_btn_container button, .select_btn_container button, .add_btn_container button {
     padding: 10px;
     font-size: 1.3rem;
     font-family: "Montserrat", "sans-serif";

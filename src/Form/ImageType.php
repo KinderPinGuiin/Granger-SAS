@@ -15,10 +15,16 @@ class ImageType extends AbstractType
     {
         $builder
             ->add('name', null, [
-                "label" => false
+                "label" => false,
+                "attr" => [
+                    "placeholder" => "Nom de l'image"
+                ]
             ])
             ->add('alt', null, [
-                "label" => false
+                "label" => false,
+                "attr" => [
+                    "placeholder" => "Description"
+                ]
             ])
             ->add('content', FileType::class, [
                 "mapped" => false,

@@ -11,27 +11,29 @@
 {% endblock %}
 
 {% block body %}
-    {% if hasCandidature %}
-        <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
-    {% else %}
-        {% form_theme uploadForm "forms/upload/upload_form_template.html.twig" %}
-        {{ form_start(uploadForm) }}
-            {# Affiche les erreurs si nécessaire #}
-            {% for error in formErrors %}
-                <div class="error">
-                    {{ error }}
+    <div class="container">
+        {% if hasCandidature %}
+            <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
+        {% else %}
+            {% form_theme uploadForm "forms/upload/upload_form_template.html.twig" %}
+            {{ form_start(uploadForm) }}
+                {# Affiche les erreurs si nécessaire #}
+                {% for error in formErrors %}
+                    <div class="error">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+                {{ form_widget(uploadForm.poste) }}
+                <div class="upload-areas">
+                    <div class="area" data-original-message="Déposer un cv">
+                        {{ form_row(uploadForm.cv) }}
+                    </div>
+                    <div class="area" data-original-message="Déposer une lettre de motivation">
+                        {{ form_row(uploadForm.lettre) }}
+                    </div>
                 </div>
-            {% endfor %}
-            {{ form_widget(uploadForm.poste) }}
-            <div class="upload-areas">
-                <div class="area" data-original-message="Déposer un cv">
-                    {{ form_row(uploadForm.cv) }}
-                </div>
-                <div class="area" data-original-message="Déposer une lettre de motivation">
-                    {{ form_row(uploadForm.lettre) }}
-                </div>
-            </div>
-            <input type="submit" value="Soumettre" />
-        {{ form_end(uploadForm) }}
-    {% endif %}
+                <input type="submit" value="Soumettre" />
+            {{ form_end(uploadForm) }}
+        {% endif %}
+    </div>
 {% endblock %}

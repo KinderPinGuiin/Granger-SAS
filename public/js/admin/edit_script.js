@@ -30,6 +30,7 @@ window.addEventListener("load", () => {
         const container = document.querySelector(".image_manager")
         container.style.display = "flex"
         listImage(container.querySelector(".images_container"))
+        // On adapte la taille de l'image
     }
 
     function uploadImage() {
@@ -75,25 +76,21 @@ window.addEventListener("load", () => {
                     imageElement = document.createElement("img")
                     imageElement.setAttribute("src", data[i].url)
                     imageElement.setAttribute("alt", data[i].alt)
-                    imageElement.setAttribute("width", "100px")
-
-                    imageContainer = document.createElement("div")
-                    imageContainer.classList.add("image")
-
-                    imageContainer.appendChild(imageElement)
                     // On adapte la taille de l'image
-                    if (
-                        window.getComputedStyle(imageElement).width
-                        > window.getComputedStyle(imageElement).height
-                    ) {
+                    if (data[i].width > data[i].height) {
                         imageElement.style.width = "100%"
                         imageElement.style.height = "auto"
                     } else {
                         imageElement.style.width = "auto"
                         imageElement.style.height = "100%"
                     }
+
+                    imageContainer = document.createElement("div")
+                    imageContainer.classList.add("image")
+
+                    imageContainer.appendChild(imageElement)
                     imageContainer.appendChild(deleteButton)
-                    document.querySelector(".images").appendChild(imageContainer)
+                    container.querySelector(".images").appendChild(imageContainer)
                 }
                 container.setAttribute("data-status", "show")
             },

@@ -23,9 +23,11 @@
         {% endblock %}
     </head>
     <body>
-        {% include "require/header.html.twig" %}
-        <div id="swup" class="transition-fade">
-            {% block body %}{% endblock %}
+        <div id="swup">
+            {% include "require/header.html.twig" %}
+            <div class="transition-fade">
+                {% block body %}{% endblock %}
+            </div>
         </div>
     </body>
 </html>

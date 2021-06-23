@@ -28,6 +28,16 @@ class Image
     private $alt;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $width;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $height;
+
+    /**
      * @ORM\Column(type="blob")
      */
     private $content;
@@ -86,6 +96,30 @@ class Image
     public function setMime(string $mime): self
     {
         $this->mime = $mime;
+
+        return $this;
+    }
+
+    public function getWidth(): ?string
+    {
+        return $this->width;
+    }
+
+    public function setWidth(string $width): self
+    {
+        $this->width = $width;
+
+        return $this;
+    }
+
+    public function getHeight(): ?string
+    {
+        return $this->height;
+    }
+
+    public function setHeight(string $height): self
+    {
+        $this->height = $height;
 
         return $this;
     }

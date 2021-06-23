@@ -16,12 +16,21 @@
         <div>{{ error.global }}</div>
     {% endif %}
 
-    <section class="upload_image">
-        {{ form_start(uploadImageForm) }}
-            {{ form_rest(uploadImageForm) }}
-            <input type="submit" value="Envoyer" />
-        {{ form_end(uploadImageForm) }}
-    </section>
+    <div class="image_manager">
+        <div class="close_button"></div>
+
+        <section class="upload_image">
+            {{ form_start(uploadImageForm) }}
+                {{ form_rest(uploadImageForm) }}
+                <input type="submit" value="Envoyer" />
+            {{ form_end(uploadImageForm) }}
+        </section>
+
+        <div class="images_container">
+            <img class="loader" style="display:block" src="/img/admin/loader.gif" alt="Loader" />
+            <div class="images"></div>
+        </div>
+    </div>
 
     <section>
         <h1>

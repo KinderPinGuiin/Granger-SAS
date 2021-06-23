@@ -36,7 +36,7 @@ class ImagesController extends AbstractController
     /**
      * @Route("/images", name="images")
      */
-    public function getAllImages(Request $req, UrlGeneratorInterface $gen)
+    public function getAllImages(UrlGeneratorInterface $gen)
     {
         // On récupère toutes les images
         $images = $this->imageRepository->findAll();
@@ -47,8 +47,9 @@ class ImagesController extends AbstractController
                 "name" => $image->getName(),
                 "alt" => $image->getAlt(),
                 "mime" => $image->getMime(),
-                "url" => $req->server->get("HTTP_HOST")
-                    . $gen->generate("image", ["id" => $image->getId()])
+                "width" => $image->getWidth(),
+                "height" => $image->getHeight(),
+                "url" => $gen->generate("image", ["id" => $image->getId()])
             ];
         }
 
@@ -122,6 +123,12 @@ class ImagesController extends AbstractController
             file_get_contents($form->get("content")->getData()->getPathname())
         );
         $image->setMime($form->get("content")->getData()->getMimeType());
+        $image->setWidth(
+            getimagesize($form->get("content")->getData()->getPathname())[0]
+        );
+        $image->setHeight(
+            getimagesize($form->get("content")->getData()->getPathname())[1]
+        );
         $this->em->persist($image);
         $this->em->flush();
 

@@ -1,3 +1,80 @@
+/* Upload Image */
+
+.image_manager {
+    display: none;
+    width: 50%;
+    height: 50vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    background-color: #FBFBFB;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+}
+
+.image_manager .upload_image {
+    display: none;
+}
+
+.image_manager .images_container {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+.image_manager .images_container[data-status="loading"] {
+    justify-content: center;
+    align-items: center;
+}
+
+.image_manager .images_container[data-status="show"] {
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.image_manager .images_container .loader {
+    width: 100px;
+    height: auto;
+}
+
+.image_manager .images_container[data-status="show"] .loader {
+    display: none !important;
+}
+
+.image_manager .images_container .images {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.image_manager .images_container .images .image {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: gray;
+    border-radius: 3px;
+    margin: 20px;
+    cursor: pointer;
+}
+
+.image_manager .images_container .images .image .close_button, .image_manager .close_button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+    background-color: red;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
 /* Règles sur le formulaire */
 
 .edit_form input[type="submit"] {

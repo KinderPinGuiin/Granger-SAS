@@ -28,31 +28,55 @@ window.addEventListener("load", () => {
 
     function displayImageManager() {
         const container = document.querySelector(".image_manager")
-        container.style.display = "flex"
+        // On ajoute les event listeners
+        container.querySelector(".upload_btn_container button").addEventListener("click", () => {
+            switchUpload(container)
+        })
+        container.querySelector(".select_btn_container button").addEventListener("click", () => {
+            switchSelect(container)
+        })
+        document.querySelector(".upload_image_container form").addEventListener("submit", e => {
+            e.preventDefault()
+            uploadImage(".upload_image_container form", () => {
+                switchSelect(container)
+                listImage(container.querySelector(".images_container"))
+            }, error => {
+                console.log(error)
+            })
+        })
+        // On affiche la pop-up
+        container.style.display = "block"
+        // On liste les images
         listImage(container.querySelector(".images_container"))
-        // On adapte la taille de l'image
     }
 
-    function uploadImage() {
+    function switchSelect(container) {
+        container.querySelector(".select_btn_container").style.display = "none"
+        container.querySelector(".upload_btn_container").style.display = "flex"
+        container.querySelector(".upload_image_container").style.display = "none"
+        container.querySelector(".images_container").style.display = "flex"
+    }
+
+    function switchUpload(container) {
+        container.querySelector(".upload_btn_container").style.display = "none"
+        container.querySelector(".select_btn_container").style.display = "flex"
+        container.querySelector(".images_container").style.display = "none"
+        container.querySelector(".upload_image_container").style.display = "flex"
+    }
+
+    function uploadImage(formSelector, success, failure) {
         // On gère l'upload d'image
-        document.querySelector(".upload_image form").addEventListener("submit", e => {
-            e.preventDefault()
-            let data = new FormData(document.querySelector(".upload_image form"))
-            $.ajax({
-                type: "POST",
-                enctype: 'multipart/form-data',
-                url: "/image/upload",
-                data: data,
-                processData: false,
-                contentType: false,
-                cache: false,
-                success: (data) => {
-                    console.log(data)
-                },
-                error: (e) => {
-                    console.log(e)
-                }
-            })
+        let data = new FormData(document.querySelector(formSelector))
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: "/image/upload",
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: success,
+            error: failure
         })
     }
 
@@ -87,6 +111,7 @@ window.addEventListener("load", () => {
 
                     imageContainer = document.createElement("div")
                     imageContainer.classList.add("image")
+                    imageContainer.setAttribute("data-id", i)
 
                     imageContainer.appendChild(imageElement)
                     imageContainer.appendChild(deleteButton)

@@ -19,16 +19,24 @@
     <div class="image_manager">
         <div class="close_button"></div>
 
-        <section class="upload_image">
+        <section class="upload_image_container">
             {{ form_start(uploadImageForm) }}
                 {{ form_rest(uploadImageForm) }}
-                <input type="submit" value="Envoyer" />
+                <input type="submit" value="Ajouter" />
             {{ form_end(uploadImageForm) }}
         </section>
 
         <div class="images_container">
             <img class="loader" style="display:block" src="/img/admin/loader.gif" alt="Loader" />
             <div class="images"></div>
+        </div>
+
+        <div class="upload_btn_container">
+            <button>Ajouter une image</button>
+        </div>
+
+        <div class="select_btn_container">
+            <button>Séléctionner une image</button>
         </div>
     </div>
 

@@ -23,6 +23,13 @@
         {{ form_end(uploadImageForm) }}
     </section>
 
+    <button class="img_display_button">Voir les images</button>
+
+    <div class="images_container">
+        <img class="loader" style="display:none" src="/img/admin/loader.gif" alt="Loader" />
+        <div class="images"></div>
+    </div>
+
     <section>
         <h1>
             Modifier le texte de la page 

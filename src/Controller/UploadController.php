@@ -2,19 +2,20 @@
 
 namespace App\Controller;
 
-use App\Entity\Candidature;
-use App\Form\UploadType;
-use App\Repository\CandidatureRepository;
-use App\Repository\PosteRepository;
-use App\Utils\Constants;
-use App\Utils\GoogleDriveManager;
 use DateTime;
-use Doctrine\ORM\Query\AST\Functions\CurrentTimestampFunction;
 use Exception;
+use App\Form\UploadType;
+use App\Utils\Constants;
+use App\Entity\Candidature;
+use App\Utils\GoogleDriveManager;
+use App\Repository\PosteRepository;
+use App\Repository\CandidatureRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UploadController extends AbstractController
@@ -23,6 +24,11 @@ class UploadController extends AbstractController
      * @var Request
      */
     private $req;
+
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
 
     /**
      * @var GoogleDriveManager
@@ -51,8 +57,9 @@ class UploadController extends AbstractController
      */
     private $formErrors = [];
 
-    public function __construct(CandidatureRepository $c, PosteRepository $pRep)
+    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $c, PosteRepository $pRep)
     {
+        $this->urlGenerator = $urlGenerator;
         $this->candRepository = $c;
         $this->posteRepository = $pRep;
     }
@@ -62,9 +69,12 @@ class UploadController extends AbstractController
      */
     public function index(Request $req): Response
     {
-        // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
+        // Si l'utilisateur n'est pas connecté on le redirige sur la page de
+        // connexion
         if (empty($this->getUser())) {
-            return $this->redirectToRoute("home");
+            return new RedirectResponse(
+                $this->urlGenerator->generate("login") . "?redirect=upload"
+            );
         }
         // Si l'utilisateur a déjà une candidature en cours on lui affiche un message
         if (!empty(
@@ -135,20 +145,21 @@ class UploadController extends AbstractController
         );
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
-            // Si tout est bon on upload les fichiers sur le drive
-            $this->driveManager->goTo($this->getUser()->getDriveID());
-            $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
-            // Si un CV a déjà été déposé par l'utilisateur on le supprime
-            $this->deleteDuplicate(Constants::CV_FILE_NAME);
-            $this->driveManager->upload(
-                Constants::CV_FILE_NAME,
-                $form->get("cv")->getData()->getPathname()
-            );
-            $this->driveManager->back();
-            $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
-            // Si une lettre a déjà été déposée par l'utilisateur on la supprime
-            $this->deleteDuplicate(Constants::LETTER_FOLDER_NAME);
             try {
+                // Si tout est bon on upload les fichiers sur le drive
+                $this->driveManager->goTo($this->getUser()->getDriveID());
+                $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
+                // Si un CV a déjà été déposé par l'utilisateur on le supprime
+                $this->deleteDuplicate(Constants::CV_FILE_NAME);
+                $this->driveManager->upload(
+                    Constants::CV_FILE_NAME,
+                    $form->get("cv")->getData()->getPathname()
+                );
+                $this->driveManager->back();
+                $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
+                // Si une lettre a déjà été déposée par l'utilisateur on la 
+                // supprime
+                $this->deleteDuplicate(Constants::LETTER_FOLDER_NAME);
                 $this->driveManager->upload(
                     Constants::LETTER_FILE_NAME,
                     $form->get("lettre")->getData()->getPathname()

@@ -26,7 +26,6 @@ class WYSIWYG {
         this.editor = document.createElement("div")
         this.editor.classList.add("editor")
         // On enlève le correcteur
-        this.editor.setAttribute("spellcheck", "false")
         this.editor.innerHTML = content
         this.buttonsContainer = document.createElement("div")
         this.buttonsContainer.classList.add("buttonsContainer")
@@ -135,26 +134,48 @@ class WYSIWYG {
 
         // On ajoute les boutons à la barre
         this.buttons.forEach(button => {
-            let _button = document.createElement("button")
-            _button.setAttribute("title", this.buttonList[0][button]["desc"])
-            _button.innerHTML = `<img src="${this.buttonList[0][button]["logo"]}" 
-                                 alt="${this.buttonList[0][button]["logoAlt"]}"
-                                 width="20" height="20" />`
-            this.buttonsContainer.appendChild(_button)
+            this.addToList(button)
+        })
+    }
 
-            // On ajoute les events listeners
-            _button.addEventListener("click", (e) => {
-                e.preventDefault()
-                this.buttonList[0][button]["apply"]()
-            })
+    /**
+     * Créé un bouton et l'ajoute à la barre
+     */
+    addButton(name, logo, logoAlt, desc, apply) {
+        this.buttonList[0][name] = {
+            "logo": logo,
+            "logoAlt": logoAlt,
+            "desc": desc,
+            "apply": apply
+        }
+        this.buttons.push(name)
+        this.addToList(name)
+    }
 
-            _button.addEventListener("mousedown", () => {
-                _button.style.boxShadow = "inset 0px 0px 10px 0px rgba(0,0,0,0.75)"
-            })
+    /**
+     * Ajoute le bouton à la barre et ajout les events listener
+     * @param {string} button Le nom du bouton 
+     */
+    addToList(button) {
+        let _button = document.createElement("button")
+        _button.setAttribute("title", this.buttonList[0][button]["desc"])
+        _button.innerHTML = `<img src="${this.buttonList[0][button]["logo"]}" 
+                                alt="${this.buttonList[0][button]["logoAlt"]}"
+                                width="20" height="20" />`
+        this.buttonsContainer.appendChild(_button)
 
-            _button.addEventListener("mouseup", () => {
-                _button.style.boxShadow = "none"
-            })
+        // On ajoute les events listeners
+        _button.addEventListener("click", (e) => {
+            e.preventDefault()
+            this.buttonList[0][button]["apply"]()
+        })
+
+        _button.addEventListener("mousedown", () => {
+            _button.style.boxShadow = "inset 0px 0px 10px 0px rgba(0,0,0,0.75)"
+        })
+
+        _button.addEventListener("mouseup", () => {
+            _button.style.boxShadow = "none"
         })
     }
 }          

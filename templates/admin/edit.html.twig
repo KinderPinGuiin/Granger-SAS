@@ -16,6 +16,13 @@
         <div>{{ error.global }}</div>
     {% endif %}
 
+    <section class="upload_image">
+        {{ form_start(uploadImageForm) }}
+            {{ form_rest(uploadImageForm) }}
+            <input type="submit" value="Envoyer" />
+        {{ form_end(uploadImageForm) }}
+    </section>
+
     <section>
         <h1>
             Modifier le texte de la page 

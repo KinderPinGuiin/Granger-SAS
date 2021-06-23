@@ -40,7 +40,7 @@ window.addEventListener("load", () => {
                 error: (e) => {
                     console.log(e)
                 }
-            });
+            })
         })
     }
 
@@ -55,19 +55,45 @@ window.addEventListener("load", () => {
                 url: "/images",
                 success: (data) => {
                     container.querySelector(".loader").style.display = "none"
-                    let imageElement, i
+                    let imageContainer, imageElement, deleteButton, i
                     for (i in data) {
+                        deleteButton = document.createElement("button")
+                        deleteButton.setAttribute("data-id", i)
+                        deleteButton.innerHTML = "Supprimer"
+                        deleteButton.addEventListener("click", e => {
+                            deleteImage(e.target)
+                        })
+
                         imageElement = document.createElement("img")
                         imageElement.setAttribute("src", data[i].url)
                         imageElement.setAttribute("alt", data[i].alt)
                         imageElement.setAttribute("width", "100px")
-                        container.querySelector(".images").appendChild(imageElement)
+
+                        imageContainer = document.createElement("div")
+                        imageContainer.classList.add("image")
+
+                        imageContainer.appendChild(imageElement)
+                        imageContainer.appendChild(deleteButton)
+                        document.querySelector(".images").appendChild(imageContainer)
                     }
                 },
                 error: (e) => {
                     console.log(e)
                 }
-            });
+            })
+        })
+    }
+
+    function deleteImage(buttonClicked) {
+        $.ajax({
+            type: "POST",
+            url: "/image/delete/" + buttonClicked.dataset.id,
+            success: (data) => {
+                buttonClicked.parentElement.remove()
+            },
+            error: (e) => {
+                console.log(e)
+            }
         })
     }
 

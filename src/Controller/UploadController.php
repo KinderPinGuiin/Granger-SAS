@@ -72,9 +72,9 @@ class UploadController extends AbstractController
         // Si l'utilisateur n'est pas connecté on le redirige sur la page de
         // connexion
         if (empty($this->getUser())) {
-            return new RedirectResponse(
-                $this->urlGenerator->generate("login") . "?redirect=upload"
-            );
+            // On définit les variables de redirection
+            $this->get("session")->set("redirect", "upload");
+            return new RedirectResponse($this->urlGenerator->generate("login"));
         }
         // Si l'utilisateur a déjà une candidature en cours on lui affiche un message
         if (!empty(

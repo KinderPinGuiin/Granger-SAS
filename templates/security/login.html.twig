@@ -3,7 +3,7 @@
 {% block title %}Connexion{% endblock %}
 {% block stylesheets %}<link href="/css/login/style.css" rel="stylesheet">{% endblock %}
 
-{% block body %}*
+{% block body %}
 <div class="login_container">
 <img class="login_arrow" src="/img/login/login_arrow.svg" alt="login arrow">
 <form class="login_form" method="post">
@@ -26,5 +26,5 @@
         <p class="login_error">⚠️ Adresse e-mail ou mot de passe invalide</p>
     {% endif %}
 </form>
-<div>
+</div>
 {% endblock %}

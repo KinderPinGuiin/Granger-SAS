@@ -42,6 +42,17 @@ body {
     background-attachment: fixed;
 }
 
+.transition-fade {
+    transition: 0.2s;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+html.is-animating .transition-fade {
+    opacity: 0;
+    transform: translateX(50px);
+}
+
 .hidden {
     display: none;
 }

@@ -12,14 +12,19 @@
             {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
 
-        <script src="/js/constants.js" defer></script>
+        <script src="/js/global/constants.js" defer></script>
+        <script src="https://unpkg.com/swup@latest/dist/swup.min.js" defer></script>
+        <script src="/js/global/swup_plugin.js" defer></script>
+        <script src="/js/global/swup_head.js" defer></script>
+        <script src="/js/global/swup.js" defer></script>
         {% block javascripts %}
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
     </head>
     <body>
         {% include "require/header.html.twig" %}
-        {% block body %}
-        {% endblock %}
+        <div id="swup" class="transition-fade">
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>

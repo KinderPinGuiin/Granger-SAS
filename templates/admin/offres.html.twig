@@ -34,7 +34,7 @@
                         <div class="offre" data-search="true" data-id="{{ offre.id }}">
                             Offre : {{ offre.name }} |
                             <label for="online">En ligne : </label>
-                            <input id="online" type="checkbox" {% if offre.online == 1 %}checked{% endif %} />
+                            <input id="online" type="checkbox" {% if offre.online %}checked{% endif %} />
                             <a href="{{ path("admin_offres_update", {id: offre.id}) }}">Modifier l'offre</a>
                             <a href="{{ path("admin_offres_delete", {id: offre.id}) }}">Supprimer l'offre</a>
                         </div>

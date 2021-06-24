@@ -12,7 +12,7 @@ function setOnline(e) {
         data: {
             "onlineValue": e.target.parentElement.querySelector("#online").checked
         },
-        success: data => console.log(data),
+        success: data => console.info(data),
         error: err => console.warn(err)
     })
 }

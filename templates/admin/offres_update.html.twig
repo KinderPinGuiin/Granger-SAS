@@ -10,5 +10,9 @@
 {% endblock %}
 
 {% block body %}
-    
+    {% form_theme updateForm "forms/global/global_form_template.html.twig" %}
+    {{ form_start(updateForm) }}
+        {{ form_rest(updateForm) }}
+        <input type="submit" value="Modifier l'offre" />
+    {{ form_end(updateForm) }}
 {% endblock %}

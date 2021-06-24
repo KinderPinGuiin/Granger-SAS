@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
 use App\Form\ImageType;
+use App\Form\UpdateOffreType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
@@ -587,6 +588,7 @@ class AdminController extends AbstractController {
         $this->em->persist($offre);
         $this->em->flush();
 
+        // Et on redirige sur l'update pour la modifier
         return new RedirectResponse($this->generateUrl("admin_offres_update", [
             "id" => $offre->getId()
         ]));
@@ -602,9 +604,28 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
+        // On trouve l'offre
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // Si elle n'existe pas on redirige l'utilisateur
+        if (empty($offre)) {
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
+        // On créé le formulaire
+        $form = $this->createForm(UpdateOffreType::class, $offre[0]);
+        $form->handleRequest($req);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Si le formulaire est valide on modifie l'offre
+            $this->em->flush();
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
 
         return $this->render("admin/offres_update.html.twig", [
-            "offre" => $this->offreRepository->findBy(["id" => $id])
+            "offre" => $offre[0],
+            "updateForm" => $form->createView()
         ]);
     }
 
@@ -626,12 +647,12 @@ class AdminController extends AbstractController {
             $this->em->flush();
 
             return $this->render("admin/offres.html.twig", [
-                "offres" => $this->offreRepository->findAll()
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
             ]);
         } else if (empty($offre)) {
             // Si l'offre est vide on renvoie sur la page des offres
             return $this->render("admin/offres.html.twig", [
-                "offres" => $this->offreRepository->findAll()
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
             ]);
         }
 

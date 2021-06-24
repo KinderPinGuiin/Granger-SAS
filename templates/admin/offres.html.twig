@@ -7,6 +7,13 @@
 
 {% block javascripts %}
     <script src="/js/admin/search_bar.js" defer></script>
+    <noscript>
+        <style>
+            #online, label[for="online"] {
+                display: none;
+            }
+        </style>
+    </noscript>
 {% endblock %}
 
 {% block body %}

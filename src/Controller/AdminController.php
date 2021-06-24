@@ -544,6 +544,11 @@ class AdminController extends AbstractController {
 
     /**
      * @Route("/offres", name="_offres")
+<<<<<<< HEAD
+=======
+     * 
+     * @return mixed RedirectResponse ou Response
+>>>>>>> master
      */
     public function offresEmploi(Request $req)
     {
@@ -586,12 +591,8 @@ class AdminController extends AbstractController {
             case "admin_postes_add_GET":
             case "admin_postes_delete":
                 return in_array("ROLE_ADMIN", $userRoles);
-
+            
             case "admin_offres":
-                return in_array("ROLE_ADMIN", $userRoles)
-                    || in_array("ROLE_EDITOR", $userRoles)
-                    || in_array("ROLE_RH", $userRoles);
-
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

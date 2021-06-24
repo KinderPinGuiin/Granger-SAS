@@ -4,7 +4,7 @@
     display: none;
     width: 50%;
     height: 50vh;
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -94,7 +94,9 @@
 
 .image_manager .images_container .images {
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .image_manager .images_container .images .image {

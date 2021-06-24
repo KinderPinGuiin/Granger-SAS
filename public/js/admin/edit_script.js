@@ -26,31 +26,64 @@ window.addEventListener("load", () => {
         "Bouton ajouter une image", "Ajouter une image", displayImageManager
     )
 
-    function displayImageManager() {
-        const container = document.querySelector(".image_manager")
-        // On ajoute les event listeners
-        container.querySelector(".upload_btn_container button").addEventListener("click", () => {
-            switchUpload(container)
-        })
-        container.querySelector(".select_btn_container button").addEventListener("click", () => {
+    // On séléctionne l'image manager
+    const container = document.querySelector(".image_manager")
+    // On ajoute les event listeners
+    container.querySelector(".upload_btn_container button").addEventListener("click", () => {
+        switchUpload(container)
+    })
+    container.querySelector(".select_btn_container button").addEventListener("click", () => {
+        switchSelect(container)
+    })
+    container.querySelector(".add_btn_container button").addEventListener("click", e => {
+        e.stopPropagation()
+        const selectedImage = document.querySelector(".image[data-selected='true'] img")
+        // Création de la figure
+        let figure = document.createElement("figure")
+        figure.style.display = "flex"
+        figure.style.justifyContent = "center"
+        figure.style.alignItems = "center"
+        figure.style.flexDirection = "column-reverse"
+        // Création du figcaption
+        let figcaption = document.createElement("figcaption")
+        figcaption.innerHTML = selectedImage.getAttribute("alt")
+        figure.appendChild(figcaption)
+        // Création de l'image
+        let appendImage = selectedImage.cloneNode()
+        if (
+            parseInt(selectedImage.dataset.originalWidth)
+            >= parseInt(selectedImage.dataset.originalHeight)
+        ) {
+            appendImage.style.width = "60%"
+            appendImage.style.height = "auto"
+        } else {
+            appendImage.style.height = "30vh"
+            appendImage.style.width = "auto"
+        }
+        // On ajoute l'image à l'éditeur
+        figure.appendChild(appendImage)
+        wysiwygAbout.editor.appendChild(figure)
+        wysiwygAbout.editor.innerHTML += "<br/>"
+        // On remet l'image manager en forme et on le fait disparaitre
+        container.querySelector(".add_btn_container").style.display = "none"
+        switchSelect(container)
+        container.style.display = "none"
+    })
+    document.querySelector(".upload_image_container form").addEventListener("submit", e => {
+        e.preventDefault()
+        uploadImage(".upload_image_container form", () => {
             switchSelect(container)
+            listImage(container.querySelector(".images_container"), () => bindEventsOnImages(container))
+        }, e => {
+            document.querySelector(".upload_image_container form").innerHTML +=
+                "<div class='error'>" + e.responseJSON.error + "</div>"
         })
-        container.querySelector(".add_btn_container button").addEventListener("click", () => {
-            wysiwygAbout.editor.appendChild(document.querySelector(".image[data-selected='true'] img"))
-        })
-        document.querySelector(".upload_image_container form").addEventListener("submit", e => {
-            e.preventDefault()
-            uploadImage(".upload_image_container form", () => {
-                switchSelect(container)
-                listImage(container.querySelector(".images_container"), () => bindEventsOnImages(container))
-            }, e => {
-                document.querySelector(".upload_image_container form").innerHTML +=
-                    "<div class='error'>" + e.responseJSON.error + "</div>"
-            })
-        })
-        document.querySelector(".image_manager > .close_button").addEventListener("click", () => {
-            container.style.display = "none"
-        })
+    })
+    document.querySelector(".image_manager > .close_button").addEventListener("click", () => {
+        container.style.display = "none"
+    })
+
+    function displayImageManager() {
         // On affiche la pop-up
         container.style.display = "block"
         // On liste les images
@@ -74,6 +107,7 @@ window.addEventListener("load", () => {
     function uploadImage(formSelector, success, failure) {
         // On gère l'upload d'image
         let data = new FormData(document.querySelector(formSelector))
+        console.info("Upload en cours")
         $.ajax({
             type: "POST",
             enctype: 'multipart/form-data',
@@ -125,7 +159,7 @@ window.addEventListener("load", () => {
                 }
                 container.setAttribute("data-status", "show")
                 if (callback instanceof Function) {
-                    callback()
+                    callback.call()
                 }
             },
             error: (e) => {
@@ -145,7 +179,6 @@ window.addEventListener("load", () => {
 
     function bindEventsOnImages(container) {
         // On ajoute les events sur les images
-        let images = container.querySelectorAll(".images_container .image")
         container.querySelector(".images_container").addEventListener("click", () => {
             document.querySelector(".image_manager .add_btn_container")
                 .style.display = "none"
@@ -156,6 +189,7 @@ window.addEventListener("load", () => {
                 image.style.outline = "none"
             })
         })
+        let images = container.querySelectorAll(".images_container .image")
         images.forEach(image => {
             image.addEventListener("click", e => {
                 imageFocus(e, images, image)

@@ -12,6 +12,7 @@ use App\Form\ImageType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use App\Repository\OffreRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -49,11 +50,16 @@ class AdminController extends AbstractController {
     private $posteRepository;
 
     /**
+     * @var OffreRepository
+     */
+    private $offreRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, OffreRepository $oRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -63,6 +69,7 @@ class AdminController extends AbstractController {
         $this->candidRepository = $cRepository;
         $this->contentRepository = $coRepository;
         $this->posteRepository = $pRep;
+        $this->offreRepository = $oRep;
         $this->em = $em;
     }
 
@@ -553,7 +560,25 @@ class AdminController extends AbstractController {
             return $this->redirectToRoute("home");
         }
 
-        return $this->render("admin/offres.html.twig");
+        return $this->render("admin/offres.html.twig", [
+            "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+        ]);
+    }
+
+    /**
+     * @Route("/offres/update/{id}", name="_offres_update")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function updateOffre(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/offres_update.html.twig", [
+            "offre" => $this->offreRepository->findBy(["id" => $id])
+        ]);
     }
 
     /**
@@ -590,6 +615,7 @@ class AdminController extends AbstractController {
                 return in_array("ROLE_ADMIN", $userRoles);
             
             case "admin_offres":
+            case "admin_offres_update":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

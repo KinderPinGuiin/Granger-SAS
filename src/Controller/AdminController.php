@@ -2,26 +2,28 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Entity\Offre;
 use App\Entity\Poste;
+use App\Form\ImageType;
 use App\Utils\Constants;
+use App\Form\UpdateOffreType;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
+use App\Repository\OffreRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
-use App\Form\ImageType;
-use App\Form\UpdateOffreType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
-use App\Repository\OffreRepository;
-use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/admin", name="admin")
@@ -630,6 +632,42 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/offres/set-online/{id}", name="_offres_set_online")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function setOffreOnline(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // Si l'offre n'existe pas on renvoie une erreur
+        if (empty($offre)) {
+            return new JsonResponse(
+                ["error" => "Offre inexistante"], 
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+        // On edit l'offre
+        $value = $req->get("onlineValue");
+        if (!empty($req->get("onlineValue")) && ($value == "true" || $value == "false")) {
+            $offre[0]->setOnline($value == "true");
+            $this->em->flush();
+
+            return new JsonResponse(
+                ["message" => "Statut changé", "value" => $value == "true"],
+                Response::HTTP_OK
+            );
+        }
+
+        return new JsonResponse(
+            ["error" => "Données invalides"], 
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    /**
      * @Route("/offres/delete/{id}", name="_offres_delete")
      * 
      * @return mixed RedirectResponse ou Response
@@ -700,6 +738,7 @@ class AdminController extends AbstractController {
             case "admin_offres_update":
             case "admin_offres_delete":
             case "admin_offres_add":
+            case "admin_offres_set_online":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

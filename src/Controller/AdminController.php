@@ -543,6 +543,18 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/offres", name="_offres")
+     */
+    public function offresEmploi(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/offres.html.twig");
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -574,6 +586,11 @@ class AdminController extends AbstractController {
             case "admin_postes_add_GET":
             case "admin_postes_delete":
                 return in_array("ROLE_ADMIN", $userRoles);
+
+            case "admin_offres":
+                return in_array("ROLE_ADMIN", $userRoles)
+                    || in_array("ROLE_EDITOR", $userRoles)
+                    || in_array("ROLE_RH", $userRoles);
 
             default:
                 return in_array("ROLE_ADMIN", $userRoles)

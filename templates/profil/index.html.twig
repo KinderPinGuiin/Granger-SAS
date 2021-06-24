@@ -47,7 +47,20 @@
     </section>
     {# Modifier les informations #}
     <section>
-        
+        <h2>Modifier vos informations</h2>
+        {% form_theme updateForm "forms/registration/register_form_template.html.twig" %}
+        {{ form_start(updateForm) }}
+            {{ form_row(updateForm.plainPassword.first, {
+                "label": "Entrez un nouveau mot de passe",
+                "required": false
+            }) }}
+            {{ form_row(updateForm.plainPassword.second, {
+                "label": "Confirmez le nouveau mot de passe",
+                "required": false
+            }) }}
+            {{ form_rest(updateForm) }}
+            <input type="submit" value="Modifier" />
+        {{ form_end(updateForm) }}
     </section>
     {# Bouton suppression #}
     <a href="{{ path("profil_delete") }}">Supprimer le compte</a>

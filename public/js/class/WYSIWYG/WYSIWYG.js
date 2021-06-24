@@ -56,11 +56,7 @@ class WYSIWYG {
             },
             "title": {
                 apply: () => {
-                    document.execCommand("formatBlock", false, "h1")
-                    // On ajoute une ligne vide à la fin du conteneur
-                    // pour ne pas rester bloqué dans le bloc
-                    this.editor.innerHTML = this.editor.innerHTML.trim()
-                    this.editor.innerHTML += "<br/>"
+                    document.execCommand("insertHTML", false, "<h1>Votre titre</h1>")
                 },
                 logo: classPath + "logos/title.png",
                 logoAlt: "Bloc de code",

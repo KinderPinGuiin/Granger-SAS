@@ -544,11 +544,8 @@ class AdminController extends AbstractController {
 
     /**
      * @Route("/offres", name="_offres")
-<<<<<<< HEAD
-=======
      * 
      * @return mixed RedirectResponse ou Response
->>>>>>> master
      */
     public function offresEmploi(Request $req)
     {

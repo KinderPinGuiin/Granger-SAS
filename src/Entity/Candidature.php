@@ -35,9 +35,13 @@ class Candidature
 
     /**
      * @ORM\ManyToOne(targetEntity=Poste::class)
-     * @ORM\JoinColumn(nullable=false)
      */
     private $poste;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Offre::class, inversedBy="candidatures")
+     */
+    private $offre;
 
     public function getId(): ?int
     {
@@ -88,6 +92,18 @@ class Candidature
     public function setPoste(?Poste $poste): self
     {
         $this->poste = $poste;
+
+        return $this;
+    }
+
+    public function getOffre(): ?Offre
+    {
+        return $this->offre;
+    }
+
+    public function setOffre(?Offre $offre): self
+    {
+        $this->offre = $offre;
 
         return $this;
     }

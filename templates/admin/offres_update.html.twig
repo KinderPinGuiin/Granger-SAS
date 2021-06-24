@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Gérer les offres d'emploi{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/admin/search_bar.js" defer></script>
+{% endblock %}
+
+{% block body %}
+    {% form_theme updateForm "forms/global/global_form_template.html.twig" %}
+    {{ form_start(updateForm) }}
+        {{ form_rest(updateForm) }}
+        <input type="submit" value="Modifier l'offre" />
+    {{ form_end(updateForm) }}
+{% endblock %}

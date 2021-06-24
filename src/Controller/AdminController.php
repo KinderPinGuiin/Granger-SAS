@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Offre;
 use App\Entity\Poste;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
@@ -9,14 +10,18 @@ use App\Repository\UserRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
 use App\Form\ImageType;
+use App\Form\UpdateOffreType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use App\Repository\OffreRepository;
+use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * @Route("/admin", name="admin")
@@ -49,11 +54,16 @@ class AdminController extends AbstractController {
     private $posteRepository;
 
     /**
+     * @var OffreRepository
+     */
+    private $offreRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, OffreRepository $oRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -63,6 +73,7 @@ class AdminController extends AbstractController {
         $this->candidRepository = $cRepository;
         $this->contentRepository = $coRepository;
         $this->posteRepository = $pRep;
+        $this->offreRepository = $oRep;
         $this->em = $em;
     }
 
@@ -544,11 +555,8 @@ class AdminController extends AbstractController {
 
     /**
      * @Route("/offres", name="_offres")
-<<<<<<< HEAD
-=======
      * 
      * @return mixed RedirectResponse ou Response
->>>>>>> master
      */
     public function offresEmploi(Request $req)
     {
@@ -556,7 +564,103 @@ class AdminController extends AbstractController {
             return $this->redirectToRoute("home");
         }
 
-        return $this->render("admin/offres.html.twig");
+        return $this->render("admin/offres.html.twig", [
+            "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+        ]);
+    }
+
+    /**
+     * @Route("/offres/add", name="_offres_add")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function addOffre(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On créé l'offre
+        $offre = new Offre();
+        $offre->setName("Sans nom")
+            ->setContent("")
+            ->setDate(new DateTime())
+            ->setOnline(false);
+        $this->em->persist($offre);
+        $this->em->flush();
+
+        // Et on redirige sur l'update pour la modifier
+        return new RedirectResponse($this->generateUrl("admin_offres_update", [
+            "id" => $offre->getId()
+        ]));
+    }
+
+    /**
+     * @Route("/offres/update/{id}", name="_offres_update")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function updateOffre(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On trouve l'offre
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // Si elle n'existe pas on redirige l'utilisateur
+        if (empty($offre)) {
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
+        // On créé le formulaire
+        $form = $this->createForm(UpdateOffreType::class, $offre[0]);
+        $form->handleRequest($req);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Si le formulaire est valide on modifie l'offre
+            $this->em->flush();
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
+
+        return $this->render("admin/offres_update.html.twig", [
+            "offre" => $offre[0],
+            "updateForm" => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/offres/delete/{id}", name="_offres_delete")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function deleteOffre(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // On vérifie si l'utilisateur a confirmé et que l'offre existe
+        if ($req->get("confirm") == true && !empty($offre)) {
+            // Si oui on supprime l'offre
+            $this->em->remove($offre[0]);
+            $this->em->flush();
+
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        } else if (empty($offre)) {
+            // Si l'offre est vide on renvoie sur la page des offres
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
+
+        // Sinon on affiche la page avec un message de confirmation
+        return $this->render("admin/offres.html.twig", [
+            "delete" => true,
+            "offre" => $offre[0]
+        ]);
     }
 
     /**
@@ -593,6 +697,9 @@ class AdminController extends AbstractController {
                 return in_array("ROLE_ADMIN", $userRoles);
             
             case "admin_offres":
+            case "admin_offres_update":
+            case "admin_offres_delete":
+            case "admin_offres_add":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

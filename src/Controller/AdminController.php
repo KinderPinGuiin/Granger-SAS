@@ -582,6 +582,40 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/offres/delete/{id}", name="_offres_delete")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function deleteOffre(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // On vérifie si l'utilisateur a confirmé et que l'offre existe
+        if ($req->get("confirm") == true && !empty($offre)) {
+            // Si oui on supprime l'offre
+            $this->em->remove($offre[0]);
+            $this->em->flush();
+
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findAll()
+            ]);
+        } else if (empty($offre)) {
+            // Si l'offre est vide on renvoie sur la page des offres
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findAll()
+            ]);
+        }
+
+        // Sinon on affiche la page avec un message de confirmation
+        return $this->render("admin/offres.html.twig", [
+            "delete" => true,
+            "offre" => $offre[0]
+        ]);
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -616,6 +650,7 @@ class AdminController extends AbstractController {
             
             case "admin_offres":
             case "admin_offres_update":
+            case "admin_offres_delete":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

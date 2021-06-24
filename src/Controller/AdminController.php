@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Offre;
 use App\Entity\Poste;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
@@ -13,11 +14,13 @@ use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
 use App\Repository\OffreRepository;
+use DateTime;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * @Route("/admin", name="admin")
@@ -566,6 +569,30 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/offres/add", name="_offres_add")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function addOffre(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On créé l'offre
+        $offre = new Offre();
+        $offre->setName("Sans nom")
+            ->setContent("")
+            ->setDate(new DateTime())
+            ->setOnline(false);
+        $this->em->persist($offre);
+        $this->em->flush();
+
+        return new RedirectResponse($this->generateUrl("admin_offres_update", [
+            "id" => $offre->getId()
+        ]));
+    }
+
+    /**
      * @Route("/offres/update/{id}", name="_offres_update")
      * 
      * @return mixed RedirectResponse ou Response
@@ -651,6 +678,7 @@ class AdminController extends AbstractController {
             case "admin_offres":
             case "admin_offres_update":
             case "admin_offres_delete":
+            case "admin_offres_add":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

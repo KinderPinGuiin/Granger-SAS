@@ -32,6 +32,11 @@ class Offre
      */
     private $date;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $online;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +74,18 @@ class Offre
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getOnline(): ?bool
+    {
+        return $this->online;
+    }
+
+    public function setOnline(bool $online): self
+    {
+        $this->online = $online;
 
         return $this;
     }

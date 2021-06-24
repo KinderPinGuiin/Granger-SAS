@@ -39,6 +39,11 @@ class Offre
      */
     private $candidatures;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $online;
+
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
@@ -99,6 +104,18 @@ class Offre
             $this->candidatures[] = $candidature;
             $candidature->setOffre($this);
         }
+
+        return $this;
+    }
+
+    public function getOnline(): bool
+    {
+        return $this->online;
+    }
+
+    public function setOnline(bool $online): self
+    {
+        $this->online = $online;
 
         return $this;
     }

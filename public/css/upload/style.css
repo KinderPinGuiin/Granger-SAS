@@ -73,10 +73,8 @@ form select {
 }
 
 form input[type="submit"] {
-    position: absolute;
-    top: 100%;
-    left: 80%;
-    margin: 15px;
+    align-self: flex-end;
+    margin: 30px calc((100% - 40vw * 2 - 4 * 5px) / 2) 0 0;
     padding: 15px;
     background-color: #DA3832;
     color: white;
@@ -120,6 +118,7 @@ form input[type="submit"]:hover {
     }
 
     form input[type="submit"] {
-        position: static;
+        align-self: center;
+        margin: 15px;
     }
 }

@@ -26,7 +26,9 @@ class OffreController extends AbstractController
     public function offres(): Response
     {
         return $this->render('offre/offres.html.twig', [
-            "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            "offres" => $this->offreRepository->findBy(
+                ["online" => 1], ["date" => "DESC"]
+            )
         ]);
     }
 

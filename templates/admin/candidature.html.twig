@@ -12,7 +12,14 @@
         <p>Cet utilisateur n'a pas déposé de pièces</p>
     {% else %}
         {% if view == "candidature" %}            
-            <h1>Candidature de {{ candidat.prenom }} {{ candidat.nom }} pour le poste {{ candidature.poste.name }}</h1>
+            <h1>
+                Candidature de {{ candidat.prenom }} {{ candidat.nom }} pour
+                {% if candidature.poste is not null %}
+                    le poste {{ candidature.poste.name }}
+                {% else %}
+                    l'offre {{ candidature.offre.name }}
+                {% endif %}
+            </h1>
             {{ form_start(form) }}
                 {{ form_rest(form) }}
                 <input type="submit" value="Envoyer la réponse" />
@@ -36,7 +43,13 @@
                             <tr>
                                 <td>{{ candidature.date|date("d/m/Y") }}</td>
                                 <td>{% if candidature.acceptee %} Acceptée {% else %} Refusée {% endif %}</td>
-                                <td>{{ candidature.poste.name }}</td>
+                                <td>
+                                    {% if candidature.poste is not null %}
+                                        {{ candidature.poste.name }}
+                                    {% else %}
+                                        {{ candidature.offre.name }}
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     {% endif %}

@@ -30,7 +30,15 @@
                                     Refusée
                                 {% endif %}
                             </td>
-                            <td>{{ candidature.poste.name }}</td>
+                            <td>
+                                {% if candidature.poste is not null %}
+                                    {{ candidature.poste.name }}
+                                {% else %}
+                                    <a href="{{ path("offre", {id: candidature.offre.id}) }}">
+                                        {{ candidature.offre.name }}
+                                    </a>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 {% else %}

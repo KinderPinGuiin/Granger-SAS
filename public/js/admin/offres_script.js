@@ -1,7 +1,6 @@
 // Mettre en ligne une offre directement depuis la page des offres
-document.querySelectorAll("label[for='online']").forEach(label => {
-    document.querySelector("#online")
-        .addEventListener("click", setOnline)
+document.querySelectorAll("#online").forEach(checkbox => {
+    checkbox.addEventListener("change", setOnline)
 })
 
 function setOnline(e) {

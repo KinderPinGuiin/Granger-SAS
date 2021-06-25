@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offre d'emploi : {{ offre.name }}{% endblock %}
+
+{% block body %}
+    <header>
+        <h1>Offre {{ offre.name }}</h1>
+        <em>Postée le {{ offre.date|date("d/m/Y à H:i:s") }}</em>
+    </header>
+    <section class="content">
+        {{ offre.content|raw }}
+    </section>
+    <a href="{{ path("upload_offre", {id: offre.id}) }}">Postuler pour cette offre</a>
+{% endblock %}

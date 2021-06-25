@@ -6,13 +6,15 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="/js/admin/search_bar.js" defer></script>
+    <script src="/js/class/WYSIWYG/WYSIWYG.js" defer></script>
+    <script src="/js/admin/offres_update_script.js" defer></script>
 {% endblock %}
 
 {% block body %}
     {% form_theme updateForm "forms/global/global_form_template.html.twig" %}
-    {{ form_start(updateForm) }}
+    {{ form_start(updateForm, {"attr": {"class": "update_form"}}) }}
         {{ form_rest(updateForm) }}
+        <div class="WYSIWYG WYSIWYG_accueil"></div>
         <input type="submit" value="Modifier l'offre" />
     {{ form_end(updateForm) }}
 {% endblock %}

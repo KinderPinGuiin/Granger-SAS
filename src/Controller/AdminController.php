@@ -2,26 +2,29 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Entity\Offre;
 use App\Entity\Poste;
+use App\Form\ImageType;
 use App\Utils\Constants;
+use App\Form\UpdateOffreType;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
+use App\Repository\OffreRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
-use App\Form\ImageType;
-use App\Form\UpdateOffreType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
-use App\Repository\OffreRepository;
-use DateTime;
+use Google\Service\AdExchangeBuyerII\Date;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/admin", name="admin")
@@ -589,9 +592,9 @@ class AdminController extends AbstractController {
         $this->em->flush();
 
         // Et on redirige sur l'update pour la modifier
-        return new RedirectResponse($this->generateUrl("admin_offres_update", [
+        return $this->redirectToRoute("admin_offres_update", [
             "id" => $offre->getId()
-        ]));
+        ]);
     }
 
     /**
@@ -617,16 +620,55 @@ class AdminController extends AbstractController {
         $form->handleRequest($req);
         if ($form->isSubmitted() && $form->isValid()) {
             // Si le formulaire est valide on modifie l'offre
+            $offre[0]->setDate(new DateTime());
             $this->em->flush();
-            return $this->render("admin/offres.html.twig", [
-                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
-            ]);
+            return $this->redirectToRoute("admin_offres");
         }
 
         return $this->render("admin/offres_update.html.twig", [
             "offre" => $offre[0],
             "updateForm" => $form->createView()
         ]);
+    }
+
+    /**
+     * @Route("/offres/set-online/{id}", name="_offres_set_online")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function setOffreOnline(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // Si l'offre n'existe pas on renvoie une erreur
+        if (empty($offre)) {
+            return new JsonResponse(
+                ["error" => "Offre inexistante"], 
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+        // On edit l'offre
+        $value = $req->get("onlineValue");
+        if (!empty($req->get("onlineValue")) && ($value == "true" || $value == "false")) {
+            $offre[0]->setOnline($value == "true");
+            if ($value == "true") {
+                // Si l'offre est (re)mise en ligne on met à jour sa date
+                $offre[0]->setDate(new DateTime());
+            }
+            $this->em->flush();
+
+            return new JsonResponse(
+                ["message" => "Statut changé", "value" => $value == "true"],
+                Response::HTTP_OK
+            );
+        }
+
+        return new JsonResponse(
+            ["error" => "Données invalides"], 
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
     }
 
     /**
@@ -700,6 +742,7 @@ class AdminController extends AbstractController {
             case "admin_offres_update":
             case "admin_offres_delete":
             case "admin_offres_add":
+            case "admin_offres_set_online":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

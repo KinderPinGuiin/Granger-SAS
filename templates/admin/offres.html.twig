@@ -7,6 +7,7 @@
 
 {% block javascripts %}
     <script src="/js/admin/search_bar.js" defer></script>
+    <script src="/js/admin/offres_script.js" defer></script>
     <noscript>
         <style>
             #online, label[for="online"] {
@@ -27,13 +28,11 @@
                     <h2>Il n'y a pas d'offres pour le moment</h2>
                 {% else %}
                     {% for offre in offres %}
-                        {# Ajout d'une offre #}
-                        <button>Ajouter une offre</button>
                         {# Offres déjà existantes #}
                         <div class="offre" data-search="true" data-id="{{ offre.id }}">
                             Offre : {{ offre.name }} |
                             <label for="online">En ligne : </label>
-                            <input id="online" type="checkbox" {% if offre.online == 1 %}checked{% endif %} />
+                            <input id="online" type="checkbox" {% if offre.online %}checked{% endif %} />
                             <a href="{{ path("admin_offres_update", {id: offre.id}) }}">Modifier l'offre</a>
                             <a href="{{ path("admin_offres_delete", {id: offre.id}) }}">Supprimer l'offre</a>
                         </div>

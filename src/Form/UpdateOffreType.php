@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Offre;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,8 +15,10 @@ class UpdateOffreType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('content')
-            ->add('online', CheckboxType::class)
+            ->add('content', HiddenType::class, [
+                "attr" => ["class" => "content"]
+            ])
+            ->add('online', CheckboxType::class, ["required" => false])
         ;
     }
 

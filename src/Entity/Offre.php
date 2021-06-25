@@ -43,7 +43,7 @@ class Offre
 
     /**
      * @ORM\Column(type="boolean")
-     * @Assert\Type(min="bool")
+     * @Assert\Type("bool")
      */
     private $online;
 

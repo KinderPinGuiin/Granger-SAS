@@ -28,8 +28,6 @@
                     <h2>Il n'y a pas d'offres pour le moment</h2>
                 {% else %}
                     {% for offre in offres %}
-                        {# Ajout d'une offre #}
-                        <button>Ajouter une offre</button>
                         {# Offres déjà existantes #}
                         <div class="offre" data-search="true" data-id="{{ offre.id }}">
                             Offre : {{ offre.name }} |

@@ -1,10 +1,11 @@
+// Mettre en ligne une offre directement depuis la page des offres
 document.querySelectorAll("label[for='online']").forEach(label => {
-    label.addEventListener("click", setOnline)
     document.querySelector("#online")
         .addEventListener("click", setOnline)
 })
 
 function setOnline(e) {
+    e.stopPropagation()
     const offreId = e.target.parentElement.dataset.id
     $.ajax({
         type: "GET",

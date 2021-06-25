@@ -42,12 +42,22 @@
                         {% for candidature in candidatures %}
                             <tr>
                                 <td>{{ candidature.date|date("d/m/Y") }}</td>
-                                <td>{% if candidature.acceptee %} Acceptée {% else %} Refusée {% endif %}</td>
+                                <td>
+                                    {% if candidature.acceptee == true %} 
+                                        Acceptée
+                                    {% elseif candidature.acceptee is null %} 
+                                        En cours de traitement
+                                    {% elseif candidature.acceptee == false %} 
+                                        Refusée
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if candidature.poste is not null %}
                                         {{ candidature.poste.name }}
                                     {% else %}
-                                        {{ candidature.offre.name }}
+                                        <a href="{{ path("offre", {id: candidature.offre.id}) }}">
+                                            {{ candidature.offre.name }}
+                                        </a>
                                     {% endif %}
                                 </td>
                             </tr>

@@ -9,6 +9,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class UploadType extends AbstractType
 {
@@ -42,6 +44,8 @@ class UploadType extends AbstractType
                 "label" => "Déposer un CV",
                 "mapped" => false,
                 "constraints" => [
+                    new NotBlank(),
+                    new NotNull(),
                     new File([
                         "maxSize" => "3M",
                         "mimeTypes" => [
@@ -57,6 +61,8 @@ class UploadType extends AbstractType
                 "label" => "Déposer une lettre de motivation",
                 "mapped" => false,
                 "constraints" => [
+                    new NotBlank(),
+                    new NotNull(),
                     new File([
                         "maxSize" => "3M",
                         "mimeTypes" => [

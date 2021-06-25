@@ -70,8 +70,13 @@ class UserSubscriber implements EventSubscriberInterface
         if ($this->user && $redirect !== null) {
             // On redirige l'utilisateur là où il souhaite aller
             $session->set("redirect", null);
+            $params = [];
+            if (!empty($session->get("params"))) {
+                $params = $session->get("params");
+                $session->set("params", null);
+            }
             return $event->setResponse(new RedirectResponse(
-                $this->urlGen->generate($redirect)
+                $this->urlGen->generate($redirect, $params)
             ));
         }
     }

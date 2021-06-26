@@ -118,7 +118,7 @@ class UploadController extends AbstractController
         // Si l'offre n'existe pas on redirige l'utilisateur à la page des 
         // offres
         $offre = $this->offreRepository->findBy(["id" => $offreID]);
-        if (empty($offre)) {
+        if (empty($offre) || !$offre[0]->getOnline()) {
             return $this->redirectToRoute("offres");
         }
         $form = $commonHandle["form"];

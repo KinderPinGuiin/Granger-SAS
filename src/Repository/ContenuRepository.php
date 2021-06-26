@@ -19,6 +19,20 @@ class ContenuRepository extends ServiceEntityRepository
         parent::__construct($registry, Contenu::class);
     }
 
+    /**
+     * Renvoie les contenus des mails d'acceptation et de refus
+     * 
+     * @return Contenu[]
+     */
+    public function getMailsContent()
+    {
+        return $this->createQueryBuilder("c")
+            ->orWhere("c.page = 'accept_mail'")
+            ->orWhere("c.page = 'deny_mail'")
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Contenu[] Returns an array of Contenu objects
     //  */

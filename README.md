@@ -34,7 +34,7 @@ class Constants {
     const PUBLIC_FOLDER = self::ROOT . "public/";
 
     // ID du dossier racine Google Drive
-    const ID_DRIVE_ROOT = "Identifiant de votre dossier Google Drive";
+    const ID_DRIVE_ROOT = "Identifiant de votre dossier";
 
     // Nom du dossier de CV
     const CV_FOLDER_NAME = "CV";

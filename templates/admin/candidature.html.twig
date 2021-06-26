@@ -30,10 +30,10 @@
                 {{ form_row(form.message, {attr: {class: "content"}}) }}
                 <div class="WYSIWYG"></div>
                 <span class="hidden accept_content">
-                    {{ mailsContent[0].content }}
+                    {{ mailsContent[0].content|raw }}
                 </span>
                 <span class="hidden deny_content">
-                    {{ mailsContent[1].content }}
+                    {{ mailsContent[1].content|raw }}
                 </span>
                 <input type="submit" value="Envoyer la réponse" />
             {{ form_end(form) }}

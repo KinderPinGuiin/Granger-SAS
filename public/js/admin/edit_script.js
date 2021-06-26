@@ -11,6 +11,14 @@ window.addEventListener("load", () => {
         ".WYSIWYG_about", CLASS_FOLDER + "WYSIWYG/",
         [], document.querySelector(".aboutContent").innerHTML
     )
+    new WYSIWYG(
+        ".WYSIWYG_accept_mail", CLASS_FOLDER + "WYSIWYG/",
+        [], document.querySelector(".acceptMailContent").innerHTML
+    )
+    new WYSIWYG(
+        ".WYSIWYG_deny_mail", CLASS_FOLDER + "WYSIWYG/",
+        [], document.querySelector(".denyMailContent").innerHTML
+    )
 
     // On gère la soumission du formulaire pour remplir les input hidden
     document.querySelectorAll(".edit_form").forEach(form => {

@@ -72,4 +72,28 @@
             <input type="submit" value="Modifier la page" />
         </form>
     </section>
+
+    <section>
+        <h1>
+            Modifier le texte du mail d'acceptation :
+        </h1>
+        <form action="#" method="POST" class="edit_form">
+            <div class="WYSIWYG WYSIWYG_accept_mail"></div>
+            <div class="hidden acceptMailContent">{{ acceptMailContent|raw }}</div>
+            <input type="hidden" name="accept_mail" class="editedContent" value="" />
+            <input type="submit" value="Modifier le mail" />
+        </form>
+    </section>
+
+    <section>
+        <h1>
+            Modifier le texte du mail de refus :
+        </h1>
+        <form action="#" method="POST" class="edit_form">
+            <div class="WYSIWYG WYSIWYG_deny_mail"></div>
+            <div class="hidden denyMailContent">{{ denyMailContent|raw }}</div>
+            <input type="hidden" name="deny_mail" class="editedContent" value="" />
+            <input type="submit" value="Modifier le mail" />
+        </form>
+    </section>
 {% endblock %}

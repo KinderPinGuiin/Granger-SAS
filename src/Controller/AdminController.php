@@ -266,6 +266,8 @@ class AdminController extends AbstractController {
         return $this->render("admin/edit.html.twig", [
             "homeContent" => $contenus[0]->getContent(),
             "aboutContent" => $contenus[1]->getContent(),
+            "acceptMailContent" => $contenus[2]->getContent(),
+            "denyMailContent" => $contenus[3]->getContent(),
             "uploadImageForm" => $uploadImageForm->createView()
         ]);
     }
@@ -309,6 +311,20 @@ class AdminController extends AbstractController {
                 return $this->redirectToRoute("about");
                 break;
 
+            case "accept_mail":
+                // On actualise le contenu
+                $contenu->setContent($_POST["accept_mail"]);
+                $this->em->flush();
+                return $this->redirectToRoute("admin");
+                break;
+
+            case "deny_mail":
+                // On actualise le contenu
+                $contenu->setContent($_POST["deny_mail"]);
+                $this->em->flush();
+                return $this->redirectToRoute("admin");
+                break;
+
             default:
                 // Si la requête n'est pas valide on définit une erreur
                 $error["global"] = "Requête invalide veuillez réessayer";
@@ -330,6 +346,16 @@ class AdminController extends AbstractController {
                 isset($_POST["about"]) 
                 ? $_POST["about"] 
                 : $contenus[1]->getContent()
+            ),
+            "aboutContent" => (
+                isset($_POST["accept_mail"]) 
+                ? $_POST["accept_mail"] 
+                : $contenus[2]->getContent()
+            ),
+            "aboutContent" => (
+                isset($_POST["deny_mail"]) 
+                ? $_POST["deny_mail"] 
+                : $contenus[3]->getContent()
             ),
             "error" => $error,
             "uploadImageForm" => $uploadImageForm->createView()

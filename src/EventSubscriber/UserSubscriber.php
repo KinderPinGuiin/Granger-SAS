@@ -51,8 +51,7 @@ class UserSubscriber implements EventSubscriberInterface
             )) {
                 // Si le dossier n'existe pas on le recréé
                 $folder = $driveManager->createFolder(
-                    $this->user->getPrenom() . " " . $this->user->getNom() 
-                    . " | " . $this->user->getEmail()
+                    Constants::DRIVE_FOLDER_NAME
                 );
                 $this->user->setDriveID($folder["id"]);
                 $this->em->flush();

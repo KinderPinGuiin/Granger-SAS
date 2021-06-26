@@ -101,7 +101,8 @@ class UploadController extends AbstractController
         return $this->render('upload/index.html.twig', [
             "hasCandidature" => false,
             "uploadForm" => $form->createView(),
-            "formErrors" => $this->formErrors
+            "formErrors" => $this->formErrors,
+            "view" => "spontanee"
         ]);
     }
 

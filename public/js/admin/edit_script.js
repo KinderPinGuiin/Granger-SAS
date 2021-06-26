@@ -1,11 +1,12 @@
 "use strict"
 
-// On ajoute le WYSIWYG et on focus dedans
 window.addEventListener("load", () => {
-    new WYSIWYG(
+    // On ajoute le WYSIWYG et on focus dedans
+    const wysiwygHome = new WYSIWYG(
         ".WYSIWYG_accueil", CLASS_FOLDER + "WYSIWYG/", 
         [], document.querySelector(".homeContent").innerHTML
     )
+    wysiwygHome.editor.focus()
     const wysiwygAbout = new WYSIWYG(
         ".WYSIWYG_about", CLASS_FOLDER + "WYSIWYG/",
         [], document.querySelector(".aboutContent").innerHTML

@@ -167,7 +167,8 @@ class AdminController extends AbstractController {
             "didntUpload" => $didntUpload,
             "cv" => $cvLettre["cv"],
             "lettre" => $cvLettre["lettre"],
-            "form" => $form->createView()
+            "form" => $form->createView(),
+            "mailsContent" => $this->contentRepository->getMailsContent()
         ]);
     }
 
@@ -225,7 +226,9 @@ class AdminController extends AbstractController {
             ->htmlTemplate("emails/candidature_mail.html.twig")
             ->context([
                 "candidat" => $candidat,
-                "poste" => $candidature->getPoste()->getName(),
+                "poste" => $candidature->getPoste() == null 
+                           ? $candidature->getOffre()->getName() 
+                           : $candidature->getPoste()->getName(),
                 "message" => nl2br($form->get("message")->getData())
             ]);
         // Envoi du mail

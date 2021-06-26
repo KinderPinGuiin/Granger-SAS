@@ -5,6 +5,11 @@
 {% block stylesheets %}
 {% endblock %}
 
+{% block javascripts %}
+    <script src="/js/class/WYSIWYG/WYSIWYG.js" defer></script>
+    <script src="/js/admin/candidature_script.js" defer></script>
+{% endblock %}
+
 {% block body %}
     {% if dontExist is defined and dontExist %}
         <p>Ce profil n'existe pas</p>
@@ -20,8 +25,16 @@
                     l'offre {{ candidature.offre.name }}
                 {% endif %}
             </h1>
-            {{ form_start(form) }}
-                {{ form_rest(form) }}
+            {{ form_start(form, {attr: {class: "mail_form"}}) }}
+                {{ form_row(form.acceptee) }}
+                {{ form_row(form.message, {attr: {class: "content"}}) }}
+                <div class="WYSIWYG"></div>
+                <span class="hidden accept_content">
+                    {{ mailsContent[0].content }}
+                </span>
+                <span class="hidden deny_content">
+                    {{ mailsContent[1].content }}
+                </span>
                 <input type="submit" value="Envoyer la réponse" />
             {{ form_end(form) }}
         {% elseif view == "history" %}

@@ -13,6 +13,15 @@ namespace App\Utils;
 /**
  * Classe contenant les constantes de l'application
  */
+<?php
+
+namespace App\Utils;
+
+use App\Entity\User;
+
+/**
+ * Classe contenant les constantes de l'application
+ */
 class Constants {
 
     // Racine de l'application
@@ -25,7 +34,7 @@ class Constants {
     const PUBLIC_FOLDER = self::ROOT . "public/";
 
     // ID du dossier racine Google Drive
-    const ID_DRIVE_ROOT = "Identifiant de votre dossier";
+    const ID_DRIVE_ROOT = "Identifiant de votre dossier Google Drive";
 
     // Nom du dossier de CV
     const CV_FOLDER_NAME = "CV";
@@ -41,6 +50,30 @@ class Constants {
 
     // Image par défaut en cas de 404
     const DEFAULT_IMAGE = self::PUBLIC_FOLDER . "img/images/default.png";
+
+    // Nom du dossier des candidats
+    const DRIVE_FOLDER_NAME = "{{ prenom }} {{ nom }} | {{ mail }}";
+
+    /**
+     * Créé le nom du dossier d'un utilisateur
+     * 
+     * @param  User   $user L'utilisateur
+     * @return string       Le nom du dossier
+     */
+    public static function folderName(User $user)
+    {
+        $folderName = self::DRIVE_FOLDER_NAME;
+        $folderName = str_replace(
+            "{{ prenom }}", $user->getPrenom(), $folderName
+        );
+        $folderName = str_replace(
+            "{{ nom }}", $user->getNom(), $folderName
+        );
+        $folderName = str_replace(
+            "{{ email }}", $user->getEmail(), $folderName
+        );
+        return $folderName;
+    }
 
 }
 ```

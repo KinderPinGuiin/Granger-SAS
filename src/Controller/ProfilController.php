@@ -68,6 +68,14 @@ class ProfilController extends AbstractController
         $form = $this->createForm(UserUpdateType::class, $user);
         $form->handleRequest($req);
         if ($form->isSubmitted() && $form->isValid()) {
+            // On renomme le dossier drive
+            $driveManager = new GoogleDriveManager(
+                Constants::GOOGLE_FOLDER . "credentials.json",
+                Constants::ID_DRIVE_ROOT
+            );
+            $driveManager->update($user->getDriveID(), [
+                "name" => Constants::folderName($user)
+            ]);
             if (!empty($form->get("plainPassword")->getViewData()["first"])) {
                 $user->setPassword(
                     $passwordEncoder->hashPassword(

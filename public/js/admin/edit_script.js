@@ -80,12 +80,15 @@ window.addEventListener("load", () => {
     })
     document.querySelector(".upload_image_container form").addEventListener("submit", e => {
         e.preventDefault()
+        let submitButton = document.querySelector(".upload_image_container form input[type='submit']")
+        submitButton.style.display = "none"
         uploadImage(".upload_image_container form", () => {
             if (document.querySelector(".upload_image_container form .error")) {
                 document.querySelector(".upload_image_container form .error").innerHTML = ""
             }
             switchSelect(container)
             listImage(container.querySelector(".images_container"), () => bindEventsOnImages(container))
+            submitButton.style.display = "block"
         }, e => {
             if (!document.querySelector(".upload_image_container form .error")) {
                 let errorContainer = document.createElement("div")
@@ -96,6 +99,7 @@ window.addEventListener("load", () => {
             for (const input in e.responseJSON.errors) {
                 errors += e.responseJSON.errors[input] + "<br/>"
             }
+            submitButton.style.display = "block"
             document.querySelector(".upload_image_container form .error").innerHTML = errors
         })
     })

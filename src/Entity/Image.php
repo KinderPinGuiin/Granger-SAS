@@ -112,7 +112,7 @@ class Image
         return $this->mime;
     }
 
-    public function setMime(int $mime): self
+    public function setMime(string $mime): self
     {
         $this->mime = $mime;
 
@@ -136,7 +136,7 @@ class Image
         return $this->height;
     }
 
-    public function setHeight(string $height): self
+    public function setHeight(int $height): self
     {
         $this->height = $height;
 

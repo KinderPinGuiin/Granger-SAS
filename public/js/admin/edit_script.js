@@ -81,11 +81,22 @@ window.addEventListener("load", () => {
     document.querySelector(".upload_image_container form").addEventListener("submit", e => {
         e.preventDefault()
         uploadImage(".upload_image_container form", () => {
+            if (document.querySelector(".upload_image_container form .error")) {
+                document.querySelector(".upload_image_container form .error").innerHTML = ""
+            }
             switchSelect(container)
             listImage(container.querySelector(".images_container"), () => bindEventsOnImages(container))
         }, e => {
-            document.querySelector(".upload_image_container form").innerHTML +=
-                "<div class='error'>" + e.responseJSON.error + "</div>"
+            if (!document.querySelector(".upload_image_container form .error")) {
+                let errorContainer = document.createElement("div")
+                errorContainer.classList.add("error")
+                document.querySelector(".upload_image_container form").appendChild(errorContainer)
+            }
+            let errors = ""
+            for (const input in e.responseJSON.errors) {
+                errors += e.responseJSON.errors[input] + "<br/>"
+            }
+            document.querySelector(".upload_image_container form .error").innerHTML = errors
         })
     })
     document.querySelector(".image_manager > .close_button").addEventListener("click", () => {

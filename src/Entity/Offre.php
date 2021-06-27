@@ -22,7 +22,7 @@ class Offre
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\Length(min=2, max=255)
+     * @Assert\Length(min=1, max=255)
      */
     private $name;
 

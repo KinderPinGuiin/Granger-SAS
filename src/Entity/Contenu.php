@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ContenuRepository::class)
@@ -19,6 +20,7 @@ class Contenu
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(max=255)
      */
     private $page;
 

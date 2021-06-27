@@ -25,6 +25,7 @@
                     l'offre {{ candidature.offre.name }}
                 {% endif %}
             </h1>
+            {% form_theme form "forms/global/global_form_template.html.twig" %}
             {{ form_start(form, {attr: {class: "mail_form"}}) }}
                 {{ form_row(form.acceptee) }}
                 {{ form_row(form.message, {attr: {class: "content"}}) }}

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CandidatureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CandidatureRepository::class)
@@ -25,6 +26,8 @@ class Candidature
 
     /**
      * @ORM\Column(type="boolean", nullable="true")
+     * @Assert\GreaterThanOrEqual(0)
+     * @Assert\LessThanOrEqual(1)
      */
     private $acceptee;
 

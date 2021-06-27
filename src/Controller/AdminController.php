@@ -206,10 +206,13 @@ class AdminController extends AbstractController {
         $cvLettre = $this->getCVAndLetter($driveId);
 
         return $this->render("admin/candidature.html.twig", [
+            "view" => "candidature",
             "candidat" => $candidat,
             "cv" => $cvLettre["cv"],
             "lettre" => $cvLettre["lettre"],
-            "form" => $form->createView()
+            "form" => $form->createView(),
+            "candidature" => $candidature,
+            "mailsContent" => $this->contentRepository->getMailsContent()
         ]);
     }
 

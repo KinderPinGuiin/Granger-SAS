@@ -32,12 +32,7 @@ class ImageType extends AbstractType
                 "constraints" => [
                     new File([
                         "maxSize" => "3M",
-                        "mimeTypes" => [
-                            "image/png",
-                            "image/jpeg",
-                            "image/jpg",
-                            "image/gif"
-                        ],
+                        "mimeTypes" => "image/*",
                         "maxSizeMessage" => "Fichier trop volumineux (3Mo Max.)",
                         "mimeTypesMessage" => "Format invalide"
                     ])

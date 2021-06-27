@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ImageRepository::class)
@@ -19,21 +20,33 @@ class Image
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *      min=1,
+     *      max=255,
+     *      minMessage = "Nom trop court",
+     *      maxMessage = "Nom trop long"
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *      min=1,
+     *      max=255,
+     *      minMessage = "Description trop courte",
+     *      maxMessage = "Description trop longue"
+     * )
      */
     private $alt;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer")
      */
     private $width;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer")
      */
     private $height;
 
@@ -44,6 +57,12 @@ class Image
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *     min=1, 
+     *     max=255, 
+     *     maxMessage = "Une erreur MIME est survenue, veuillez réessayer. Si le problème persiste contactez un administrateur.",
+     *     minMessage = "Une erreur MIME est survenue, veuillez réessayer. Si le problème persiste contactez un administrateur."
+     * )
      */
     private $mime;
 
@@ -93,7 +112,7 @@ class Image
         return $this->mime;
     }
 
-    public function setMime(string $mime): self
+    public function setMime(int $mime): self
     {
         $this->mime = $mime;
 
@@ -105,7 +124,7 @@ class Image
         return $this->width;
     }
 
-    public function setWidth(string $width): self
+    public function setWidth(int $width): self
     {
         $this->width = $width;
 

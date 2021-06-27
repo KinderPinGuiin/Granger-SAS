@@ -124,10 +124,10 @@ class ImagesController extends AbstractController
         );
         $image->setMime($form->get("content")->getData()->getMimeType());
         $image->setWidth(
-            getimagesize($form->get("content")->getData()->getPathname())[0]
+            intval(getimagesize($form->get("content")->getData()->getPathname())[0])
         );
         $image->setHeight(
-            getimagesize($form->get("content")->getData()->getPathname())[1]
+            intval(getimagesize($form->get("content")->getData()->getPathname())[1])
         );
         $this->em->persist($image);
         $this->em->flush();

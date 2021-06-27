@@ -20,6 +20,7 @@
         <div class="close_button"></div>
 
         <section class="upload_image_container">
+            {% form_theme uploadImageForm "forms/global/global_form_template.html.twig" %}
             {{ form_start(uploadImageForm) }}
                 {{ form_rest(uploadImageForm) }}
                 <input type="submit" value="Ajouter" />

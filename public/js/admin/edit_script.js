@@ -109,7 +109,7 @@ window.addEventListener("load", () => {
 
     function displayImageManager() {
         // On affiche la pop-up
-        container.style.display = "block"
+        container.style.display = "flex"
         // On liste les images
         listImage(container.querySelector(".images_container"), () => bindEventsOnImages(container))
     }

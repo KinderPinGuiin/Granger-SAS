@@ -64,13 +64,9 @@ class Constants {
     {
         $folderName = self::DRIVE_FOLDER_NAME;
         $folderName = str_replace(
-            "{{ prenom }}", $user->getPrenom(), $folderName
-        );
-        $folderName = str_replace(
-            "{{ nom }}", $user->getNom(), $folderName
-        );
-        $folderName = str_replace(
-            "{{ email }}", $user->getEmail(), $folderName
+            ["{{ prenom }}", "{{ nom }}", "{{ mail }}"],
+            [$user->getPrenom(), $user->getNom(), $user->getEmail()],
+            $folderName
         );
         return $folderName;
     }

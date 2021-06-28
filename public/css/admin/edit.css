@@ -4,6 +4,7 @@
     display: none;
     width: 50%;
     height: 50vh;
+    padding: 5px;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -12,6 +13,9 @@
     background-color: #FBFBFB;
     border-radius: 5px;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+    /* Si visible */
+    flex-direction: column;
+    align-items: center;
 }
 
 .image_manager .upload_image_container {
@@ -110,6 +114,10 @@
     border-radius: 3px;
     margin: 20px;
     cursor: pointer;
+}
+
+.image_manager .images_container .images .image span {
+    display: none;
 }
 
 .image_manager .images_container .images .image .close_button, .image_manager .close_button {

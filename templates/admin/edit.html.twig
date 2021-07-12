@@ -16,12 +16,34 @@
         <div>{{ error.global }}</div>
     {% endif %}
 
-    <section class="upload_image">
-        {{ form_start(uploadImageForm) }}
-            {{ form_rest(uploadImageForm) }}
-            <input type="submit" value="Envoyer" />
-        {{ form_end(uploadImageForm) }}
-    </section>
+    <div class="image_manager">
+        <div class="close_button"></div>
+
+        <section class="upload_image_container">
+            {% form_theme uploadImageForm "forms/global/global_form_template.html.twig" %}
+            {{ form_start(uploadImageForm) }}
+                {{ form_rest(uploadImageForm) }}
+                <input type="submit" value="Ajouter" />
+            {{ form_end(uploadImageForm) }}
+        </section>
+
+        <div class="images_container">
+            <img class="loader" style="display:block" src="/img/admin/loader.gif" alt="Loader" />
+            <div class="images"></div>
+        </div>
+
+        <div class="upload_btn_container">
+            <button>Ajouter une image</button>
+        </div>
+
+        <div class="add_btn_container">
+            <button>Ajouter cette image</button>
+        </div>
+
+        <div class="select_btn_container">
+            <button>Séléctionner une image</button>
+        </div>
+    </div>
 
     <section>
         <h1>
@@ -49,6 +71,30 @@
             <div class="hidden aboutContent">{{ aboutContent|raw }}</div>
             <input type="hidden" name="about" class="editedContent" value="" />
             <input type="submit" value="Modifier la page" />
+        </form>
+    </section>
+
+    <section>
+        <h1>
+            Modifier le texte du mail d'acceptation :
+        </h1>
+        <form action="#" method="POST" class="edit_form">
+            <div class="WYSIWYG WYSIWYG_accept_mail"></div>
+            <div class="hidden acceptMailContent">{{ acceptMailContent|raw }}</div>
+            <input type="hidden" name="accept_mail" class="editedContent" value="" />
+            <input type="submit" value="Modifier le mail" />
+        </form>
+    </section>
+
+    <section>
+        <h1>
+            Modifier le texte du mail de refus :
+        </h1>
+        <form action="#" method="POST" class="edit_form">
+            <div class="WYSIWYG WYSIWYG_deny_mail"></div>
+            <div class="hidden denyMailContent">{{ denyMailContent|raw }}</div>
+            <input type="hidden" name="deny_mail" class="editedContent" value="" />
+            <input type="submit" value="Modifier le mail" />
         </form>
     </section>
 {% endblock %}

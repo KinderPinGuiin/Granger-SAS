@@ -8,6 +8,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UserSubscriber implements EventSubscriberInterface
 {
@@ -22,10 +26,16 @@ class UserSubscriber implements EventSubscriberInterface
      */
     private $em;
 
-    public function __construct(Security $security, EntityManagerInterface $em)
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGen;
+
+    public function __construct(Security $security, EntityManagerInterface $em, UrlGeneratorInterface $urlGen)
     {
         $this->user = $security->getUser();
         $this->em = $em;
+        $this->urlGen = $urlGen;
     }
 
     public function onKernelController()
@@ -41,8 +51,7 @@ class UserSubscriber implements EventSubscriberInterface
             )) {
                 // Si le dossier n'existe pas on le recréé
                 $folder = $driveManager->createFolder(
-                    $this->user->getPrenom() . " " . $this->user->getNom() 
-                    . " | " . $this->user->getEmail()
+                    Constants::folderName($this->user)
                 );
                 $this->user->setDriveID($folder["id"]);
                 $this->em->flush();
@@ -53,10 +62,29 @@ class UserSubscriber implements EventSubscriberInterface
         }
     }
 
+    public function onKernelResponse(ResponseEvent $event)
+    {
+        $session = $event->getRequest()->getSession();
+        $redirect = $session->get("redirect");
+        if ($this->user && $redirect !== null) {
+            // On redirige l'utilisateur là où il souhaite aller
+            $session->set("redirect", null);
+            $params = [];
+            if (!empty($session->get("params"))) {
+                $params = $session->get("params");
+                $session->set("params", null);
+            }
+            return $event->setResponse(new RedirectResponse(
+                $this->urlGen->generate($redirect, $params)
+            ));
+        }
+    }
+
     public static function getSubscribedEvents()
     {
         return [
             KernelEvents::CONTROLLER => 'onKernelController',
+            KernelEvents::RESPONSE => "onKernelResponse"
         ];
     }
 

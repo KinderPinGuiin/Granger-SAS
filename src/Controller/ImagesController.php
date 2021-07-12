@@ -36,7 +36,7 @@ class ImagesController extends AbstractController
     /**
      * @Route("/images", name="images")
      */
-    public function getAllImages(Request $req, UrlGeneratorInterface $gen)
+    public function getAllImages(UrlGeneratorInterface $gen)
     {
         // On récupère toutes les images
         $images = $this->imageRepository->findAll();
@@ -47,8 +47,9 @@ class ImagesController extends AbstractController
                 "name" => $image->getName(),
                 "alt" => $image->getAlt(),
                 "mime" => $image->getMime(),
-                "url" => $req->server->get("HTTP_HOST")
-                    . $gen->generate("image", ["id" => $image->getId()])
+                "width" => $image->getWidth(),
+                "height" => $image->getHeight(),
+                "url" => $gen->generate("image", ["id" => $image->getId()])
             ];
         }
 
@@ -113,8 +114,9 @@ class ImagesController extends AbstractController
         // On vérifie les informations
         if (!$form->isSubmitted() || !$form->isValid()) {
             // Si une d'entre elle est invalide on renvoie un code 500
+            $errors = $this->getErrorsAsArray($form);
             return new JsonResponse([
-                "error" => "Données invalides"
+                "errors" => $errors
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         // Si tout est bon on ajoute l'image dans la base de données
@@ -122,10 +124,30 @@ class ImagesController extends AbstractController
             file_get_contents($form->get("content")->getData()->getPathname())
         );
         $image->setMime($form->get("content")->getData()->getMimeType());
+        $image->setWidth(
+            intval(getimagesize($form->get("content")->getData()->getPathname())[0])
+        );
+        $image->setHeight(
+            intval(getimagesize($form->get("content")->getData()->getPathname())[1])
+        );
         $this->em->persist($image);
         $this->em->flush();
 
         return new JsonResponse(["message" => "Uploadé"], Response::HTTP_OK);
+    }
+
+    private function getErrorsAsArray($form)
+    {
+        $errors = [];
+        foreach ($form->getErrors() as $error) {
+            $errors[] = $error->getMessage();
+        }
+        foreach ($form->all() as $key => $child) {
+            if ($err = $this->getErrorsAsArray($child)) {
+                $errors[$key] = $err[0];
+            }
+        }
+        return $errors;
     }
 
     /**

@@ -2,20 +2,26 @@
 
 namespace App\Controller;
 
+use DateTime;
+use App\Entity\Offre;
 use App\Entity\Poste;
+use App\Form\ImageType;
 use App\Utils\Constants;
+use App\Form\UpdateOffreType;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
+use App\Repository\OffreRepository;
 use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
-use App\Form\ImageType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -49,11 +55,16 @@ class AdminController extends AbstractController {
     private $posteRepository;
 
     /**
+     * @var OffreRepository
+     */
+    private $offreRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, PosteRepository $pRep, OffreRepository $oRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -63,6 +74,7 @@ class AdminController extends AbstractController {
         $this->candidRepository = $cRepository;
         $this->contentRepository = $coRepository;
         $this->posteRepository = $pRep;
+        $this->offreRepository = $oRep;
         $this->em = $em;
     }
 
@@ -155,7 +167,8 @@ class AdminController extends AbstractController {
             "didntUpload" => $didntUpload,
             "cv" => $cvLettre["cv"],
             "lettre" => $cvLettre["lettre"],
-            "form" => $form->createView()
+            "form" => $form->createView(),
+            "mailsContent" => $this->contentRepository->getMailsContent()
         ]);
     }
 
@@ -193,10 +206,13 @@ class AdminController extends AbstractController {
         $cvLettre = $this->getCVAndLetter($driveId);
 
         return $this->render("admin/candidature.html.twig", [
+            "view" => "candidature",
             "candidat" => $candidat,
             "cv" => $cvLettre["cv"],
             "lettre" => $cvLettre["lettre"],
-            "form" => $form->createView()
+            "form" => $form->createView(),
+            "candidature" => $candidature,
+            "mailsContent" => $this->contentRepository->getMailsContent()
         ]);
     }
 
@@ -213,7 +229,9 @@ class AdminController extends AbstractController {
             ->htmlTemplate("emails/candidature_mail.html.twig")
             ->context([
                 "candidat" => $candidat,
-                "poste" => $candidature->getPoste()->getName(),
+                "poste" => $candidature->getPoste() == null 
+                           ? $candidature->getOffre()->getName() 
+                           : $candidature->getPoste()->getName(),
                 "message" => nl2br($form->get("message")->getData())
             ]);
         // Envoi du mail
@@ -251,6 +269,8 @@ class AdminController extends AbstractController {
         return $this->render("admin/edit.html.twig", [
             "homeContent" => $contenus[0]->getContent(),
             "aboutContent" => $contenus[1]->getContent(),
+            "acceptMailContent" => $contenus[2]->getContent(),
+            "denyMailContent" => $contenus[3]->getContent(),
             "uploadImageForm" => $uploadImageForm->createView()
         ]);
     }
@@ -294,6 +314,20 @@ class AdminController extends AbstractController {
                 return $this->redirectToRoute("about");
                 break;
 
+            case "accept_mail":
+                // On actualise le contenu
+                $contenu->setContent($_POST["accept_mail"]);
+                $this->em->flush();
+                return $this->redirectToRoute("admin");
+                break;
+
+            case "deny_mail":
+                // On actualise le contenu
+                $contenu->setContent($_POST["deny_mail"]);
+                $this->em->flush();
+                return $this->redirectToRoute("admin");
+                break;
+
             default:
                 // Si la requête n'est pas valide on définit une erreur
                 $error["global"] = "Requête invalide veuillez réessayer";
@@ -315,6 +349,16 @@ class AdminController extends AbstractController {
                 isset($_POST["about"]) 
                 ? $_POST["about"] 
                 : $contenus[1]->getContent()
+            ),
+            "aboutContent" => (
+                isset($_POST["accept_mail"]) 
+                ? $_POST["accept_mail"] 
+                : $contenus[2]->getContent()
+            ),
+            "aboutContent" => (
+                isset($_POST["deny_mail"]) 
+                ? $_POST["deny_mail"] 
+                : $contenus[3]->getContent()
             ),
             "error" => $error,
             "uploadImageForm" => $uploadImageForm->createView()
@@ -543,6 +587,155 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/offres", name="_offres")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function offresEmploi(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/offres.html.twig", [
+            "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+        ]);
+    }
+
+    /**
+     * @Route("/offres/add", name="_offres_add")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function addOffre(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On créé l'offre
+        $offre = new Offre();
+        $offre->setName("Sans nom")
+            ->setContent("")
+            ->setDate(new DateTime())
+            ->setOnline(false);
+        $this->em->persist($offre);
+        $this->em->flush();
+
+        // Et on redirige sur l'update pour la modifier
+        return $this->redirectToRoute("admin_offres_update", [
+            "id" => $offre->getId()
+        ]);
+    }
+
+    /**
+     * @Route("/offres/update/{id}", name="_offres_update")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function updateOffre(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // On trouve l'offre
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // Si elle n'existe pas on redirige l'utilisateur
+        if (empty($offre)) {
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
+        // On créé le formulaire
+        $form = $this->createForm(UpdateOffreType::class, $offre[0]);
+        $form->handleRequest($req);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Si le formulaire est valide on modifie l'offre
+            $offre[0]->setDate(new DateTime());
+            $this->em->flush();
+            return $this->redirectToRoute("admin_offres");
+        }
+
+        return $this->render("admin/offres_update.html.twig", [
+            "offre" => $offre[0],
+            "updateForm" => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/offres/set-online/{id}", name="_offres_set_online")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function setOffreOnline(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // Si l'offre n'existe pas on renvoie une erreur
+        if (empty($offre)) {
+            return new JsonResponse(
+                ["error" => "Offre inexistante"], 
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+        // On edit l'offre
+        $value = $req->get("onlineValue");
+        if (!empty($req->get("onlineValue")) && ($value == "true" || $value == "false")) {
+            $offre[0]->setOnline($value == "true");
+            if ($value == "true") {
+                // Si l'offre est (re)mise en ligne on met à jour sa date
+                $offre[0]->setDate(new DateTime());
+            }
+            $this->em->flush();
+
+            return new JsonResponse(
+                ["message" => "Statut changé", "value" => $value == "true"],
+                Response::HTTP_OK
+            );
+        }
+
+        return new JsonResponse(
+            ["error" => "Données invalides"], 
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+
+    /**
+     * @Route("/offres/delete/{id}", name="_offres_delete")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function deleteOffre(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $offre = $this->offreRepository->findBy(["id" => $id]);
+        // On vérifie si l'utilisateur a confirmé et que l'offre existe
+        if ($req->get("confirm") == true && !empty($offre)) {
+            // Si oui on supprime l'offre
+            $this->em->remove($offre[0]);
+            $this->em->flush();
+
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        } else if (empty($offre)) {
+            // Si l'offre est vide on renvoie sur la page des offres
+            return $this->render("admin/offres.html.twig", [
+                "offres" => $this->offreRepository->findBy([], ["date" => "DESC"])
+            ]);
+        }
+
+        // Sinon on affiche la page avec un message de confirmation
+        return $this->render("admin/offres.html.twig", [
+            "delete" => true,
+            "offre" => $offre[0]
+        ]);
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -574,7 +767,12 @@ class AdminController extends AbstractController {
             case "admin_postes_add_GET":
             case "admin_postes_delete":
                 return in_array("ROLE_ADMIN", $userRoles);
-
+            
+            case "admin_offres":
+            case "admin_offres_update":
+            case "admin_offres_delete":
+            case "admin_offres_add":
+            case "admin_offres_set_online":
             default:
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_EDITOR", $userRoles)

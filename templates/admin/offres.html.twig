@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Gérer les offres d'emploi{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/admin/search_bar.js" defer></script>
+    <script src="/js/admin/offres_script.js" defer></script>
+    <noscript>
+        <style>
+            #online, label[for="online"] {
+                display: none;
+            }
+        </style>
+    </noscript>
+{% endblock %}
+
+{% block body %}
+    {% if not (delete is defined and delete == true) %}
+        <section>
+            <h1>Les offres d'emploi actuelles</h1>
+            {% include "require/admin/search_bar.html.twig" %}
+            <div class="offres_container">
+                <a href="{{ path("admin_offres_add") }}">Ajouter une offre</a>
+                {% if offres is empty %}
+                    <h2>Il n'y a pas d'offres pour le moment</h2>
+                {% else %}
+                    {% for offre in offres %}
+                        {# Offres déjà existantes #}
+                        <div class="offre" data-search="true" data-id="{{ offre.id }}">
+                            Offre : {{ offre.name }} |
+                            <label for="online">En ligne : </label>
+                            <input id="online" type="checkbox" {% if offre.online %}checked{% endif %} />
+                            <a href="{{ path("admin_offres_update", {id: offre.id}) }}">Modifier l'offre</a>
+                            <a href="{{ path("admin_offres_delete", {id: offre.id}) }}">Supprimer l'offre</a>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </section>
+    {% else %}
+        <section>
+            <h1>Suppression de l'offre : {{ offre.name }}</h1>
+            <p>
+                Êtes-vous sûrs de vouloir supprimer l'offre ? 
+                <a href="{{ path("admin_offres_delete", {id: offre.id}) }}?confirm=true">Oui</a>
+                <a href="{{ path("admin_offres") }}">Non</a>
+            </p>
+        </section>
+    {% endif %}
+{% endblock %}

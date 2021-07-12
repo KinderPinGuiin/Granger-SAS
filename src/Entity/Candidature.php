@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\CandidatureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CandidatureRepository::class)
@@ -25,6 +26,8 @@ class Candidature
 
     /**
      * @ORM\Column(type="boolean", nullable="true")
+     * @Assert\GreaterThanOrEqual(0)
+     * @Assert\LessThanOrEqual(1)
      */
     private $acceptee;
 
@@ -35,9 +38,13 @@ class Candidature
 
     /**
      * @ORM\ManyToOne(targetEntity=Poste::class)
-     * @ORM\JoinColumn(nullable=false)
      */
     private $poste;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Offre::class, inversedBy="candidatures")
+     */
+    private $offre;
 
     public function getId(): ?int
     {
@@ -88,6 +95,18 @@ class Candidature
     public function setPoste(?Poste $poste): self
     {
         $this->poste = $poste;
+
+        return $this;
+    }
+
+    public function getOffre(): ?Offre
+    {
+        return $this->offre;
+    }
+
+    public function setOffre(?Offre $offre): self
+    {
+        $this->offre = $offre;
 
         return $this;
     }

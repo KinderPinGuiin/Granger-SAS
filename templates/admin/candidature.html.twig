@@ -5,6 +5,11 @@
 {% block stylesheets %}
 {% endblock %}
 
+{% block javascripts %}
+    <script src="/js/class/WYSIWYG/WYSIWYG.js" defer></script>
+    <script src="/js/admin/candidature_script.js" defer></script>
+{% endblock %}
+
 {% block body %}
     {% if dontExist is defined and dontExist %}
         <p>Ce profil n'existe pas</p>
@@ -12,9 +17,25 @@
         <p>Cet utilisateur n'a pas déposé de pièces</p>
     {% else %}
         {% if view == "candidature" %}            
-            <h1>Candidature de {{ candidat.prenom }} {{ candidat.nom }} pour le poste {{ candidature.poste.name }}</h1>
-            {{ form_start(form) }}
-                {{ form_rest(form) }}
+            <h1>
+                Candidature de {{ candidat.prenom }} {{ candidat.nom }} pour
+                {% if candidature.poste is not null %}
+                    le poste {{ candidature.poste.name }}
+                {% else %}
+                    l'offre {{ candidature.offre.name }}
+                {% endif %}
+            </h1>
+            {% form_theme form "forms/global/global_form_template.html.twig" %}
+            {{ form_start(form, {attr: {class: "mail_form"}}) }}
+                {{ form_row(form.acceptee) }}
+                {{ form_row(form.message, {attr: {class: "content"}}) }}
+                <div class="WYSIWYG"></div>
+                <span class="hidden accept_content">
+                    {{ mailsContent[0].content|raw }}
+                </span>
+                <span class="hidden deny_content">
+                    {{ mailsContent[1].content|raw }}
+                </span>
                 <input type="submit" value="Envoyer la réponse" />
             {{ form_end(form) }}
         {% elseif view == "history" %}
@@ -35,8 +56,24 @@
                         {% for candidature in candidatures %}
                             <tr>
                                 <td>{{ candidature.date|date("d/m/Y") }}</td>
-                                <td>{% if candidature.acceptee %} Acceptée {% else %} Refusée {% endif %}</td>
-                                <td>{{ candidature.poste.name }}</td>
+                                <td>
+                                    {% if candidature.acceptee == true %} 
+                                        Acceptée
+                                    {% elseif candidature.acceptee is null %} 
+                                        En cours de traitement
+                                    {% elseif candidature.acceptee == false %} 
+                                        Refusée
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if candidature.poste is not null %}
+                                        {{ candidature.poste.name }}
+                                    {% else %}
+                                        <a href="{{ path("offre", {id: candidature.offre.id}) }}">
+                                            {{ candidature.offre.name }}
+                                        </a>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     {% endif %}

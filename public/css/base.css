@@ -35,11 +35,20 @@
 body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
     background-color: #FBFBFB;
     background-image: url("../img/all/arrow_background.svg");
     background-size: auto 100vh;
     background-repeat: no-repeat;
     background-attachment: fixed;
+}
+
+#swup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .transition-fade {
@@ -119,6 +128,60 @@ header {
     margin: 5px;
 }
 
+/* Règles concernant l'éditeur WYSIWYG */
+
+    /* Conteneur */
+
+.WYSIWYG {
+    width: 80%;
+    background-color: white;
+    margin: auto;
+    border-radius: 5px;
+}
+
+.WYSIWYG, .WYSIWYG * {
+    color: black;
+    font-family: sans-serif;
+}
+
+    /* Liste des boutons et boutons */
+
+.WYSIWYG .buttonsContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.75);
+    overflow-y: auto;
+    background-color: rgb(235, 233, 233);
+    position: sticky;
+    top: 0;
+}
+
+.WYSIWYG .buttonsContainer button {
+    cursor: pointer;
+    border: 1px solid gray;
+    border-radius: 2px;
+    padding: 3px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+}
+
+    /* Editeur */
+
+.WYSIWYG .editor {
+    padding: 5px;
+    height: 300px;
+    overflow-y: auto;
+    outline: none;
+}
+
+    /* Interlignes */
+
+.WYSIWYG div {
+    margin: 0;
+}
+
 /* Responsive */
 
 @media only screen and (max-width: 650px) {
@@ -146,5 +209,12 @@ header {
 @media only screen and (max-width: 350px) {
     header .button_container_responsive img {
         margin: 0 5px;
+    }
+}
+
+/* Ajustement responsive des boutons */
+@media only screen and (max-width: 900px) {
+    .WYSIWYG .buttonsContainer {
+        justify-content: start;
     }
 }

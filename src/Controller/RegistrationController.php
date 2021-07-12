@@ -71,8 +71,7 @@ class RegistrationController extends AbstractController
             Constants::ID_DRIVE_ROOT
         );
         $folder = $driveManager->createFolder(
-            $user->getPrenom() . " " . $user->getNom() . " | " 
-            . $user->getEmail()
+            Constants::folderName($user)
         );
         $user->setDriveID($folder["id"]);
         $driveManager->goTo($folder["id"]);

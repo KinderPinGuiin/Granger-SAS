@@ -13,6 +13,15 @@ namespace App\Utils;
 /**
  * Classe contenant les constantes de l'application
  */
+<?php
+
+namespace App\Utils;
+
+use App\Entity\User;
+
+/**
+ * Classe contenant les constantes de l'application
+ */
 class Constants {
 
     // Racine de l'application
@@ -41,6 +50,26 @@ class Constants {
 
     // Image par défaut en cas de 404
     const DEFAULT_IMAGE = self::PUBLIC_FOLDER . "img/images/default.png";
+
+    // Nom du dossier des candidats
+    const DRIVE_FOLDER_NAME = "{{ prenom }} {{ nom }} | {{ mail }}";
+
+    /**
+     * Créé le nom du dossier d'un utilisateur
+     * 
+     * @param  User   $user L'utilisateur
+     * @return string       Le nom du dossier
+     */
+    public static function folderName(User $user)
+    {
+        $folderName = self::DRIVE_FOLDER_NAME;
+        $folderName = str_replace(
+            ["{{ prenom }}", "{{ nom }}", "{{ mail }}"],
+            [$user->getPrenom(), $user->getNom(), $user->getEmail()],
+            $folderName
+        );
+        return $folderName;
+    }
 
 }
 ```

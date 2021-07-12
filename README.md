@@ -10,13 +10,6 @@ Ajoutez un fichier nommé Constants.php dans le dossier *src/Utils/* et collez-y
 
 namespace App\Utils;
 
-/**
- * Classe contenant les constantes de l'application
- */
-<?php
-
-namespace App\Utils;
-
 use App\Entity\User;
 
 /**

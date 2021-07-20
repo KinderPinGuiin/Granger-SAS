@@ -6,8 +6,6 @@ use App\Form\ImageType;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
-use App\Repository\OffreRepository;
-use App\Repository\PosteRepository;
 use App\Form\CandidatureHandlingType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,16 +40,6 @@ class AdminController extends AbstractController {
      * @var ContenuRepository
      */
     private $contentRepository;
-
-    /**
-     * @var PosteRepository
-     */
-    private $posteRepository;
-
-    /**
-     * @var OffreRepository
-     */
-    private $offreRepository;
 
     /**
      * @var ObjectManager
@@ -221,9 +209,6 @@ class AdminController extends AbstractController {
             ->htmlTemplate("emails/candidature_mail.html.twig")
             ->context([
                 "candidat" => $candidat,
-                "poste" => $candidature->getPoste() == null 
-                           ? $candidature->getOffre()->getName() 
-                           : $candidature->getPoste()->getName(),
                 "message" => nl2br($form->get("message")->getData())
             ]);
         // Envoi du mail
@@ -452,7 +437,6 @@ class AdminController extends AbstractController {
             
             case "admin_users":
             case "admin_users_POST":
-            case "admin_postes":
                 return in_array("ROLE_ADMIN", $userRoles);
 
             default:

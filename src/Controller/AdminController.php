@@ -13,6 +13,8 @@ use App\Repository\CandidatureRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\HttpFoundation\Response;
+use App\Repository\ValidationRequestRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -42,11 +44,16 @@ class AdminController extends AbstractController {
     private $contentRepository;
 
     /**
+     * @var ValidationRequestRepository
+     */
+    private $vReqRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -55,6 +62,7 @@ class AdminController extends AbstractController {
         $this->userRepository = $repository;
         $this->candidRepository = $cRepository;
         $this->contentRepository = $coRepository;
+        $this->vReqRepository = $vRep;
         $this->em = $em;
     }
 
@@ -421,22 +429,86 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
+        $requests = $this->vReqRepository->findBy(["accepted" => null]);
 
-        return $this->render("admin/validations_requests.html.twig");
+        return $this->render("admin/validations_requests.html.twig", [
+            "requests" => $requests
+        ]);
     }
 
     /**
-     * @Route("/validation-request", name="_validation_request")
+     * @Route("/validation-request/{id}", name="_validation_request")
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function validationRequest(Request $req)
+    public function validationRequest(Request $req, int $id)
     {
         if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
+        $request = $this->vReqRepository->findBy(["id" => $id]);
+        if (empty($request)) {
+            return $this->redirectToRoute("admin_validations_requests");
+        }
+        $request = $request[0];
+        // Si la demande a été traitée on l'actualise dans la BDD
+        if ($req->get("accept") !== null || $req->get("deny") != null) {
+            $request->setAccepted($req->get("accept") !== null);
+            $this->em->flush();
+            return $this->redirectToRoute("admin_validations_requests");
+        }
 
-        return $this->render("admin/validation_request.html.twig");
+        return $this->render("admin/validation_request.html.twig", [
+            "request" => $request
+        ]);
+    }
+
+    /**
+     * @Route("/validation-request/{id}/file/permis", name="_validation_request_permis")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function validationRequestPermis(Request $req, int $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $request = $this->vReqRepository->findBy(["id" => $id]);
+        if (empty($request)) {
+            return $this->redirectToRoute("admin_validations_requests");
+        }
+
+        return new Response(
+            stream_get_contents($request[0]->getPermis()),
+            Response::HTTP_OK, 
+            [
+                "content-type" => "application/pdf"
+            ]
+        );
+    }
+
+    /**
+     * @Route("/validation-request/{id}/file/contrat", name="_validation_request_contrat")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function validationRequestContrat(Request $req, int $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $request = $this->vReqRepository->findBy(["id" => $id]);
+        if (empty($request)) {
+            return $this->redirectToRoute("admin_validations_requests");
+        }
+
+        return new Response(
+            stream_get_contents($request[0]->getContrat()),
+            Response::HTTP_OK, 
+            [
+                "content-type" => "application/pdf"
+            ]
+        );
     }
 
     /**
@@ -455,6 +527,10 @@ class AdminController extends AbstractController {
             case "admin_candidatures":
             case "admin_candidature":
             case "admin_candidature_mail":
+            case "admin_validations_requests":
+            case "admin_validation_request":
+            case "admin_validation_request_permis":
+            case "admin_validation_request_contrat":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

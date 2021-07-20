@@ -67,7 +67,7 @@
     }) }}
     <div class="signup_devide_container">
     {{ form_errors(registrationForm.agreeTerms) }}
-    <label for="{{ registrationForm.agreeTerms.vars.id}}">Accepter les <a href="#">CGU</a></label>
+    <label for="{{ registrationForm.agreeTerms.vars.id}}">Accepter les <a href="{{ path("cgu") }}">CGU</a></label>
     {{ form_row(registrationForm.agreeTerms) }}
     </div>
     {{ form_errors(registrationForm.captcha) }}

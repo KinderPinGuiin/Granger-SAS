@@ -54,6 +54,15 @@ class UploadController extends AbstractController
      */
     public function upload(Request $req): Response
     {
+        // On vérifie que l'utilisateur peur postuler
+        if (
+            in_array("ROLE_CONDUCTOR", $this->getUser()->getRoles())
+            || in_array("ROLE_ACCEPTED", $this->getUser()->getRoles())
+        ) {
+            return $this->render('upload/index.html.twig', [
+                "canUpload" => false 
+            ]);
+        }
         $commonHandle = $this->commonHandle($req);
         if (isset($commonHandle["error"])) {
             return $commonHandle["error"];
@@ -66,7 +75,7 @@ class UploadController extends AbstractController
             // l'accueil
             if ($this->isUploaded) {
                 // Si le poste est valide on ajoute la candidature en base de 
-                // données
+                // données et on ajoute un rôle à l'utilisateur
                 $this->addCandidature();
 
                 // Et on renvoie l'utilisateur sur la page d'accueil
@@ -123,6 +132,9 @@ class UploadController extends AbstractController
         $candidature->setDate(new DateTime());
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
+        $this->getUser()->setRoles([
+            $this->getUser()->getRealRole(), "ROLE_POSTULATED"
+        ]);
         $entityManager->flush();
     }
 

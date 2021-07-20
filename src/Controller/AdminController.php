@@ -185,6 +185,7 @@ class AdminController extends AbstractController {
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
             // On actualise la candidature et on envoie l'email
+            $candidature->getUser()->setStatus(Constants::ACCEPTED_STATUS);
             $this->em->flush();
             $this->sendMail(
                 $mailer, $candidat->getEmail(), 
@@ -460,9 +461,7 @@ class AdminController extends AbstractController {
         // Si la demande a été traitée on l'actualise dans la BDD
         if ($req->get("accept") !== null || $req->get("deny") != null) {
             $request->setAccepted($req->get("accept") !== null);
-            $request->getUser()->setRoles([
-                $request->getUser()->getRealRole(), "ROLE_CONDUCTOR"
-            ]);
+            $request->getUser()->setStatus(Constants::DRIVER_STATUS);
             $this->em->flush();
             // On envoie également un mail
             $this->sendMail(

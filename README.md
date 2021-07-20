@@ -27,7 +27,7 @@ class Constants {
     const PUBLIC_FOLDER = self::ROOT . "public/";
 
     // ID du dossier racine Google Drive
-    const ID_DRIVE_ROOT = "Identifiant de votre dossier";
+    const ID_DRIVE_ROOT = "1D3vgBSlyekKEDwEAQ5C4KVYwWOOVnL-g";
 
     // Nom du dossier de CV
     const CV_FOLDER_NAME = "CV";
@@ -63,6 +63,14 @@ class Constants {
         );
         return $folderName;
     }
+
+    /*
+     * Status des utilisateurs
+     */
+    const DEFAULT_STATUS = "DEFAULT";
+    const POSTULATED_STATUS = "POSTULATED";
+    const ACCEPTED_STATUS = "ACCEPTED";
+    const DRIVER_STATUS = "DRIVER";
 
 }
 ```

@@ -27,12 +27,7 @@ class RegistrationFormType extends AbstractType
                     'placeholder' => 'Email'
                 )
             ))
-            // ->add('nom', array(
-            //     'label' => ' ',
-            //     'attr' => array(
-            //         'placeholder' => 'Nom'
-            //     )
-            // ))
+            ->add('nom')
             ->add('prenom')
             ->add('plainPassword', RepeatedType::class, [
                 'mapped' => false,

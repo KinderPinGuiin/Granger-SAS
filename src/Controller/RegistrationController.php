@@ -42,6 +42,7 @@ class RegistrationController extends AbstractController
                 )
             );
             $user->setRoles(["ROLE_USER"]);
+            $user->setStatus(Constants::DEFAULT_STATUS);
             $this->createDriveFolder($user);
 
             $entityManager = $this->getDoctrine()->getManager();

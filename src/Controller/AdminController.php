@@ -327,12 +327,12 @@ class AdminController extends AbstractController {
                 ? $_POST["about"] 
                 : $contenus[1]->getContent()
             ),
-            "aboutContent" => (
+            "acceptMailContent" => (
                 isset($_POST["accept_mail"]) 
                 ? $_POST["accept_mail"] 
                 : $contenus[2]->getContent()
             ),
-            "aboutContent" => (
+            "denyMailContent" => (
                 isset($_POST["deny_mail"]) 
                 ? $_POST["deny_mail"] 
                 : $contenus[3]->getContent()
@@ -409,6 +409,34 @@ class AdminController extends AbstractController {
         return $this->render("admin/users.html.twig", [
             "users" => $this->userRepository->findAll()
         ]);
+    }
+
+    /**
+     * @Route("/validations-requests", name="_validations_requests")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function validationsRequests(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/validations_requests.html.twig");
+    }
+
+    /**
+     * @Route("/validation-request", name="_validation_request")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function validationRequest(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/validation_request.html.twig");
     }
 
     /**

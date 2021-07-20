@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\ValidationRequest;
 use App\Utils\Constants;
 use App\Form\UserUpdateType;
 use App\Form\ValidationType;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Constraints\Valid;
 
 /**
  * @Route("/profil", name="profil")
@@ -140,7 +142,23 @@ class ProfilController extends AbstractController
         $form = $this->createForm(ValidationType::class);
         $form->handleRequest($req);
         if ($form->isSubmitted() && $form->isValid()) {
-            // On envoie la demande de validation
+            // On ajoute la demande de validation dans la BDD
+            $validation = new ValidationRequest();
+            $validation->setUser($this->getUser());
+            $validation->setPermis(
+                file_get_contents(
+                    $form->get("permis")->getData()->getPathname()
+                )
+            );
+            $validation->setContrat(
+                file_get_contents(
+                    $form->get("contrat")->getData()->getPathname()
+                )
+            );
+            $this->em->persist($validation);
+            $this->em->flush();
+
+            return $this->redirectToRoute("profil");
         }
 
         return $this->render("profil/validation.html.twig", [

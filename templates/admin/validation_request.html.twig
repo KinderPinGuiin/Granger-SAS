@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Demande de validation de {{ user.prenom }} {{ user.nom }} {% endblock %}
+{% block title %} Admin - Demande de validation de {{ request.user.prenom }} {{ request.user.nom }} {% endblock %}
 
 {% block body %}
-    <h1>Demande de validation de {{ user.prenom }} {{ user.nom }}</h1>
+    <h1>Demande de validation de {{ request.user.prenom }} {{ request.user.nom }}</h1>
 {% endblock %}

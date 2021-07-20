@@ -8,15 +8,12 @@ use App\Form\UploadType;
 use App\Utils\Constants;
 use App\Entity\Candidature;
 use App\Utils\GoogleDriveManager;
-use App\Repository\PosteRepository;
 use App\Repository\CandidatureRepository;
-use App\Repository\OffreRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class UploadController extends AbstractController
 {
@@ -36,16 +33,6 @@ class UploadController extends AbstractController
     private $candRepository;
 
     /**
-     * @var PosteRepository
-     */
-    private $posteRepository;
-
-    /**
-     * @var OffreRepository
-     */
-    private $offreRepository;
-
-    /**
      * Indique si des fichiers ont été déposés sur le drive ou non
      * @var bool
      */
@@ -57,11 +44,9 @@ class UploadController extends AbstractController
      */
     private $formErrors = [];
 
-    public function __construct(CandidatureRepository $c, PosteRepository $pRep, OffreRepository $oRep)
+    public function __construct(CandidatureRepository $c)
     {
         $this->candRepository = $c;
-        $this->posteRepository = $pRep;
-        $this->offreRepository = $oRep;
     }
 
     /**
@@ -74,22 +59,15 @@ class UploadController extends AbstractController
             return $commonHandle["error"];
         }
         $form = $commonHandle["form"];
-        // Si le poste est invalide on affiche une erreur
-        $poste = $this->posteRepository->findBy([
-            "slug" => $form->get("poste")->getData()
-        ]);
-        if ($form->isSubmitted() && empty($poste)) {
-            $this->formErrors[] = "Le poste séléctionné est invalide";
-        } else {
-            // Sinon on regarde si des fichiers ont été déposés
-            // Et si oui on les upload
+        if ($form->isSubmitted() && $form->isValid()) {
+            // On upload
             $this->handleUpload($form);
             // Si les fichiers ont été déposés on redirige l'utilisateur à 
             // l'accueil
             if ($this->isUploaded) {
                 // Si le poste est valide on ajoute la candidature en base de 
                 // données
-                $this->addCandidature($poste[0]);
+                $this->addCandidature();
 
                 // Et on renvoie l'utilisateur sur la page d'accueil
                 return $this->redirectToRoute("home", [
@@ -103,47 +81,6 @@ class UploadController extends AbstractController
             "uploadForm" => $form->createView(),
             "formErrors" => $this->formErrors,
             "view" => "spontanee"
-        ]);
-    }
-
-    /**
-     * @Route("/upload/{offreID}", name="upload_offre")
-     */
-    public function uploadOffre(Request $req, string $offreID)
-    {
-        $commonHandle = $this->commonHandle($req);
-        if (isset($commonHandle["error"])) {
-            return $commonHandle["error"];
-        }
-        // Si l'offre n'existe pas on redirige l'utilisateur à la page des 
-        // offres
-        $offre = $this->offreRepository->findBy(["id" => $offreID]);
-        if (empty($offre) || !$offre[0]->getOnline()) {
-            return $this->redirectToRoute("offres");
-        }
-        $form = $commonHandle["form"];
-        // On regarde si des fichiers ont été déposés
-        // Et si oui on les upload
-        $this->handleUpload($form);
-        // Si les fichiers ont été déposés on redirige l'utilisateur à 
-        // l'accueil
-        if ($this->isUploaded) {
-            // Si le poste est valide on ajoute la candidature en base de 
-            // données
-            $this->addCandidature(null, $offre[0]);
-
-            // Et on renvoie l'utilisateur sur la page d'accueil
-            return $this->redirectToRoute("home", [
-                "message" => "Fichiers déposés avec succès"
-            ]);
-        }
-
-        return $this->render('upload/index.html.twig', [
-            "hasCandidature" => false,
-            "uploadForm" => $form->createView(),
-            "formErrors" => $this->formErrors,
-            "view" => "offre",
-            "offre" => $offre[0]
         ]);
     }
 
@@ -179,16 +116,11 @@ class UploadController extends AbstractController
         ];
     }
 
-    private function addCandidature($poste = null, $offre = null)
+    private function addCandidature()
     {
         $candidature = new Candidature();
         $candidature->setUser($this->getUser());
         $candidature->setDate(new DateTime());
-        if ($poste) {
-            $candidature->setPoste($poste);
-        } else {
-            $candidature->setOffre($offre);
-        }
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
         $entityManager->flush();

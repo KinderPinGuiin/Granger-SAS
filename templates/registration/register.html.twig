@@ -9,16 +9,19 @@
 {% block body %}
 <div class="signup_container">
 
-<form class="signup_form">
+<div>
 
     {% for flashError in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <p class="signup_title">S'inscrire</p>
-
     {% form_theme registrationForm "forms/registration/registration_form_template.html.twig" %}
-    {{ form_start(registrationForm) }}
+    {{ form_start(registrationForm.nom, {
+        attr: {
+            class: 'signup_form'
+        }
+    }) }}
+    <p class="signup_title">S'inscrire</p>
     <div class="signup_devide_container">
     {{ form_row(registrationForm.nom, {
         attr: {
@@ -38,6 +41,7 @@
             placeholder: "Email"
         }
     }) }}
+    {{ form_errors(registrationForm.plainPassword.first) }}
     <div class="signup_devide_container">
     {{ form_row(registrationForm.plainPassword.first, {
         attr: {
@@ -50,6 +54,7 @@
         }
     }) }}
     </div>
+    {{ form_errors(registrationForm.telephone) }}
     {{ form_row(registrationForm.telephone, {
         attr: {
             placeholder: "Téléphone"
@@ -61,9 +66,11 @@
         }
     }) }}
     <div class="signup_devide_container">
+    {{ form_errors(registrationForm.agreeTerms) }}
     <label for="{{ registrationForm.agreeTerms.vars.id}}">Accepter les <a href="#">CGU</a></label>
     {{ form_row(registrationForm.agreeTerms) }}
     </div>
+    {{ form_errors(registrationForm.captcha) }}
     {{ form_row(registrationForm.captcha, {
         attr: {
             placeholder: "Saisissez les caractères",
@@ -72,6 +79,6 @@
         {{ form_rest(registrationForm) }}
         <button type="submit" class="signup_button">Inscription</button>
     {{ form_end(registrationForm) }}
-</form>
+</div>
 </div>
 {% endblock %}

@@ -412,6 +412,34 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/validations-requests", name="_validations_requests")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function validationsRequests(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/validations_requests.html.twig");
+    }
+
+    /**
+     * @Route("/validation-request", name="_validation_request")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function validationRequest(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/validation_request.html.twig");
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 

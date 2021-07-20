@@ -394,19 +394,19 @@ class AdminController extends AbstractController {
         // On définit son nouveau rôle
         switch ($_POST["role"]) {
             case "user":
-                $user->setRoles(["ROLE_USER"]);
+                $user->setRealRole("ROLE_USER");
                 break;
 
             case "editor":
-                $user->setRoles(["ROLE_EDITOR"]);
+                $user->setRealRole("ROLE_EDITOR");
                 break;
 
             case "rh":
-                $user->setRoles(["ROLE_RH"]);
+                $user->setRealRole("ROLE_RH");
                 break;
 
             case "admin":
-                $user->setRoles(["ROLE_ADMIN"]);
+                $user->setRealRole("ROLE_ADMIN");
                 break;
             
             default:

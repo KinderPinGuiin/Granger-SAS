@@ -60,8 +60,9 @@ class RegistrationFormType extends AbstractType
             ->add('captcha', CaptchaType::class, [
                 "mapped" => false,
                 "attr" => [
-                    "class" => "captcha"
-                ]
+                    "class" => "captcha",
+                ],
+                "invalid_message" => "Code captcha incorrect"
             ])
         ;
     }

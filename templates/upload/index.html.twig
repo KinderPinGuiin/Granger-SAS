@@ -12,7 +12,9 @@
 
 {% block body %}
     <div class="container">
-        {% if hasCandidature %}
+        {% if canUpload is defined and not canUpload %}
+            <h1>Désolé, vous n'êtes pas en mesure de postuler chez Granger SAS</h1>
+        {% elseif hasCandidature %}
             <h1>Vous avez déjà une candidature en cours merci de réessayer ultérieurement</h1>
         {% else %}
             {% form_theme uploadForm "forms/upload/upload_form_template.html.twig" %}

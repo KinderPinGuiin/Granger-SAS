@@ -1,7 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Admin - Demande de validation de {{ user.prenom }} {{ user.nom }} {% endblock %}
+{% block title %} Admin - Demande de validation de {{ request.user.prenom }} {{ request.user.nom }} {% endblock %}
 
 {% block body %}
-    <h1>Demande de validation de {{ user.prenom }} {{ user.nom }}</h1>
+    <h1>Demande de validation de {{ request.user.prenom }} {{ request.user.nom }}</h1>
+    <div>
+        <p>Contrat de travail :</p>
+        <iframe src="{{ path('admin_validation_request_contrat', {id: request.id}) }}"></iframe>
+    </div>
+    <div>
+        <p>Permis de conduire</p>
+        <iframe src="{{ path('admin_validation_request_permis', {id: request.id}) }}"></iframe>
+    </div>
+    <a href="{{ path('admin_validation_request', {id: request.id}) }}?accept=true">Accepter</a>
+    <a href="{{ path('admin_validation_request', {id: request.id}) }}?deny=true">Refuser</a>
 {% endblock %}

@@ -86,6 +86,7 @@ body,
 .signup_devide_container .form_row {
     width: 38%;
     margin: 0 0.5rem;
+    z-index: 2;
 }
 
 .signup_checkbox {

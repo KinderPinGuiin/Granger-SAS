@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Utils\Constants;
 use App\Form\UserUpdateType;
+use App\Form\ValidationType;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -97,7 +98,7 @@ class ProfilController extends AbstractController
     /**
      * @Route("/delete", name="_delete")
      */
-    public function deleteAccunt(Request $req, UserRepository $userRepository, EntityManagerInterface $em)
+    public function deleteAccount(Request $req, UserRepository $userRepository, EntityManagerInterface $em)
     {
         // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
         if (!$this->getUser()) {
@@ -125,6 +126,27 @@ class ProfilController extends AbstractController
         }
 
         return $this->render("profil/delete.html.twig");
+    }
+
+    /**
+     * @Route("/validation", name="_validation")
+     */
+    public function validate(Request $req): Response
+    {
+        // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
+        if (!$this->getUser()) {
+            return $this->redirectToRoute("home");
+        }
+        $form = $this->createForm(ValidationType::class);
+        $form->handleRequest($req);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // On envoie la demande de validation
+        }
+
+        return $this->render("profil/validation.html.twig", [
+            "form" => $form->createView(),
+            "user" => $this->getUser()
+        ]);
     }
 
 }

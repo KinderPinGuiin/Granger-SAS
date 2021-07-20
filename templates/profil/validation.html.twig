@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Validation du profil - {{ user.prenom }} {{ user.nom }}{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {% form_theme form "forms/global/global_form_template.html.twig" %}
+        {{ form_rest(form) }}
+        <input type="submit" value="Envoyer la demande" />
+    {{ form_end(form) }}
+{% endblock %}

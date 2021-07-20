@@ -1,7 +1,12 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}À propos de nous{% endblock %}
+{% block stylesheets %}<link href="/css/home/style.css" rel="stylesheet">{% endblock %}
 
 {% block body %}
-    {{ content|raw }}
+<div class=" home_container">
+    <div class="home_paragraph">
+        {{ content|raw }}
+    </div>
+</div>
 {% endblock %}

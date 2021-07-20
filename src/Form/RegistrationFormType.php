@@ -21,8 +21,18 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailType::class)
-            ->add('nom')
+            ->add('email', EmailType::class, array(
+                'label' => ' ',
+                'attr' => array(
+                    'placeholder' => 'Email'
+                )
+            ))
+            // ->add('nom', array(
+            //     'label' => ' ',
+            //     'attr' => array(
+            //         'placeholder' => 'Nom'
+            //     )
+            // ))
             ->add('prenom')
             ->add('plainPassword', RepeatedType::class, [
                 'mapped' => false,
@@ -46,7 +56,12 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('telephone', TelType::class)
+            ->add('telephone', TelType::class, array(
+                'label' => ' ',
+                'attr' => array(
+                    'placeholder' => 'Téléphone'
+                )
+            ))
             ->add('ville')
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,

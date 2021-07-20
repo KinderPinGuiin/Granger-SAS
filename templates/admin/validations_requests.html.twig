@@ -4,4 +4,11 @@
 
 {% block body %}
     <h1>Demandes de validation en cours</h1>
+    {% for request in requests %}
+        <div class="request">
+            <a href="{{ path('admin_validation_request', { id: request.id }) }}">
+                Demande de {{ request.user.prenom }} {{ request.user.nom }}
+            </a>
+        </div>
+    {% endfor %}
 {% endblock %}

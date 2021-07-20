@@ -78,6 +78,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $candidatures;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
+
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
@@ -128,7 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Renvoie le vrai rôle de l'utilisateur
+     * Renvoie le rôle principal de l'utilisateur
      * 
      * @return string Le rôle de l'utilisateur
      */
@@ -140,6 +145,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Définit le rôle principal de l'utilisateur
+     */
+    public function setRealRole(string $role)
+    {
+        $this->roles[0] = $role;
 
         return $this;
     }
@@ -265,6 +280,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $candidature->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

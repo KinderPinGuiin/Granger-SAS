@@ -18,7 +18,7 @@ class ValidationRequest
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist", "remove"})
      */
     private $user;
 
@@ -33,7 +33,7 @@ class ValidationRequest
     private $contrat;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable="true")
      */
     private $accepted;
 

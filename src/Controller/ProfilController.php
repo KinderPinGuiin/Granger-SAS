@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\ValidationRequest;
 use App\Utils\Constants;
 use App\Form\UserUpdateType;
+use App\Form\ValidationType;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +18,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Constraints\Valid;
 
 /**
  * @Route("/profil", name="profil")
@@ -97,7 +100,7 @@ class ProfilController extends AbstractController
     /**
      * @Route("/delete", name="_delete")
      */
-    public function deleteAccunt(Request $req, UserRepository $userRepository, EntityManagerInterface $em)
+    public function deleteAccount(Request $req, UserRepository $userRepository, EntityManagerInterface $em)
     {
         // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
         if (!$this->getUser()) {
@@ -125,6 +128,43 @@ class ProfilController extends AbstractController
         }
 
         return $this->render("profil/delete.html.twig");
+    }
+
+    /**
+     * @Route("/validation", name="_validation")
+     */
+    public function validate(Request $req): Response
+    {
+        // Si l'utilisateur n'est pas connecté on le redirige sur l'accueil
+        if (!$this->getUser()) {
+            return $this->redirectToRoute("home");
+        }
+        $form = $this->createForm(ValidationType::class);
+        $form->handleRequest($req);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // On ajoute la demande de validation dans la BDD
+            $validation = new ValidationRequest();
+            $validation->setUser($this->getUser());
+            $validation->setPermis(
+                file_get_contents(
+                    $form->get("permis")->getData()->getPathname()
+                )
+            );
+            $validation->setContrat(
+                file_get_contents(
+                    $form->get("contrat")->getData()->getPathname()
+                )
+            );
+            $this->em->persist($validation);
+            $this->em->flush();
+
+            return $this->redirectToRoute("profil");
+        }
+
+        return $this->render("profil/validation.html.twig", [
+            "form" => $form->createView(),
+            "user" => $this->getUser()
+        ]);
     }
 
 }

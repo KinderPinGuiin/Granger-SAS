@@ -29,7 +29,7 @@ class UserUpdateType extends AbstractType
                     new Length([
                         'min' => 6,
                         'minMessage' => 'Le mot de passe doit contenir au moins' 
-                                        . '6 caractères',
+                                        . ' 6 caractères',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                         "maxMessage" => "Le mot de passe ne doit pas contenir"

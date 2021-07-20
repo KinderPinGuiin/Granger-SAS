@@ -14,32 +14,10 @@ use Symfony\Component\Validator\Constraints\NotNull;
 
 class UploadType extends AbstractType
 {
-    /**
-     * @var PosteRepository
-     */
-    private $posteRepository;
-
-    public function __construct(PosteRepository $pRep)
-    {
-        $this->posteRepository = $pRep;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        // On récupère tous les postes
-        $choices = [];
-        foreach ($this->posteRepository->findAll() as $poste) {
-            $choices[$poste->getName()] = $poste->getSlug();
-        }
         // Et on construit le formulaire
         $builder
-            ->add("poste", ChoiceType::class, [
-                "label" => false,
-                "mapped" => false,
-                "invalid_message" => "Valeur séléctionnée invalide",
-                "choices" => $choices,
-                'placeholder' => 'Choisissez un poste',
-            ])
             ->add('cv', FileType::class, [
                 "label" => "Déposer un CV",
                 "mapped" => false,

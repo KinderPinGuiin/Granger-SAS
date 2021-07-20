@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\CandidatureRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -35,16 +34,6 @@ class Candidature
      * @ORM\Column(type="date", nullable=true)
      */
     private $date;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Poste::class)
-     */
-    private $poste;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Offre::class, inversedBy="candidatures")
-     */
-    private $offre;
 
     public function getId(): ?int
     {
@@ -83,30 +72,6 @@ class Candidature
     public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
-
-        return $this;
-    }
-
-    public function getPoste(): ?Poste
-    {
-        return $this->poste;
-    }
-
-    public function setPoste(?Poste $poste): self
-    {
-        $this->poste = $poste;
-
-        return $this;
-    }
-
-    public function getOffre(): ?Offre
-    {
-        return $this->offre;
-    }
-
-    public function setOffre(?Offre $offre): self
-    {
-        $this->offre = $offre;
 
         return $this;
     }

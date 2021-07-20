@@ -13,7 +13,6 @@
                 <tr>
                     <th>Date</th>
                     <th>Statut</th>
-                    <th>Poste</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,15 +27,6 @@
                                     En cours de traitement
                                 {% elseif candidature.acceptee == false %} 
                                     Refusée
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if candidature.poste is not null %}
-                                    {{ candidature.poste.name }}
-                                {% else %}
-                                    <a href="{{ path("offre", {id: candidature.offre.id}) }}">
-                                        {{ candidature.offre.name }}
-                                    </a>
                                 {% endif %}
                             </td>
                         </tr>

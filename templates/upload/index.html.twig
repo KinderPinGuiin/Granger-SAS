@@ -23,15 +23,6 @@
                         {{ error }}
                     </div>
                 {% endfor %}
-                {% if not (view == "offre") %}
-                    {{ form_widget(uploadForm.poste) }}
-                {% else %}
-                    {{ form_widget(uploadForm.poste, {
-                        "required": false,
-                        "attr": {"style": "display:none"}
-                    }) }}
-                    <h2>Postuler pour l'offre : {{ offre.name }}</h2>
-                {% endif %}
                 <div class="upload-areas">
                     <div class="area" data-original-message="Déposer un cv">
                         {{ form_row(uploadForm.cv) }}

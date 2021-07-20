@@ -10,13 +10,6 @@ Ajoutez un fichier nommé Constants.php dans le dossier *src/Utils/* et collez-y
 
 namespace App\Utils;
 
-/**
- * Classe contenant les constantes de l'application
- */
-<?php
-
-namespace App\Utils;
-
 use App\Entity\User;
 
 /**
@@ -74,7 +67,7 @@ class Constants {
 }
 ```
 
-Remplacez la ligne 17 ("*Identifiant de votre dossier*") par l'ID de votre dossier Google Drive.
+Remplacez la ligne 22 ("*Identifiant de votre dossier*") par l'ID de votre dossier Google Drive.
 
 # Configuration du fichier .env.local
 

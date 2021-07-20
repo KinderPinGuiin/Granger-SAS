@@ -1,0 +1,58 @@
+{% apply inline_css %}
+<style>
+    * {
+        font-family: "Montserrat", sans-serif;
+    }
+
+    header {
+        display: flex;
+    }
+
+    header a {
+        padding: 0 10px 0 0;
+        height: 50px;
+    }
+
+    header a img {
+        width: 50px;
+        height: 50px;
+    }
+
+    h1 {
+        font-size: 30px;
+        line-height: 50px;
+        margin: 0;
+    }
+
+    p {
+        font-size: 1.2rem;
+        padding-left: 20px;
+    }
+
+    p a {
+        font-size: 0.8rem;
+    }
+</style>
+
+<header>
+    <a href="{{ app.request.getSchemeAndHttpHost() ~ path("home") }}">
+        <img src="{{ email.image('/emails/embed/logo_n.png') }}" alt="Logo Granger SAS">
+    </a>
+    <h1>Votre Candidature chez Granger SAS</h1>
+</header>
+
+<section>
+    <p>
+        {% if accepted %}
+            Toutes vos pièces ont été acceptées !
+        {% else %}
+            Vos pièces ne sont pas toutes valides, vous pouvez cependant 
+            les redéposer.
+        {% endif %}
+        <br/>
+        <a href="{{ app.request.getSchemeAndHttpHost() ~ path("profil") }}">
+            Consulter votre profil
+        </a>
+    </p>
+</section>
+{% endapply %}

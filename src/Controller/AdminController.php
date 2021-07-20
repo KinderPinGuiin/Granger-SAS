@@ -216,7 +216,7 @@ class AdminController extends AbstractController {
     /**
      * Envoie un email
      */
-    private function sendMail($mailer, $to, $subject, $template, $context)
+    private function sendMail($mailer, $to, $subject, $template, $context = [])
     {
         // Rédaction du mail
         $email = (new TemplatedEmail())
@@ -447,7 +447,7 @@ class AdminController extends AbstractController {
      * 
      * @return mixed RedirectResponse ou Response
      */
-    public function validationRequest(Request $req, int $id)
+    public function validationRequest(Request $req, int $id, MailerInterface $mailer)
     {
         if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
@@ -465,7 +465,13 @@ class AdminController extends AbstractController {
             ]);
             $this->em->flush();
             // On envoie également un mail
-            
+            $this->sendMail(
+                $mailer, 
+                $request->getUser()->getEmail(),
+                "Vérification de votre profil Granger SAS",
+                "emails/verification_mail.html.twig",
+                ["accepted" => $req->get("accept") !== null]
+            );
             return $this->redirectToRoute("admin_validations_requests");
         }
 

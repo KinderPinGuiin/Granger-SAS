@@ -186,7 +186,16 @@ class AdminController extends AbstractController {
         if ($form->isSubmitted() && $form->isValid()) {
             // On actualise la candidature et on envoie l'email
             $this->em->flush();
-            $this->sendMail($mailer, $candidat, $candidature, $form);
+            $this->sendMail(
+                $mailer, $candidat->getEmail(), 
+                "Votre candidature chez Granger SAS",
+                "emails/candidature_mail.html.twig", 
+                [
+                    "candidat" => $candidat,
+                    "message" => nl2br($form->get("message")->getData()),
+                    "candidature" => $candidature
+                ]
+            );
             return $this->redirectToRoute("admin_candidatures");
         }
         // Si elles ne sont pas bonnes on renvoie l'utilisateur sur le 
@@ -205,20 +214,17 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * Envoie l'email de réponse
+     * Envoie un email
      */
-    private function sendMail($mailer, $candidat, $candidature, $form)
+    private function sendMail($mailer, $to, $subject, $template, $context)
     {
         // Rédaction du mail
         $email = (new TemplatedEmail())
             ->from("noreply@grangersas.com")
-            ->to($candidat->getEmail())
-            ->subject("Votre candidature pour Granger SAS")
-            ->htmlTemplate("emails/candidature_mail.html.twig")
-            ->context([
-                "candidat" => $candidat,
-                "message" => nl2br($form->get("message")->getData())
-            ]);
+            ->to($to)
+            ->subject($subject)
+            ->htmlTemplate($template)
+            ->context($context);
         // Envoi du mail
         $mailer->send($email);
     }
@@ -454,7 +460,12 @@ class AdminController extends AbstractController {
         // Si la demande a été traitée on l'actualise dans la BDD
         if ($req->get("accept") !== null || $req->get("deny") != null) {
             $request->setAccepted($req->get("accept") !== null);
+            $request->getUser()->setRoles([
+                $request->getUser()->getRealRole(), "ROLE_CONDUCTOR"
+            ]);
             $this->em->flush();
+            // On envoie également un mail
+            
             return $this->redirectToRoute("admin_validations_requests");
         }
 

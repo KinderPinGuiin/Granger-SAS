@@ -327,12 +327,12 @@ class AdminController extends AbstractController {
                 ? $_POST["about"] 
                 : $contenus[1]->getContent()
             ),
-            "aboutContent" => (
+            "acceptMailContent" => (
                 isset($_POST["accept_mail"]) 
                 ? $_POST["accept_mail"] 
                 : $contenus[2]->getContent()
             ),
-            "aboutContent" => (
+            "denyMailContent" => (
                 isset($_POST["deny_mail"]) 
                 ? $_POST["deny_mail"] 
                 : $contenus[3]->getContent()

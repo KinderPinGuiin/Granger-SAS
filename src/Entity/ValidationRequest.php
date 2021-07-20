@@ -32,6 +32,11 @@ class ValidationRequest
      */
     private $contrat;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $accepted;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +74,18 @@ class ValidationRequest
     public function setContrat($contrat): self
     {
         $this->contrat = $contrat;
+
+        return $this;
+    }
+
+    public function getAccepted(): ?bool
+    {
+        return $this->accepted;
+    }
+
+    public function setAccepted(bool $accepted): self
+    {
+        $this->accepted = $accepted;
 
         return $this;
     }

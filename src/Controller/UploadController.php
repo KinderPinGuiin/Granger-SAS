@@ -56,8 +56,8 @@ class UploadController extends AbstractController
     {
         // On vérifie que l'utilisateur peur postuler
         if (
-            in_array("ROLE_CONDUCTOR", $this->getUser()->getRoles())
-            || in_array("ROLE_ACCEPTED", $this->getUser()->getRoles())
+            $this->getUser()->getStatus() === Constants::DRIVER_STATUS
+            || $this->getUser()->getStatus() === Constants::ACCEPTED_STATUS
         ) {
             return $this->render('upload/index.html.twig', [
                 "canUpload" => false 
@@ -132,9 +132,7 @@ class UploadController extends AbstractController
         $candidature->setDate(new DateTime());
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($candidature);
-        $this->getUser()->setRoles([
-            $this->getUser()->getRealRole(), "ROLE_POSTULATED"
-        ]);
+        $this->getUser()->setStatus(Constants::POSTULATED_STATUS);
         $entityManager->flush();
     }
 

@@ -72,6 +72,12 @@ class Constants {
     const ACCEPTED_STATUS = "ACCEPTED";
     const DRIVER_STATUS = "DRIVER";
 
+    /**
+     * Etapes d'une embauche
+     */
+    const CANDIDAT_STEP = "CANDIDAT";
+    const HIRE_STEP = "HIRE";
+
 }
 ```
 

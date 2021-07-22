@@ -9,6 +9,7 @@
     {% if app.user.realRole == "ROLE_ADMIN" or app.user.realRole == "ROLE_RH" %}
         <a href="{{ path("admin_candidatures") }}">Accéder aux candidatures</a>
         <a href="{{ path("admin_validations_requests") }}">Demandes de validation du profil</a>
+        <a href="{{ path("admin_documents") }}">Documents à fournir</a>
     {% endif %}
     {% if app.user.realRole == "ROLE_ADMIN" or app.user.realRole == "ROLE_EDITOR" %}
         <a href="{{ path("admin_edit") }}">Editer le contenu du site</a>

@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ValidationRequestRepository;
+use App\Repository\UploadedDocumentsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ValidationRequestRepository::class)
+ * @ORM\Entity(repositoryClass=UploadedDocumentsRepository::class)
  */
-class ValidationRequest
+class UploadedDocuments
 {
     /**
      * @ORM\Id
@@ -18,18 +18,35 @@ class ValidationRequest
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Documents::class, inversedBy="uploadedDocuments")
+     */
+    private $document;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="uploadedDocuments")
      */
     private $user;
 
     /**
-     * @ORM\Column(type="boolean", nullable="true")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $accepted;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getDocument(): ?Documents
+    {
+        return $this->document;
+    }
+
+    public function setDocument(?Documents $document): self
+    {
+        $this->document = $document;
+
+        return $this;
     }
 
     public function getUser(): ?User
@@ -49,7 +66,7 @@ class ValidationRequest
         return $this->accepted;
     }
 
-    public function setAccepted(bool $accepted): self
+    public function setAccepted(?bool $accepted): self
     {
         $this->accepted = $accepted;
 

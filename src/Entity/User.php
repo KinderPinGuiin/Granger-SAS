@@ -83,9 +83,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $status;
 
+    /**
+     * @ORM\OneToMany(targetEntity=UploadedDocuments::class, mappedBy="user")
+     */
+    private $uploadedDocuments;
+
     public function __construct()
     {
         $this->candidatures = new ArrayCollection();
+        $this->uploadedDocuments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -292,6 +298,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UploadedDocuments[]
+     */
+    public function getUploadedDocuments(): Collection
+    {
+        return $this->uploadedDocuments;
+    }
+
+    public function addUploadedDocument(UploadedDocuments $uploadedDocument): self
+    {
+        if (!$this->uploadedDocuments->contains($uploadedDocument)) {
+            $this->uploadedDocuments[] = $uploadedDocument;
+            $uploadedDocument->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUploadedDocument(UploadedDocuments $uploadedDocument): self
+    {
+        if ($this->uploadedDocuments->removeElement($uploadedDocument)) {
+            // set the owning side to null (unless already changed)
+            if ($uploadedDocument->getUser() === $this) {
+                $uploadedDocument->setUser(null);
+            }
+        }
 
         return $this;
     }

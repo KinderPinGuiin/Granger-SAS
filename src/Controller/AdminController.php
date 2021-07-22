@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Documents;
+use App\Form\AddDocumentType;
 use App\Form\ImageType;
 use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
@@ -10,11 +12,12 @@ use App\Form\CandidatureHandlingType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use App\Repository\DocumentsRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use App\Repository\ValidationRequestRepository;
+use Google\Service\CloudNaturalLanguage\Document;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -49,11 +52,16 @@ class AdminController extends AbstractController {
     private $vReqRepository;
 
     /**
+     * @var DocumentsRepository
+     */
+    private $documentsRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, DocumentsRepository $dRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -63,6 +71,7 @@ class AdminController extends AbstractController {
         $this->candidRepository = $cRepository;
         $this->contentRepository = $coRepository;
         $this->vReqRepository = $vRep;
+        $this->documentsRepository = $dRep;
         $this->em = $em;
     }
 
@@ -480,6 +489,83 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/documents", name="_documents")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function documents(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/documents.html.twig", [
+            "candidatureDocs" => $this->documentsRepository->findBy(
+                ["step" => Constants::CANDIDAT_STEP]
+            ),
+            "embaucheDocs" => $this->documentsRepository->findBy(
+                ["step" => Constants::HIRE_STEP]
+            ),
+            "addForm" => $this->createForm(AddDocumentType::class)->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/document/add", name="_add_document")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function addDocument(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $document = new Documents();
+        $form = $this->createForm(AddDocumentType::class, $document);
+        $form->handleRequest($req);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $document->setSlug(
+                strtolower(str_replace(" ", "_", $form->get("nom")->getData()))
+            );
+            $this->em->persist($document);
+            $this->em->flush();
+
+            return $this->redirectToRoute("admin_documents");
+        }
+
+        return $this->render("admin/documents.html.twig", [
+            "candidatureDocs" => $this->documentsRepository->findBy(
+                ["step" => Constants::CANDIDAT_STEP]
+            ),
+            "embaucheDocs" => $this->documentsRepository->findBy(
+                ["step" => Constants::HIRE_STEP]
+            ),
+            "addForm" => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/document/delete/{id}", name="_delete_document")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function deleteDocument(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $document = $this->documentsRepository->findBy(["id" => $id]);
+        if (empty($document)) {
+            return $this->redirectToRoute("admin_documents");
+        }
+        $document = $document[0];
+        $this->em->remove($document);
+        $this->em->flush();
+
+        return $this->redirectToRoute("admin_documents");
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -497,6 +583,9 @@ class AdminController extends AbstractController {
             case "admin_candidature_mail":
             case "admin_validations_requests":
             case "admin_validation_request":
+            case "admin_documents":
+            case "admin_add_document":
+            case "admin_delete_document":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

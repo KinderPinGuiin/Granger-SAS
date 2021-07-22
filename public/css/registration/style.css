@@ -102,27 +102,27 @@ body,
     cursor: pointer;
 }
 
-.signup_form :nth-child(9) {
+.signup_form :nth-child(11) {
     font-size: 14px;
     margin: 0.5rem 0;
 }
 
-.signup_form :nth-child(9) label {
+.signup_form :nth-child(11) label {
     width: 12rem;
 }
 
-.signup_form :nth-child(11) {
+.signup_form :nth-child(10) {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.signup_form :nth-child(11) img {
+.signup_form :nth-child(10) img {
     height: 46px;
     border-radius: 10px 0 0 10px;
 }
 
-.signup_form :nth-child(11) input {
+.signup_form :nth-child(10) input {
     border-radius: 0 10px 10px 0;
 }
 

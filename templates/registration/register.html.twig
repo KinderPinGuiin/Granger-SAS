@@ -65,17 +65,17 @@
             placeholder: "Ville"
         }
     }) }}
-    <div class="signup_devide_container">
-    {{ form_errors(registrationForm.agreeTerms) }}
-    <label for="{{ registrationForm.agreeTerms.vars.id}}">Accepter les <a href="{{ path("cgu") }}">CGU</a></label>
-    {{ form_row(registrationForm.agreeTerms) }}
-    </div>
     {{ form_errors(registrationForm.captcha) }}
     {{ form_row(registrationForm.captcha, {
         attr: {
             placeholder: "Saisissez les caractères",
         }
     }) }}
+    <div class="signup_devide_container">
+    {{ form_errors(registrationForm.agreeTerms) }}
+    <label for="{{ registrationForm.agreeTerms.vars.id}}">Accepter les <a href="{{ path("cgu") }}">CGU</a></label>
+    {{ form_row(registrationForm.agreeTerms) }}
+    </div>
         {{ form_rest(registrationForm) }}
         <button type="submit" class="signup_button">Inscription</button>
     {{ form_end(registrationForm) }}

@@ -62,7 +62,7 @@ class RegistrationFormType extends AbstractType
                 "attr" => [
                     "class" => "captcha",
                 ],
-                "invalid_message" => "Code captcha incorrect"
+                "invalid_message" => "Captcha incorrect"
             ])
         ;
     }

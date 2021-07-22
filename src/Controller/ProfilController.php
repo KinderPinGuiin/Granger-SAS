@@ -10,6 +10,7 @@ use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use App\Repository\DocumentsRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,14 +37,20 @@ class ProfilController extends AbstractController
     private $candidatureRepository;
 
     /**
+     * @var DocumentsRepository
+     */
+    private $documentsRepository;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository, EntityManagerInterface $em)
+    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository, DocumentsRepository $dRep, EntityManagerInterface $em)
     {
         $this->urlGenerator = $urlGenerator;
         $this->candidatureRepository = $candidatureRepository;
+        $this->documentsRepository = $dRep;
         $this->em = $em;
     }
 
@@ -92,7 +99,10 @@ class ProfilController extends AbstractController
         return $this->render('profil/index.html.twig', [
             "candidatures" => $candidatures,
             "user" => $this->getUser(),
-            "updateForm" => $form->createView()
+            "updateForm" => $form->createView(),
+            "documents" => $this->documentsRepository->findBy([
+                "step" => Constants::HIRE_STEP
+            ])
         ]);
     }
 
@@ -130,6 +140,20 @@ class ProfilController extends AbstractController
     }
 
     /**
+     * @Route("/upload-documents", name="_upload_documents")
+     */
+    public function uploadDocuments(): Response
+    {
+        // Si l'utilisateur n'est pas autorisé à être ici on le redirige sur son
+        // profil
+        if ($this->getUser()->getStatus() !== Constants::ACCEPTED_STATUS) {
+            return $this->redirectToRoute("profil");
+        }
+
+        return $this->redirectToRoute("profil");
+    }
+
+    /**
      * @Route("/validation", name="_validation")
      */
     public function validate(Request $req): Response
@@ -144,16 +168,6 @@ class ProfilController extends AbstractController
             // On ajoute la demande de validation dans la BDD
             $validation = new ValidationRequest();
             $validation->setUser($this->getUser());
-            $validation->setPermis(
-                file_get_contents(
-                    $form->get("permis")->getData()->getPathname()
-                )
-            );
-            $validation->setContrat(
-                file_get_contents(
-                    $form->get("contrat")->getData()->getPathname()
-                )
-            );
             $this->em->persist($validation);
             $this->em->flush();
 

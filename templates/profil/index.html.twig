@@ -65,6 +65,24 @@
             <input type="submit" value="Modifier" />
         {{ form_end(updateForm) }}
     </section>
+    {% if user.status == constant('App\\Utils\\Constants::ACCEPTED_STATUS') %}
+        <section>
+            <h2>Dépôt de vos pièces</h2>
+            <p>
+                Félicitations ! Vous avez été acceptée en tant que conducteur chez
+                Granger SAS. Pour pouvoir finaliser votre embauche, veuillez déposer
+                les pièces suivantes :
+            </p>
+            {% for document in documents %}
+                <form enctype="multipart/formdata" action="{{ path('profil_upload_documents') }}" method="POST">
+                    {{ document.nom }} :
+                    <input type="file" name="{{ document.slug }}" />
+                    {{ document.description }}
+                    <input type="submit" value="Déposer" />
+                </form>
+            {% endfor %}
+        </section>
+    {% endif %}
     {# Bouton suppression #}
     <a href="{{ path("profil_delete") }}">Supprimer le compte</a>
     {# Bouton validation #}

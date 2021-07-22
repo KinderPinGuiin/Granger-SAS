@@ -480,54 +480,6 @@ class AdminController extends AbstractController {
     }
 
     /**
-     * @Route("/validation-request/{id}/file/permis", name="_validation_request_permis")
-     * 
-     * @return mixed RedirectResponse ou Response
-     */
-    public function validationRequestPermis(Request $req, int $id)
-    {
-        if (!$this->checkAccess($req)) {
-            return $this->redirectToRoute("home");
-        }
-        $request = $this->vReqRepository->findBy(["id" => $id]);
-        if (empty($request)) {
-            return $this->redirectToRoute("admin_validations_requests");
-        }
-
-        return new Response(
-            stream_get_contents($request[0]->getPermis()),
-            Response::HTTP_OK, 
-            [
-                "content-type" => "application/pdf"
-            ]
-        );
-    }
-
-    /**
-     * @Route("/validation-request/{id}/file/contrat", name="_validation_request_contrat")
-     * 
-     * @return mixed RedirectResponse ou Response
-     */
-    public function validationRequestContrat(Request $req, int $id)
-    {
-        if (!$this->checkAccess($req)) {
-            return $this->redirectToRoute("home");
-        }
-        $request = $this->vReqRepository->findBy(["id" => $id]);
-        if (empty($request)) {
-            return $this->redirectToRoute("admin_validations_requests");
-        }
-
-        return new Response(
-            stream_get_contents($request[0]->getContrat()),
-            Response::HTTP_OK, 
-            [
-                "content-type" => "application/pdf"
-            ]
-        );
-    }
-
-    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -545,8 +497,6 @@ class AdminController extends AbstractController {
             case "admin_candidature_mail":
             case "admin_validations_requests":
             case "admin_validation_request":
-            case "admin_validation_request_permis":
-            case "admin_validation_request_contrat":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

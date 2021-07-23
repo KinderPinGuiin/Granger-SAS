@@ -12,6 +12,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
 use App\Repository\DocumentsRepository;
+use App\Repository\UploadedDocumentsRepository;
 use App\Utils\GoogleDriveUploader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,15 +46,21 @@ class ProfilController extends AbstractController
     private $documentsRepository;
 
     /**
+     * @var UploadedDocumentsRepository
+     */
+    private $uploadedDocRepository;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository, DocumentsRepository $dRep, EntityManagerInterface $em)
+    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository, DocumentsRepository $dRep, UploadedDocumentsRepository $udRep, EntityManagerInterface $em)
     {
         $this->urlGenerator = $urlGenerator;
         $this->candidatureRepository = $candidatureRepository;
         $this->documentsRepository = $dRep;
+        $this->uploadedDocRepository = $udRep;
         $this->em = $em;
     }
 
@@ -105,7 +112,9 @@ class ProfilController extends AbstractController
             "updateForm" => $form->createView(),
             "documents" => $this->documentsRepository->findBy([
                 "step" => Constants::HIRE_STEP
-            ])
+            ]),
+            "uploadedDocs" => $this->uploadedDocRepository
+                                   ->getUploadedDocsSlugs($this->getUser())
         ]);
     }
 

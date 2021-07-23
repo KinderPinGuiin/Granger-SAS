@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\UploadedDocuments;
 use App\Entity\ValidationRequest;
 use App\Utils\Constants;
 use App\Form\UserUpdateType;
@@ -10,6 +11,8 @@ use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
+use App\Repository\DocumentsRepository;
+use App\Utils\GoogleDriveUploader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +20,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -36,14 +40,20 @@ class ProfilController extends AbstractController
     private $candidatureRepository;
 
     /**
+     * @var DocumentsRepository
+     */
+    private $documentsRepository;
+
+    /**
      * @var EntityManagerInterface
      */
     private $em;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository, EntityManagerInterface $em)
+    public function __construct(UrlGeneratorInterface $urlGenerator, CandidatureRepository $candidatureRepository, DocumentsRepository $dRep, EntityManagerInterface $em)
     {
         $this->urlGenerator = $urlGenerator;
         $this->candidatureRepository = $candidatureRepository;
+        $this->documentsRepository = $dRep;
         $this->em = $em;
     }
 
@@ -92,7 +102,10 @@ class ProfilController extends AbstractController
         return $this->render('profil/index.html.twig', [
             "candidatures" => $candidatures,
             "user" => $this->getUser(),
-            "updateForm" => $form->createView()
+            "updateForm" => $form->createView(),
+            "documents" => $this->documentsRepository->findBy([
+                "step" => Constants::HIRE_STEP
+            ])
         ]);
     }
 
@@ -130,6 +143,73 @@ class ProfilController extends AbstractController
     }
 
     /**
+     * @Route("/upload-documents", name="_upload_documents", methods="POST")
+     * 
+     * Upload les documents via une requête AJAX
+     */
+    public function uploadDocuments(Request $req): Response
+    {
+        // Si l'utilisateur n'est pas autorisé à être ici on renvoie une erreur
+        if (!$req->isXmlHttpRequest()) {
+            return new JsonResponse([
+                "error" => "Requête invalide"
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        if ($this->getUser()->getStatus() !== Constants::ACCEPTED_STATUS) {
+            return new JsonResponse([
+                "error" => "Vous n'êtes pas en mesure de déposer des pièces" 
+                           . " justificatives"
+            ], Response::HTTP_FORBIDDEN);
+        }
+        // On détermine le fichier envoyé
+        $documents = $this->documentsRepository->findAll();
+        foreach ($documents as $document) {
+            if ($req->files->get($document->getSlug()) !== null) {
+                // Et on le dépose sur le google drive
+                $mime = $req->files->get($document->getSlug())->getMimeType();
+                if (
+                    $mime == "application/pdf" 
+                    || $mime == "application/x-pdf"
+                ) {
+                    $driveUploader = new GoogleDriveUploader();
+                    $uploaded = $driveUploader->upload(
+                        $this->getUser(),
+                        $document->getNom(),
+                        $document->getNom(),
+                        $req->files->get($document->getSlug())->getPathName()
+                    );
+                    if (!$uploaded) {
+                        return new JsonResponse([
+                            "error" => "Erreur lors du dépôt du fichier, veuillez"
+                                       . " réessayer"
+                        ], Response::HTTP_BAD_REQUEST);
+                    }
+                    // On ajoute le document en BDD
+                    $uploadedDoc = new UploadedDocuments();
+                    $uploadedDoc
+                        ->setDocument($document)
+                        ->setUser($this->getUser());
+                    $this->em->persist($uploadedDoc);
+                    $this->em->flush();
+                } else {
+                    // Si le fichier n'est pas du bon type on renvoie une erreur
+                    return new JsonResponse([
+                        "error" => "Le type du fichier est invalide. Nous"
+                                   . " n'acceptons que les PDF"
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+                return new JsonResponse([
+                    "message" => "Fichier déposé avec succès",
+                ], Response::HTTP_OK);
+            }
+        }
+
+        return new JsonResponse([
+            "message" => "Fichier invalide"
+        ], Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
      * @Route("/validation", name="_validation")
      */
     public function validate(Request $req): Response
@@ -144,16 +224,6 @@ class ProfilController extends AbstractController
             // On ajoute la demande de validation dans la BDD
             $validation = new ValidationRequest();
             $validation->setUser($this->getUser());
-            $validation->setPermis(
-                file_get_contents(
-                    $form->get("permis")->getData()->getPathname()
-                )
-            );
-            $validation->setContrat(
-                file_get_contents(
-                    $form->get("contrat")->getData()->getPathname()
-                )
-            );
             $this->em->persist($validation);
             $this->em->flush();
 

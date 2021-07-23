@@ -165,13 +165,25 @@ class ProfilController extends AbstractController
         foreach ($documents as $document) {
             if ($req->files->get($document->getSlug()) !== null) {
                 // Et on le dépose sur le google drive
-                $driveUploader = new GoogleDriveUploader();
-                $uploaded = $driveUploader->upload(
-                    $this->getUser(),
-                    $document->getNom(),
-                    $document->getNom(),
-                    $req->files->get($document->getSlug())->getPathName()
-                );
+                $mime = $req->files->get($document->getSlug())->getMimeType();
+                if (
+                    $mime == "application/pdf" 
+                    || $mime == "application/x-pdf"
+                ) {
+                    $driveUploader = new GoogleDriveUploader();
+                    $uploaded = $driveUploader->upload(
+                        $this->getUser(),
+                        $document->getNom(),
+                        $document->getNom(),
+                        $req->files->get($document->getSlug())->getPathName()
+                    );
+                } else {
+                    // Si le fichier n'est pas du bon type on renvoie une erreur
+                    return new JsonResponse([
+                        "error" => "Le type du fichier est invalide. Nous"
+                                   . " n'acceptons que les PDF"
+                    ], Response::HTTP_BAD_REQUEST);
+                }
                 if (!$uploaded) {
                     return new JsonResponse([
                         "error" => "Erreur lors du dépôt du fichier, veuillez"

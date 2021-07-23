@@ -55,11 +55,14 @@
                 les pièces suivantes :
             </p>
             {% for document in documents %}
-                <form class="document_form" data-document="{{ document.slug }}" enctype="multipart/form-data" action="{{ path('profil_upload_documents') }}" method="POST">
+                <form class="document_form" enctype="multipart/form-data" action="{{ path('profil_upload_documents') }}" method="POST">
                     {{ document.nom }} :
                     <input type="file" name="{{ document.slug }}" />
                     {{ document.description }}
                     <input type="submit" value="Déposer" />
+                    <span class="status">
+                        {# Vide car rempli par le JS #}
+                    </span>
                 </form>
             {% endfor %}
         </section>

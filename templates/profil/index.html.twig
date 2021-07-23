@@ -2,6 +2,10 @@
 
 {% block title %}Profil - {{ user.prenom }} {{ user.nom }}{% endblock %}
 
+{% block javascripts %}
+    <script src="/js/profil/upload.js" defer></script>
+{% endblock %}
+
 {% block body %}
     {# Informations #}
     <h1>Profil de {{ user.prenom }} {{ user.nom }}</h1>
@@ -42,12 +46,24 @@
             </tbody>
         </table>
     </section>
-    <section>
-        {% if user.status == "ACCEPTED" %}
-            lorem
-        {% endif %}
-        
-    </section>
+    {% if user.status == constant('App\\Utils\\Constants::ACCEPTED_STATUS') %}
+        <section>
+            <h2>Dépôt de vos pièces justificatives</h2>
+            <p>
+                Félicitations ! Vous avez été acceptée en tant que conducteur chez
+                Granger SAS. Pour pouvoir finaliser votre embauche, veuillez déposer
+                les pièces suivantes :
+            </p>
+            {% for document in documents %}
+                <form class="document_form" data-document="{{ document.slug }}" enctype="multipart/form-data" action="{{ path('profil_upload_documents') }}" method="POST">
+                    {{ document.nom }} :
+                    <input type="file" name="{{ document.slug }}" />
+                    {{ document.description }}
+                    <input type="submit" value="Déposer" />
+                </form>
+            {% endfor %}
+        </section>
+    {% endif %}
     {# Modifier les informations #}
     <section>
         <h2>Modifier vos informations</h2>
@@ -65,24 +81,6 @@
             <input type="submit" value="Modifier" />
         {{ form_end(updateForm) }}
     </section>
-    {% if user.status == constant('App\\Utils\\Constants::ACCEPTED_STATUS') %}
-        <section>
-            <h2>Dépôt de vos pièces</h2>
-            <p>
-                Félicitations ! Vous avez été acceptée en tant que conducteur chez
-                Granger SAS. Pour pouvoir finaliser votre embauche, veuillez déposer
-                les pièces suivantes :
-            </p>
-            {% for document in documents %}
-                <form enctype="multipart/formdata" action="{{ path('profil_upload_documents') }}" method="POST">
-                    {{ document.nom }} :
-                    <input type="file" name="{{ document.slug }}" />
-                    {{ document.description }}
-                    <input type="submit" value="Déposer" />
-                </form>
-            {% endfor %}
-        </section>
-    {% endif %}
     {# Bouton suppression #}
     <a href="{{ path("profil_delete") }}">Supprimer le compte</a>
     {# Bouton validation #}

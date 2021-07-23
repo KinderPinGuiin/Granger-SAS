@@ -7,7 +7,7 @@ use Exception;
 use App\Form\UploadType;
 use App\Utils\Constants;
 use App\Entity\Candidature;
-use App\Utils\GoogleDriveManager;
+use App\Utils\GoogleDriveUploader;
 use App\Repository\CandidatureRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +23,9 @@ class UploadController extends AbstractController
     private $req;
 
     /**
-     * @var GoogleDriveManager
+     * @var GoogledriveUploader
      */
-    private $driveManager;
+    private $driveUploader;
 
     /**
      * @var CandidatureRepository
@@ -144,32 +144,24 @@ class UploadController extends AbstractController
      */
     private function handleUpload($form): FormInterface
     {
-        $this->driveManager = new GoogleDriveManager(
-            Constants::GOOGLE_FOLDER . "credentials.json",
-            Constants::ID_DRIVE_ROOT
-        );
+        $this->driveUploader = new GoogleDriveUploader();
         // On vérifie les données du formulaire
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                // Si tout est bon on upload les fichiers sur le drive
-                $this->driveManager->goTo($this->getUser()->getDriveID());
-                $this->driveManager->goToName(Constants::CV_FOLDER_NAME);
-                // Si un CV a déjà été déposé par l'utilisateur on le supprime
-                $this->deleteDuplicate(Constants::CV_FILE_NAME);
-                $this->driveManager->upload(
-                    Constants::CV_FILE_NAME,
+            if (
+                !$this->driveUploader->upload(
+                    $this->getUser(), 
+                    Constants::CV_FOLDER_NAME, 
+                    Constants::CV_FILE_NAME, 
                     $form->get("cv")->getData()->getPathname()
-                );
-                $this->driveManager->back();
-                $this->driveManager->goToName(Constants::LETTER_FOLDER_NAME);
-                // Si une lettre a déjà été déposée par l'utilisateur on la 
-                // supprime
-                $this->deleteDuplicate(Constants::LETTER_FOLDER_NAME);
-                $this->driveManager->upload(
-                    Constants::LETTER_FILE_NAME,
-                    $form->get("lettre")->getData()->getPathname()
-                );
-            } catch (Exception $e) {
+                )
+                || 
+                !$this->driveUploader->upload(
+                    $this->getUser(), 
+                    Constants::CV_FOLDER_NAME, 
+                    Constants::CV_FILE_NAME, 
+                    $form->get("cv")->getData()->getPathname()
+                )
+            ) {
                 // En cas d'erreur on l'ajoute au formulaire
                 $this->formErrors[] = "Erreur lors du dépôt, veuillez" 
                                       . " réessayer";
@@ -180,17 +172,5 @@ class UploadController extends AbstractController
         
         // On renvoie le formulaire
         return $form;
-    }
-
-    /**
-     * Supprime le fichier demandé s'il existe déjà
-     * 
-     * @param string $name Le nom du fichier
-     */
-    private function deleteDuplicate(string $name)
-    {
-        if (count($this->driveManager->relativeList()["files"]) > 0) {
-            $this->driveManager->deleteByName($name);
-        }
     }
 }

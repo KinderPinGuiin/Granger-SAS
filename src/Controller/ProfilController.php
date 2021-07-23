@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
 use App\Repository\DocumentsRepository;
+use App\Utils\GoogleDriveUploader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -140,17 +142,51 @@ class ProfilController extends AbstractController
     }
 
     /**
-     * @Route("/upload-documents", name="_upload_documents")
+     * @Route("/upload-documents", name="_upload_documents", methods="POST")
+     * 
+     * Upload les documents via une requête AJAX
      */
-    public function uploadDocuments(): Response
+    public function uploadDocuments(Request $req): Response
     {
-        // Si l'utilisateur n'est pas autorisé à être ici on le redirige sur son
-        // profil
+        // Si l'utilisateur n'est pas autorisé à être ici on renvoie une erreur
+        if (!$req->isXmlHttpRequest()) {
+            return new JsonResponse([
+                "error" => "Requête invalide"
+            ], Response::HTTP_BAD_REQUEST);
+        }
         if ($this->getUser()->getStatus() !== Constants::ACCEPTED_STATUS) {
-            return $this->redirectToRoute("profil");
+            return new JsonResponse([
+                "error" => "Vous n'êtes pas en mesure de déposer des pièces" 
+                           . " justificatives"
+            ], Response::HTTP_FORBIDDEN);
+        }
+        // On détermine le fichier envoyé
+        $documents = $this->documentsRepository->findAll();
+        foreach ($documents as $document) {
+            if ($req->files->get($document->getSlug()) !== null) {
+                // Et on le dépose sur le google drive
+                $driveUploader = new GoogleDriveUploader();
+                $uploaded = $driveUploader->upload(
+                    $this->getUser(),
+                    $document->getNom(),
+                    $document->getNom(),
+                    $req->files->get($document->getSlug())->getPathName()
+                );
+                if (!$uploaded) {
+                    return new JsonResponse([
+                        "error" => "Erreur lors du dépôt du fichier, veuillez"
+                                   . " réessayer"
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+                return new JsonResponse([
+                    "message" => "Fichier déposé avec succès",
+                ], Response::HTTP_OK);
+            }
         }
 
-        return $this->redirectToRoute("profil");
+        return new JsonResponse([
+            "message" => "Fichier invalide"
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     /**

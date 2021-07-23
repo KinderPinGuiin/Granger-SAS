@@ -11,10 +11,10 @@ $(document).ready(() => {
             cache: false,
             timeout: 800000,
             success: function (data) {
-                e.target.querySelector(".status").innerHTML = data.message
+                e.target.querySelector(".upload_status").innerHTML = data.message
             },
             error: function (err) {
-                e.target.querySelector(".status").innerHTML = err.responseJSON.error
+                e.target.querySelector(".upload_status").innerHTML = err.responseJSON.error
             }
         })
     })

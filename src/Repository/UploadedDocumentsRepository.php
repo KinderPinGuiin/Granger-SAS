@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\UploadedDocuments;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method UploadedDocuments|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +17,29 @@ class UploadedDocumentsRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, UploadedDocuments::class);
+    }
+
+    /**
+     * Récupère les documents uploadés par un utilisateur et les classe par slug
+     */
+    public function getUploadedDocsSlugs($user): array
+    {
+        $em = $this->getEntityManager();
+        $results = $em->createQuery(
+            "
+                SELECT documents.slug, uploaded_documents
+                FROM App\Entity\Documents documents, 
+                     App\Entity\UploadedDocuments uploaded_documents
+                WHERE documents.id = uploaded_documents.document
+                      AND uploaded_documents.user = :user
+            "
+        )->setParameter("user", $user)->getResult();
+        $array = [];
+        foreach ($results as $result) {
+            $array[$result["slug"]] = $result[0];
+        }
+
+        return $array;
     }
 
     // /**

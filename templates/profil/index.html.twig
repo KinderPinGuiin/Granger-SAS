@@ -60,9 +60,20 @@
                     <input type="file" name="{{ document.slug }}" />
                     {{ document.description }}
                     <input type="submit" value="Déposer" />
-                    <span class="status">
+                    <span class="upload_status">
                         {# Vide car rempli par le JS #}
                     </span>
+                    {% if document.slug in uploadedDocs|keys %}
+                        <span class="doc_status">
+                            {% if uploadedDocs[document.slug].accepted %}
+                                Pièce acceptée
+                            {% elseif uploadedDocs[document.slug].accepted is null %}
+                                Pièce en cours de traitement
+                            {% else %}
+                                Pièce refusée
+                            {% endif %}
+                        </span>
+                    {% endif %}
                 </form>
             {% endfor %}
         </section>

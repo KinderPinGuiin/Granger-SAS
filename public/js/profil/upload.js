@@ -1,12 +1,11 @@
 $(document).ready(() => {
     $(".document_form").on("submit", e => {
         e.preventDefault()
-        let form = new FormData(e.target)
         $.ajax({
             method: "POST",
             enctype: 'multipart/form-data',
             url: "/profil/upload-documents",
-            data: form,
+            data: new FormData(e.target),
             processData: false,
             contentType: false,
             cache: false,

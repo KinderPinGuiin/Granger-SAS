@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\UploadedDocuments;
 use App\Entity\ValidationRequest;
 use App\Utils\Constants;
 use App\Form\UserUpdateType;
@@ -177,17 +178,24 @@ class ProfilController extends AbstractController
                         $document->getNom(),
                         $req->files->get($document->getSlug())->getPathName()
                     );
+                    if (!$uploaded) {
+                        return new JsonResponse([
+                            "error" => "Erreur lors du dépôt du fichier, veuillez"
+                                       . " réessayer"
+                        ], Response::HTTP_BAD_REQUEST);
+                    }
+                    // On ajoute le document en BDD
+                    $uploadedDoc = new UploadedDocuments();
+                    $uploadedDoc
+                        ->setDocument($document)
+                        ->setUser($this->getUser());
+                    $this->em->persist($uploadedDoc);
+                    $this->em->flush();
                 } else {
                     // Si le fichier n'est pas du bon type on renvoie une erreur
                     return new JsonResponse([
                         "error" => "Le type du fichier est invalide. Nous"
                                    . " n'acceptons que les PDF"
-                    ], Response::HTTP_BAD_REQUEST);
-                }
-                if (!$uploaded) {
-                    return new JsonResponse([
-                        "error" => "Erreur lors du dépôt du fichier, veuillez"
-                                   . " réessayer"
                     ], Response::HTTP_BAD_REQUEST);
                 }
                 return new JsonResponse([

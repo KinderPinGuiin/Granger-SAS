@@ -6,8 +6,12 @@
         {% elseif userDocs[doc.slug].accepted is not null %}
             Refusé <a href="#">Demande de renouvellement</a>
         {% else %}
-            <a href="#">Accepter</a>
-            <a href="#">Refuser</a>
+            <a href="{{ path('admin_handle_document', {id: userDocs[doc.slug].id}) }}?status=accept&user_id={{ user.id }}">
+                Accepter
+            </a>
+            <a href="{{ path('admin_handle_document', {id: userDocs[doc.slug].id}) }}?status=deny&user_id={{ user.id }}">
+                Refuser
+            </a>
         {% endif %}
     {% else %}
         En attente de l'utilisateur             

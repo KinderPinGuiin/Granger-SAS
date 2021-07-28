@@ -9,6 +9,7 @@ use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use App\Form\CandidatureHandlingType;
+use App\Form\DenyDocType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
@@ -631,6 +632,54 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/handle-document/{id}", name="_handle_document")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function handleDocument(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $doc = $this->uploadedDocsRepository->findBy(["id" => $id]);
+        if (empty($doc)) {
+            return $this->redirectToRoute("admin");
+        }
+        $doc = $doc[0];
+        if ($req->get("status") === "accept") {
+            $doc->setAccepted(true);
+            $this->em->flush();
+
+            return $req->get("user_id") !== null ?
+            $this->redirectToRoute("admin_user", [
+                "id" => $req->get("user_id")
+            ])
+            : $this->redirectToRoute("admin");
+        } else if ($req->get("status") === "deny") {
+            $form = $this->createForm(DenyDocType::class, $doc);
+            $form->handleRequest($req);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $doc->setAccepted(false);
+                $this->em->flush();
+
+                return $req->get("user_id") !== null ?
+                $this->redirectToRoute("admin_user", [
+                    "id" => $req->get("user_id")
+                ])
+                : $this->redirectToRoute("admin");
+            }
+
+            return $this->render("admin/handle_document.html.twig", [
+                "addFormComment" => true,
+                "commentForm" => $form->createView()
+            ]);
+        }
+            
+        // Si le statut n'existe pas on redirige l'utilisateur
+        return $this->redirectToRoute("admin");
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -653,6 +702,7 @@ class AdminController extends AbstractController {
             case "admin_delete_document":
             case "admin_users_documents":
             case "admin_user":
+            case "admin_handle_document":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

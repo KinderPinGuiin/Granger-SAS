@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Traitement du document{% endblock %}
+
+{% block stylesheets %}
+{% endblock %}
+
+{% block body %}
+    {% if addFormComment %}
+        <h2>Indiquez ce qui ne va pas avec ce document</h1>
+        {{ form_start(commentForm) }}
+            {{ form_rest(commentForm) }}
+            <input type="submit" value="Envoyer le commentaire" /> 
+        {{ form_end(commentForm) }}
+    {% endif %}
+{% endblock %}

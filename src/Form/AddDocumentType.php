@@ -20,7 +20,8 @@ class AddDocumentType extends AbstractType
             ->add('step', ChoiceType::class, [
                 "choices" => [
                     "Candidature" => Constants::CANDIDAT_STEP,
-                    "Embauche" => Constants::HIRE_STEP
+                    "Embauche" => Constants::HIRE_STEP,
+                    "Conducteur" => Constants::DRIVER_STEP
                 ],
                 "label" => "Etape"
             ])

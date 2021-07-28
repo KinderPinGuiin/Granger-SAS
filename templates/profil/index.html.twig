@@ -70,7 +70,7 @@
                             {% elseif uploadedDocs[document.slug].accepted is null %}
                                 Pièce en cours de traitement
                             {% else %}
-                                Pièce refusée
+                                Pièce refusée : {{ uploadedDocs[document.slug].comment }}
                             {% endif %}
                         </span>
                     {% endif %}

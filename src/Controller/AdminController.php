@@ -9,10 +9,12 @@ use App\Utils\Constants;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use App\Form\CandidatureHandlingType;
+use App\Form\DenyDocType;
 use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
 use App\Repository\DocumentsRepository;
+use App\Repository\UploadedDocumentsRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -57,11 +59,16 @@ class AdminController extends AbstractController {
     private $documentsRepository;
 
     /**
+     * @var UploadedDocumentsRepository
+     */
+    private $uploadedDocsRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, DocumentsRepository $dRep, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, DocumentsRepository $dRep, UploadedDocumentsRepository $udRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -72,6 +79,7 @@ class AdminController extends AbstractController {
         $this->contentRepository = $coRepository;
         $this->vReqRepository = $vRep;
         $this->documentsRepository = $dRep;
+        $this->uploadedDocsRepository = $udRep;
         $this->em = $em;
     }
 
@@ -566,6 +574,227 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/users-documents", name="_users_documents")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function usersDocuments(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // Les utilisateurs qui ont des documents en attente (Certains peuvent
+        // être présents plusieurs fois)
+        $users = array_map(function($doc) {
+            return $doc->getUser();
+        }, $this->uploadedDocsRepository->findBy([
+            "accepted" => null
+        ]));
+
+        return $this->render("admin/users_documents.html.twig", [
+            // Utilisateurs ayant des documents non traités
+            "users" => array_unique($users)
+        ]);
+    }
+
+    /**
+     * @Route("/user/{id}", name="_user")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function user(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $user = $this->userRepository->findBy(["id" => $id]);
+        if (empty($user)) {
+            return $this->redirectToRoute("admin");
+        }
+        $user = $user[0];
+
+        return $this->render("admin/user.html.twig", [
+            "canPutDocs" => $user->getStatus() !== Constants::DEFAULT_STATUS,
+            "user" => $user,
+            "userDocs" => $this->uploadedDocsRepository->getUploadedDocsSlugs(
+                $user
+            ),
+            "candidatDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::CANDIDAT_STEP
+            ]),
+            "hiredDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::HIRE_STEP
+            ]),
+            "driverDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::DRIVER_STEP
+            ])
+        ]);
+    }
+
+    /**
+     * @Route("/handle-document/{status}/{id}", name="_handle_document")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function handleDocument(Request $req, string $status, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $doc = $this->uploadedDocsRepository->findBy(["id" => $id]);
+        if (empty($doc)) {
+            return $this->redirectToRoute("admin_users_documents");
+        }
+        $doc = $doc[0];
+        switch ($status) {
+            case "accept":
+                $doc->setAccepted(true);
+                $this->em->flush();
+    
+                return $req->get("user_id") !== null ?
+                $this->redirectToRoute("admin_user", [
+                    "id" => $req->get("user_id")
+                ])
+                : $this->redirectToRoute("admin_users_documents");
+
+            case "deny":
+                $form = $this->createForm(DenyDocType::class, $doc);
+                $form->handleRequest($req);
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $doc->setAccepted(false);
+                    $this->em->flush();
+    
+                    return $req->get("user_id") !== null ?
+                    $this->redirectToRoute("admin_user", [
+                        "id" => $req->get("user_id")
+                    ])
+                    : $this->redirectToRoute("admin_users_documents");
+                }
+    
+                return $this->render("admin/handle_document.html.twig", [
+                    "addFormComment" => true,
+                    "commentForm" => $form->createView()
+                ]);
+
+            case "renewal":
+                // On supprime le document
+                $this->em->remove($doc);
+                $this->em->flush();
+
+                return $req->get("user_id") !== null ?
+                $this->redirectToRoute("admin_user", [
+                    "id" => $req->get("user_id")
+                ])
+                : $this->redirectToRoute("admin_users_documents");
+            
+            default:
+                // Si le statut n'existe pas on redirige l'utilisateur
+                return $this->redirectToRoute("admin_user_documents");
+        }
+    }
+
+    /**
+     * @Route("/send-mail/{docsType}/{userId}", name="_send_docs_mail")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function sendDocsMail(
+        Request $req, string $docsType, string $userId, MailerInterface $mailer
+    )
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $user = $this->userRepository->findBy(["id" => $userId]);
+        if (empty($user)) {
+            return $this->redirectToRoute("admin_user_documents");
+        }
+        $this->getMailMessage($docsType, $userId);
+        $this->sendMail(
+            $mailer, $user[0]->getEmail(), 
+            "Du nouveau concernant la validation de vos documents - Granger SAS",
+            "emails/documents_mail.html.twig",
+            ["message" => $this->getMailMessage($docsType, $userId)]
+        );
+        
+        return $this->redirectToRoute("admin_user", [
+            "id" => $userId
+        ]);
+    }
+
+    /**
+     * Renvoie le message de l'email selon le type de document ainsi que leur
+     * validité
+     * 
+     * @param  string $docsType Le type de document
+     * @param  string $userId   L'identifiant de l'utilisateur à qui envoyer le 
+     *                          mail
+     * @return string           Le message de l'email
+     */
+    private function getMailMessage(string $docsType, string $userId): string
+    {
+        $documents = null;
+        if ($docsType === "VERIFICATION") {
+            $documents = $this->documentsRepository->findAll();
+        } else {
+            $documents = $this->documentsRepository->findBy([
+                "step" => $docsType
+            ]);
+        }
+        $uploadedDocs = $this->uploadedDocsRepository->findBy([
+            "user" => $userId,
+            "document" => $documents
+        ]);
+
+        if (count($uploadedDocs) != count($documents)) {
+            return 
+                "Bonjour,<br/><br/>Nous sommes en attente de"
+                . " certaines de vos pièces justificatives. Ceci peut-être dû à"
+                . " une demande de renouvellement de la part de notre équipe."
+                . " Nous vous demandons par conséquent de bien vouloir les"
+                . " les déposer sur votre profil dans les plus brefs délais !"
+                . "<br/><br/>Cordialement,<br/>Granger SAS.";
+        }
+        // On vérifie que les documents sont valides
+        $documentsAreValid = true;
+        foreach ($uploadedDocs as $doc) {
+            if (!$doc->getAccepted()) {
+                $documentsAreValid = false;
+                break;
+            }
+        }
+        // Et on envoie le message personnalisé selon les cas
+        if ($documentsAreValid) {
+            $message =
+                "Bonjour,<br/><br/>Félicitations !"
+                . " Toutes vos pièces justificatives ont été acceptées.";
+            if (
+                $docsType === "VERIFICATION" 
+                || $docsType === Constants::DRIVER_STEP
+            ) {
+                $message .= 
+                    " Votre profil étant désormais vérifié vous êtes"
+                    . " officiellement identifié en tant que conducteur sur le"
+                    . " site Granger SAS !";
+            } else if ($docsType === Constants::HIRE_STEP) {
+                $message .= " Il vous reste une dernière étape avant d'être"
+                . " officiellement reconnu en tant que conducteur. De nouvelles"
+                . " pièces sont à faire valider sur votre profil !";
+            }
+
+            return $message . "<br/><br/>Cordialement,<br/>Granger SAS.";
+        }
+
+        return 
+            "Bonjour,<br/><br/>Nous sommes navré de vous annoncer que"
+            . " certaines de vos pièces justificatives sont invalides."
+            . " Vous pouvez cependant corriger ceci en suivant les indications"
+            . " apportées à chacune de vos pièces sur votre profil."
+            . " Merci de les redéposer sur votre profil dans les plus brefs"
+            . " délais !<br/><br/>Cordialement,<br/>Granger SAS.";
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -586,6 +815,10 @@ class AdminController extends AbstractController {
             case "admin_documents":
             case "admin_add_document":
             case "admin_delete_document":
+            case "admin_users_documents":
+            case "admin_user":
+            case "admin_handle_document":
+            case "admin_send_docs_mail":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

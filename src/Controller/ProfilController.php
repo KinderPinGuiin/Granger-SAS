@@ -193,6 +193,15 @@ class ProfilController extends AbstractController
                                        . " réessayer"
                         ], Response::HTTP_BAD_REQUEST);
                     }
+                    // On supprime le document de l'utilisateur de la BDD
+                    // s'il en avait déjà posté un
+                    $alreadyUploadedDoc = $this->uploadedDocRepository->findBy([
+                        "document" => $document,
+                        "user" => $this->getUser()
+                    ]);
+                    if (!empty($alreadyUploadedDoc)) {
+                        $this->em->remove($alreadyUploadedDoc[0]);
+                    }
                     // On ajoute le document en BDD
                     $uploadedDoc = new UploadedDocuments();
                     $uploadedDoc

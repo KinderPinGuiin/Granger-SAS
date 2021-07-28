@@ -13,6 +13,7 @@ use App\Repository\ContenuRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
 use App\Repository\DocumentsRepository;
+use App\Repository\UploadedDocumentsRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
@@ -57,11 +58,16 @@ class AdminController extends AbstractController {
     private $documentsRepository;
 
     /**
+     * @var UploadedDocumentsRepository
+     */
+    private $uploadedDocsRepository;
+
+    /**
      * @var ObjectManager
      */
     private $em;
 
-    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, DocumentsRepository $dRep, EntityManagerInterface $em)
+    public function __construct(UserRepository $repository, CandidatureRepository $cRepository, ContenuRepository $coRepository, ValidationRequestRepository $vRep, DocumentsRepository $dRep, UploadedDocumentsRepository $udRep, EntityManagerInterface $em)
     {
         $this->driveManager = new GoogleDriveManager(
             Constants::GOOGLE_FOLDER . "credentials.json",
@@ -72,6 +78,7 @@ class AdminController extends AbstractController {
         $this->contentRepository = $coRepository;
         $this->vReqRepository = $vRep;
         $this->documentsRepository = $dRep;
+        $this->uploadedDocsRepository = $udRep;
         $this->em = $em;
     }
 
@@ -566,6 +573,64 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/users-documents", name="_users_documents")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function usersDocuments(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        // Les utilisateurs qui ont des documents en attente (Certains peuvent
+        // être présents plusieurs fois)
+        $users = array_map(function($doc) {
+            return $doc->getUser();
+        }, $this->uploadedDocsRepository->findBy([
+            "accepted" => null
+        ]));
+
+        return $this->render("admin/users_documents.html.twig", [
+            // Utilisateurs ayant des documents non traités
+            "users" => array_unique($users)
+        ]);
+    }
+
+    /**
+     * @Route("/user/{id}", name="_user")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function user(Request $req, string $id)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $user = $this->userRepository->findBy(["id" => $id]);
+        if (empty($user)) {
+            return $this->redirectToRoute("admin");
+        }
+        $user = $user[0];
+
+        return $this->render("admin/user.html.twig", [
+            "canPutDocs" => $user->getStatus() !== Constants::DEFAULT_STATUS,
+            "user" => $user,
+            "userDocs" => $this->uploadedDocsRepository->getUploadedDocsSlugs(
+                $user
+            ),
+            "candidatDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::CANDIDAT_STEP
+            ]),
+            "hiredDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::HIRE_STEP
+            ]),
+            "driverDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::DRIVER_STEP
+            ])
+        ]);
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -586,6 +651,8 @@ class AdminController extends AbstractController {
             case "admin_documents":
             case "admin_add_document":
             case "admin_delete_document":
+            case "admin_users_documents":
+            case "admin_user":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

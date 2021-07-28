@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Profil de {{ user.prenom }} {{ user.nom }}{% endblock %}
+
+{% block body %}
+    {% if canPutDocs %}
+        <h1>Documents de {{ user.prenom }} {{ user.nom }}</h1>
+        {% 
+            if user.status == constant("App\\Utils\\Constants::POSTULATED_STATUS") 
+            or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS")
+            or user.status == constant("App\\Utils\\Constants::ACCEPTED_STATUS")
+            or user.status == constant("App\\Utils\\Constants::DRIVER_STATUS")
+        %}
+            <h2>Documents pour la candidature</h2>
+            {% for doc in candidatDocs %}
+                {% include "require/admin/document.html.twig" %}
+            {% endfor %}
+        {% endif %}
+            
+        {% 
+            if user.status == constant("App\\Utils\\Constants::ACCEPTED_STATUS")
+            or user.status == constant("App\\Utils\\Constants::DRIVER_STATUS") 
+            or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS") 
+        %}
+            <h2>Documents pour l'embauche</h2>
+            {% for doc in hiredDocs %}
+                {% include "require/admin/document.html.twig" %}
+            {% endfor %}
+        {% endif %}
+
+        {% 
+            if user.status == constant("App\\Utils\\Constants::DRIVER_STATUS")
+            or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS") 
+        %}
+            <h2>Documents pour devenir conducteur</h2>
+            {% for doc in driverDocs %}
+                {% include "require/admin/document.html.twig" %}
+            {% endfor %}
+        {% endif %}
+        
+    {% else %}
+        <h1>Cet utilisateur ne doit pas encore déposer de documents</h1>
+    {% endif %}
+{% endblock %}

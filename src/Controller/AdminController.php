@@ -673,6 +673,16 @@ class AdminController extends AbstractController {
                 "addFormComment" => true,
                 "commentForm" => $form->createView()
             ]);
+        } else if ($req->get("status") === "renewal") {
+            // On supprime le document
+            $this->em->remove($doc);
+            $this->em->flush();
+
+            return $req->get("user_id") !== null ?
+            $this->redirectToRoute("admin_user", [
+                "id" => $req->get("user_id")
+            ])
+            : $this->redirectToRoute("admin");
         }
             
         // Si le statut n'existe pas on redirige l'utilisateur

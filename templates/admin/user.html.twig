@@ -12,6 +12,9 @@
             or user.status == constant("App\\Utils\\Constants::DRIVER_STATUS")
         %}
             <h2>Documents pour la candidature</h2>
+            <a href="#">Envoyer le mail d'état</a>
+            <br/>            
+            <br/>
             {% for doc in candidatDocs %}
                 {% include "require/admin/document.html.twig" %}
             {% endfor %}
@@ -23,6 +26,9 @@
             or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS") 
         %}
             <h2>Documents pour l'embauche</h2>
+            <a href="#">Envoyer le mail d'état</a>
+            <br/>            
+            <br/>
             {% for doc in hiredDocs %}
                 {% include "require/admin/document.html.twig" %}
             {% endfor %}
@@ -33,6 +39,9 @@
             or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS") 
         %}
             <h2>Documents pour devenir conducteur</h2>
+            <a href="#">Envoyer le mail d'état</a>
+            <br/>            
+            <br/>
             {% for doc in driverDocs %}
                 {% include "require/admin/document.html.twig" %}
             {% endfor %}

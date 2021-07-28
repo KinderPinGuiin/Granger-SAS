@@ -2,9 +2,15 @@
     {{ doc.nom }}
     {% if doc.slug in userDocs|keys %}
         {% if userDocs[doc.slug].accepted %}
-            Accepté <a href="#">Demande de renouvellement</a>
+            Accepté 
+            <a href="{{ path('admin_handle_document', {id: userDocs[doc.slug].id}) }}?status=renewal&user_id={{ user.id }}">
+                Demande de renouvellement
+            </a>
         {% elseif userDocs[doc.slug].accepted is not null %}
-            Refusé <a href="#">Demande de renouvellement</a>
+            Refusé 
+            <a href="{{ path('admin_handle_document', {id: userDocs[doc.slug].id}) }}?status=renewal&user_id={{ user.id }}">
+                Demande de renouvellement
+            </a>
         {% else %}
             <a href="{{ path('admin_handle_document', {id: userDocs[doc.slug].id}) }}?status=accept&user_id={{ user.id }}">
                 Accepter
@@ -14,6 +20,6 @@
             </a>
         {% endif %}
     {% else %}
-        En attente de l'utilisateur             
+        En attente de l'utilisateur
     {% endif %}
 </div>

@@ -5,6 +5,12 @@
 {% block body %}
     {% if canPutDocs %}
         <h1>Documents de {{ user.prenom }} {{ user.nom }}</h1>
+        <a href="{{ path('admin_send_docs_mail', {
+            docsType: "VERIFICATION",
+            userId: user.id
+        }) }}">
+            Envoyer le mail récapitulatif
+        </a>
         {% 
             if user.status == constant("App\\Utils\\Constants::POSTULATED_STATUS") 
             or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS")
@@ -12,7 +18,12 @@
             or user.status == constant("App\\Utils\\Constants::DRIVER_STATUS")
         %}
             <h2>Documents pour la candidature</h2>
-            <a href="#">Envoyer le mail d'état</a>
+            <a href="{{ path('admin_send_docs_mail', {
+                docsType: constant("App\\Utils\\Constants::CANDIDAT_STEP"),
+                userId: user.id
+            }) }}">
+                Envoyer le mail récapitulatif
+            </a>
             <br/>            
             <br/>
             {% for doc in candidatDocs %}
@@ -26,7 +37,12 @@
             or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS") 
         %}
             <h2>Documents pour l'embauche</h2>
-            <a href="#">Envoyer le mail d'état</a>
+            <a href="{{ path('admin_send_docs_mail', {
+                docsType: constant("App\\Utils\\Constants::HIRE_STEP"),
+                userId: user.id
+            }) }}">
+                Envoyer le mail récapitulatif
+            </a>
             <br/>            
             <br/>
             {% for doc in hiredDocs %}
@@ -39,7 +55,12 @@
             or user.status == constant("App\\Utils\\Constants::VERIFICATION_STATUS") 
         %}
             <h2>Documents pour devenir conducteur</h2>
-            <a href="#">Envoyer le mail d'état</a>
+            <a href="{{ path('admin_send_docs_mail', {
+                docsType: constant("App\\Utils\\Constants::DRIVER_STEP"),
+                userId: user.id
+            }) }}">
+                Envoyer le mail récapitulatif
+            </a>
             <br/>            
             <br/>
             {% for doc in driverDocs %}

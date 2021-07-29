@@ -514,6 +514,9 @@ class AdminController extends AbstractController {
             "embaucheDocs" => $this->documentsRepository->findBy(
                 ["step" => Constants::HIRE_STEP]
             ),
+            "driverDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::DRIVER_STEP
+            ]),
             "addForm" => $this->createForm(AddDocumentType::class)->createView()
         ]);
     }
@@ -548,6 +551,9 @@ class AdminController extends AbstractController {
             "embaucheDocs" => $this->documentsRepository->findBy(
                 ["step" => Constants::HIRE_STEP]
             ),
+            "driverDocs" => $this->documentsRepository->findBy([
+                "step" => Constants::DRIVER_STEP
+            ]),
             "addForm" => $form->createView()
         ]);
     }
@@ -772,6 +778,8 @@ class AdminController extends AbstractController {
                 $docsType === "VERIFICATION" 
                 || $docsType === Constants::DRIVER_STEP
             ) {
+                $user = $this->userRepository->findBy(["id" => $userId]);
+                $user[0]->setStatus(Constants::DRIVER_STEP);
                 $message .= 
                     " Votre profil étant désormais vérifié vous êtes"
                     . " officiellement identifié en tant que conducteur sur le"

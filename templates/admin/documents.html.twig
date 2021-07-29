@@ -26,6 +26,17 @@
         {% endfor %}
     </section>
     <section>
+        <h2>Documents pour devenir conducteur</h2>
+        {% for doc in driverDocs %}
+            <div>
+                {{ doc.nom }} 
+                <a href="{{ path('admin_delete_document', {id: doc.id}) }}">
+                    Supprimer
+                </a>
+            </div>
+        {% endfor %}
+    </section>
+    <section>
         <h2>Ajouter un document</h2>
         {{ form_start(
             addForm, {action: path('admin_add_document') }

@@ -771,6 +771,31 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/fire/{id}", name="_fire")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function fire(Request $req, string $id) {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $user = $this->userRepository->findBy(["id" => $id]);
+        if (empty($user)) {
+            return $this->redirectToRoute("admin_users");
+        }
+        $user = $user[0];
+        if ($req->get("confirm") !== null) {
+            $user->setStatus(Constants::DEFAULT_STATUS);
+            $this->em->flush();
+            return $this->redirectToRoute("admin_users");
+        }
+
+        return $this->render("admin/fire.html.twig", [
+            "user" => $user
+        ]);
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -805,6 +830,7 @@ class AdminController extends AbstractController {
             
             case "admin_users":
             case "admin_users_POST":
+            case "admin_fire":
                 return in_array("ROLE_ADMIN", $userRoles);
 
             default:

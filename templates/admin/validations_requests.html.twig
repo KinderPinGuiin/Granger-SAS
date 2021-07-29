@@ -6,7 +6,7 @@
     <h1>Demandes de validation en cours</h1>
     {% for request in requests %}
         <div class="request">
-            <a href="{{ path('admin_validation_request', { id: request.id }) }}">
+            <a href="{{ path('admin_user', { id: request.user.id }) }}">
                 Demande de {{ request.user.prenom }} {{ request.user.nom }}
             </a>
         </div>

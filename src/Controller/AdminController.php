@@ -453,46 +453,10 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
-        $requests = $this->vReqRepository->findBy(["accepted" => null]);
+        $requests = $this->vReqRepository->getNotHandledRequest();
 
         return $this->render("admin/validations_requests.html.twig", [
             "requests" => $requests
-        ]);
-    }
-
-    /**
-     * @Route("/validation-request/{id}", name="_validation_request")
-     * 
-     * @return mixed RedirectResponse ou Response
-     */
-    public function validationRequest(Request $req, int $id, MailerInterface $mailer)
-    {
-        if (!$this->checkAccess($req)) {
-            return $this->redirectToRoute("home");
-        }
-        $request = $this->vReqRepository->findBy(["id" => $id]);
-        if (empty($request)) {
-            return $this->redirectToRoute("admin_validations_requests");
-        }
-        $request = $request[0];
-        // Si la demande a été traitée on l'actualise dans la BDD
-        if ($req->get("accept") !== null || $req->get("deny") != null) {
-            $request->setAccepted($req->get("accept") !== null);
-            $request->getUser()->setStatus(Constants::DRIVER_STATUS);
-            $this->em->flush();
-            // On envoie également un mail
-            $this->sendMail(
-                $mailer, 
-                $request->getUser()->getEmail(),
-                "Vérification de votre profil Granger SAS",
-                "emails/verification_mail.html.twig",
-                ["accepted" => $req->get("accept") !== null]
-            );
-            return $this->redirectToRoute("admin_validations_requests");
-        }
-
-        return $this->render("admin/validation_request.html.twig", [
-            "request" => $request
         ]);
     }
 
@@ -785,7 +749,6 @@ class AdminController extends AbstractController {
                     . " officiellement identifié en tant que conducteur sur le"
                     . " site Granger SAS !";
             } else if ($docsType === Constants::HIRE_STEP) {
-                $user[0]->setStatus(Constants::PRE_DRIVER_STATUS);
                 $message .= " Il vous reste une dernière étape avant d'être"
                 . " officiellement reconnu en tant que conducteur. De nouvelles"
                 . " pièces sont à faire valider sur votre profil !";

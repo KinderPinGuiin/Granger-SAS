@@ -46,14 +46,9 @@
             </tbody>
         </table>
     </section>
-    {% if user.status == constant('App\\Utils\\Constants::ACCEPTED_STATUS') %}
+    {% if documents|length > 0 %}
         <section>
             <h2>Dépôt de vos pièces justificatives</h2>
-            <p>
-                Félicitations ! Vous avez été acceptée en tant que conducteur chez
-                Granger SAS. Pour pouvoir finaliser votre embauche, veuillez déposer
-                les pièces suivantes :
-            </p>
             {% for document in documents %}
                 <form class="document_form" enctype="multipart/form-data" action="{{ path('profil_upload_documents') }}" method="POST">
                     {{ document.nom }} :

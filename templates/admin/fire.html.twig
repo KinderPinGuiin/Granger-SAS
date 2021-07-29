@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Renvoyer {{ user.prenom }} {{ user.nom }}{% endblock %}
+
+{% block body %}
+    Êtes-vous sûr ?
+    <a href="{{ path('admin_fire', {id: user.id}) }}?confirm=true">Oui</a>
+    <a href="{{ path('admin_users') }}">Non</a>
+{% endblock %}

@@ -752,6 +752,10 @@ class AdminController extends AbstractController {
                 $message .= " Il vous reste une dernière étape avant d'être"
                 . " officiellement reconnu en tant que conducteur. De nouvelles"
                 . " pièces sont à faire valider sur votre profil !";
+            } else if ($docsType === Constants::CANDIDAT_STEP) {
+                $message .=
+                 " Nous vous préviendrons dans les plus brefs délais au sujet"
+                 . " de votre candidature.";
             }
 
             return $message . "<br/><br/>Cordialement,<br/>Granger SAS.";
@@ -762,8 +766,33 @@ class AdminController extends AbstractController {
             . " certaines de vos pièces justificatives sont invalides."
             . " Vous pouvez cependant corriger ceci en suivant les indications"
             . " apportées à chacune de vos pièces sur votre profil."
-            . " Merci de les redéposer sur votre profil dans les plus brefs"
-            . " délais !<br/><br/>Cordialement,<br/>Granger SAS.";
+            . " Merci de les redéposer dans les plus brefs délais !"
+            . " <br/><br/>Cordialement,<br/>Granger SAS.";
+    }
+
+    /**
+     * @Route("/fire/{id}", name="_fire")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function fire(Request $req, string $id) {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+        $user = $this->userRepository->findBy(["id" => $id]);
+        if (empty($user)) {
+            return $this->redirectToRoute("admin_users");
+        }
+        $user = $user[0];
+        if ($req->get("confirm") !== null) {
+            $user->setStatus(Constants::DEFAULT_STATUS);
+            $this->em->flush();
+            return $this->redirectToRoute("admin_users");
+        }
+
+        return $this->render("admin/fire.html.twig", [
+            "user" => $user
+        ]);
     }
 
     /**
@@ -801,6 +830,7 @@ class AdminController extends AbstractController {
             
             case "admin_users":
             case "admin_users_POST":
+            case "admin_fire":
                 return in_array("ROLE_ADMIN", $userRoles);
 
             default:

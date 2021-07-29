@@ -18,7 +18,9 @@
         <div data-search="true">
             <span class="user-info">
                 {{ user.prenom }} {{ user.nom }} | {{ user.email }} 
-                (<a href="{{ path("admin_candidature", {driveId: user.driveId}) }}">Candidatures</a>)
+                <a href="{{ path("admin_candidature", {driveId: user.driveId}) }}">Candidatures</a>
+                <a href="{{ path("admin_user", {id: user.id}) }}">Profil</a>
+                <a href="{{ path("admin_fire", {id: user.id}) }}">Renvoyer</a>
             </span>
             <form method="POST" action="#">
                 <select name="role">

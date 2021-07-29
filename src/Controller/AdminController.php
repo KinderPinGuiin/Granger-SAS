@@ -752,6 +752,10 @@ class AdminController extends AbstractController {
                 $message .= " Il vous reste une dernière étape avant d'être"
                 . " officiellement reconnu en tant que conducteur. De nouvelles"
                 . " pièces sont à faire valider sur votre profil !";
+            } else if ($docsType === Constants::CANDIDAT_STEP) {
+                $message .=
+                 " Nous vous préviendrons dans les plus brefs délais au sujet"
+                 . " de votre candidature.";
             }
 
             return $message . "<br/><br/>Cordialement,<br/>Granger SAS.";
@@ -762,8 +766,8 @@ class AdminController extends AbstractController {
             . " certaines de vos pièces justificatives sont invalides."
             . " Vous pouvez cependant corriger ceci en suivant les indications"
             . " apportées à chacune de vos pièces sur votre profil."
-            . " Merci de les redéposer sur votre profil dans les plus brefs"
-            . " délais !<br/><br/>Cordialement,<br/>Granger SAS.";
+            . " Merci de les redéposer dans les plus brefs délais !"
+            . " <br/><br/>Cordialement,<br/>Granger SAS.";
     }
 
     /**

@@ -771,6 +771,7 @@ class AdminController extends AbstractController {
         }
         // Et on envoie le message personnalisé selon les cas
         if ($documentsAreValid) {
+            $user = $this->userRepository->findBy(["id" => $userId]);
             $message =
                 "Bonjour,<br/><br/>Félicitations !"
                 . " Toutes vos pièces justificatives ont été acceptées.";
@@ -778,13 +779,13 @@ class AdminController extends AbstractController {
                 $docsType === "VERIFICATION" 
                 || $docsType === Constants::DRIVER_STEP
             ) {
-                $user = $this->userRepository->findBy(["id" => $userId]);
-                $user[0]->setStatus(Constants::DRIVER_STEP);
+                $user[0]->setStatus(Constants::DRIVER_STATUS);
                 $message .= 
                     " Votre profil étant désormais vérifié vous êtes"
                     . " officiellement identifié en tant que conducteur sur le"
                     . " site Granger SAS !";
             } else if ($docsType === Constants::HIRE_STEP) {
+                $user[0]->setStatus(Constants::PRE_DRIVER_STATUS);
                 $message .= " Il vous reste une dernière étape avant d'être"
                 . " officiellement reconnu en tant que conducteur. De nouvelles"
                 . " pièces sont à faire valider sur votre profil !";

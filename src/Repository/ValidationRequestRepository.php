@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ValidationRequest;
+use App\Utils\Constants;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +18,19 @@ class ValidationRequestRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ValidationRequest::class);
+    }
+
+    public function getNotHandledRequest()
+    {
+        return $this->getEntityManager()->createQuery(
+            "
+                SELECT request
+                FROM App\Entity\ValidationRequest request, 
+                     App\Entity\User user
+                WHERE user.id = request.user
+                      AND user.status = :status
+            "
+        )->setParameter("status", Constants::VERIFICATION_STATUS)->getResult();
     }
 
     // /**

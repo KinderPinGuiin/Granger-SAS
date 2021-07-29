@@ -14,6 +14,7 @@ use App\Repository\CandidatureRepository;
 use App\Repository\DocumentsRepository;
 use App\Repository\UploadedDocumentsRepository;
 use App\Utils\GoogleDriveUploader;
+use PhpParser\Node\Stmt\Const_;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -110,11 +111,29 @@ class ProfilController extends AbstractController
             "candidatures" => $candidatures,
             "user" => $this->getUser(),
             "updateForm" => $form->createView(),
-            "documents" => $this->documentsRepository->findBy([
-                "step" => Constants::HIRE_STEP
-            ]),
+            "documents" => $this->getDocsToUpload(),
             "uploadedDocs" => $this->uploadedDocRepository
                                    ->getUploadedDocsSlugs($this->getUser())
+        ]);
+    }
+
+    /**
+     * Renvoie les documents à upload selon l'utilisateur
+     */
+    private function getDocsToUpload(): array
+    {
+        $stepArray = null;
+        switch ($this->getUser()->getStatus()) {
+            case Constants::VERIFICATION_STATUS:
+            case Constants::DRIVER_STATUS:
+                $stepArray[] = Constants::DRIVER_STATUS; 
+            case Constants::ACCEPTED_STATUS:
+                $stepArray[] = Constants::HIRE_STEP;
+            case Constants::POSTULATED_STATUS:
+                $stepArray[] = Constants::CANDIDAT_STEP;
+        }
+        return $this->documentsRepository->findBy([
+            "step" => $stepArray
         ]);
     }
 
@@ -236,12 +255,11 @@ class ProfilController extends AbstractController
         if (!$this->getUser()) {
             return $this->redirectToRoute("home");
         }
-        $form = $this->createForm(ValidationType::class);
-        $form->handleRequest($req);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($req->get("confirm") !== null) {
             // On ajoute la demande de validation dans la BDD
             $validation = new ValidationRequest();
             $validation->setUser($this->getUser());
+            $this->getUser()->setStatus(Constants::VERIFICATION_STATUS);
             $this->em->persist($validation);
             $this->em->flush();
 
@@ -249,7 +267,10 @@ class ProfilController extends AbstractController
         }
 
         return $this->render("profil/validation.html.twig", [
-            "form" => $form->createView(),
+            "canAsk" =>  
+                $this->getUser()->getStatus() === Constants::DEFAULT_STATUS
+                || 
+                $this->getUser()->getStatus() === Constants::POSTULATED_STATUS,
             "user" => $this->getUser()
         ]);
     }

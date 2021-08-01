@@ -9,6 +9,7 @@ use App\Utils\Constants;
 use App\Entity\Candidature;
 use App\Utils\GoogleDriveUploader;
 use App\Repository\CandidatureRepository;
+use PhpParser\Node\Stmt\Const_;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -56,8 +57,7 @@ class UploadController extends AbstractController
     {
         // On vérifie que l'utilisateur peur postuler
         if (
-            $this->getUser()->getStatus() === Constants::DRIVER_STATUS
-            || $this->getUser()->getStatus() === Constants::ACCEPTED_STATUS
+            $this->getUser()->getStatus() !== Constants::DEFAULT_STATUS
         ) {
             return $this->render('upload/index.html.twig', [
                 "canUpload" => false 

@@ -808,7 +808,9 @@ class AdminController extends AbstractController {
             return $this->redirectToRoute("home");
         }
 
-        return $this->render("admin/map.html.twig");
+        return $this->render("admin/map.html.twig", [
+            "api_key" => Constants::MAPS_API_KEY
+        ]);
     }
 
     /**

@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Repository\UploadedDocumentsRepository;
 use App\Repository\ValidationRequestRepository;
 use Symfony\Component\Routing\Annotation\Route;
-use Google\Service\CloudNaturalLanguage\Document;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 

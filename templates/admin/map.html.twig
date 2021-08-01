@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Carte des utilisateurs{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/css/admin/map.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/js/admin/map_script.js" defer></script>
+{% endblock %}
+
+{% block body %}
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzEiyzWqKXz7j1z0XwZw2M2j94U1w8Zdc&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+{% endblock %}

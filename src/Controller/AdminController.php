@@ -2,25 +2,27 @@
 
 namespace App\Controller;
 
-use App\Entity\Documents;
-use App\Form\AddDocumentType;
 use App\Form\ImageType;
 use App\Utils\Constants;
+use App\Entity\Documents;
+use App\Form\DenyDocType;
+use App\Form\AddDocumentType;
 use App\Utils\GoogleDriveManager;
 use App\Repository\UserRepository;
 use App\Form\CandidatureHandlingType;
-use App\Form\DenyDocType;
 use App\Repository\ContenuRepository;
+use App\Repository\DocumentsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CandidatureRepository;
-use App\Repository\DocumentsRepository;
-use App\Repository\UploadedDocumentsRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\HttpFoundation\Response;
+use App\Repository\UploadedDocumentsRepository;
 use App\Repository\ValidationRequestRepository;
-use Google\Service\CloudNaturalLanguage\Document;
 use Symfony\Component\Routing\Annotation\Route;
+use Google\Service\CloudNaturalLanguage\Document;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -819,6 +821,32 @@ class AdminController extends AbstractController {
         if (!$this->checkAccess($req)) {
             return $this->redirectToRoute("home");
         }
+        // On vérifie qu'il s'agit bien d'une requête AJAX
+        if (!$req->isXmlHttpRequest()) {
+            return new JsonResponse([
+                "error" => "Requête invalide"
+            ], Response::HTTP_BAD_REQUEST);
+        }
+        // On prend la latitude et la longitude de tous les utilisateurs devant
+        // apparaitre sur la map
+        $markers = [];
+        foreach ($this->userRepository->findAll() as $user) {
+            $icon = Constants::getMapIcon($user->getStatus());
+            if ($icon !== null) {
+                $markers[] = [
+                    "lat" => $user->getLatitude(),
+                    "long" => $user->getLongitude(),
+                    "icon" => $icon,
+                    "user" => $this->generateUrl("admin_candidature", [
+                        "driveId" => $user->getDriveID()
+                    ])
+                ];
+            }
+        }
+
+        return new JsonResponse([
+            "markers" => $markers
+        ], RESPONSE::HTTP_OK);
     }
 
     /**

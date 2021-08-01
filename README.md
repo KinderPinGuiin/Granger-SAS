@@ -27,7 +27,13 @@ class Constants {
     const PUBLIC_FOLDER = self::ROOT . "public/";
 
     // ID du dossier racine Google Drive
-    const ID_DRIVE_ROOT = "Identifiant de votre dossier";
+    const ID_DRIVE_ROOT = "1D3vgBSlyekKEDwEAQ5C4KVYwWOOVnL-g";
+
+    // Clé maps API
+    const MAPS_API_KEY = "AIzaSyBzEiyzWqKXz7j1z0XwZw2M2j94U1w8Zdc";
+
+    // Clé geocoding API
+    const GEOCODING_API = "K0jvEiU9FYPoqlLnDQJCLFGPFV1MYBiS";
 
     // Nom du dossier de CV
     const CV_FOLDER_NAME = "CV";

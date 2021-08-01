@@ -796,6 +796,32 @@ class AdminController extends AbstractController {
     }
 
     /**
+     * @Route("/map", name="_map")
+     * 
+     * @return mixed RedirectResponse ou Response
+     */
+    public function map(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+
+        return $this->render("admin/map.html.twig");
+    }
+
+    /**
+     * @Route("/map/markers", name="_map_markers")
+     * 
+     * @return mixed RedirectResponse ou JSONResponse
+     */
+    public function getMapMarkers(Request $req)
+    {
+        if (!$this->checkAccess($req)) {
+            return $this->redirectToRoute("home");
+        }
+    }
+
+    /**
      * Retourne false si l'utilisateur n'est pas autorisé à accéder à la page
      * d'administration et true sinon
      * 
@@ -820,6 +846,8 @@ class AdminController extends AbstractController {
             case "admin_user":
             case "admin_handle_document":
             case "admin_send_docs_mail":
+            case "admin_map":
+            case "admin_map_markers":
                 return in_array("ROLE_ADMIN", $userRoles)
                     || in_array("ROLE_RH", $userRoles);
             

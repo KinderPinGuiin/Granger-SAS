@@ -56,6 +56,7 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
+            "geocoding_key" => Constants::GEOCODING_API
         ]);
     }
 

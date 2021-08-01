@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
@@ -56,6 +57,16 @@ class RegistrationFormType extends AbstractType
                                      'd\'utilisation',
                     ]),
                 ],
+            ])
+            ->add('latitude', HiddenType::class, [
+                "attr" => [
+                    "class" => "latitude" 
+                ]
+            ])
+            ->add('longitude', HiddenType::class, [
+                "attr" => [
+                    "class" => "longitude" 
+                ]
             ])
             ->add('captcha', CaptchaType::class, [
                 "mapped" => false,

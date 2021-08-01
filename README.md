@@ -81,7 +81,7 @@ class Constants {
      * @return string         Lien de l'icone correspondante au statut ou null
      *                        si le statut ne possède pas d'icone
      */
-    public static function getMapIcon(string $status): string
+    public static function getMapIcon(string $status)
     {
         $baseLink = "http://maps.google.com/mapfiles/ms/icons/";
         $iconExt = ".png";

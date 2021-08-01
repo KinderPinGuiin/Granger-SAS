@@ -27,7 +27,7 @@ class Constants {
     const PUBLIC_FOLDER = self::ROOT . "public/";
 
     // ID du dossier racine Google Drive
-    const ID_DRIVE_ROOT = "1D3vgBSlyekKEDwEAQ5C4KVYwWOOVnL-g";
+    const ID_DRIVE_ROOT = "Identifiant de votre dossier";
 
     // Nom du dossier de CV
     const CV_FOLDER_NAME = "CV";
@@ -65,13 +65,40 @@ class Constants {
     }
 
     /*
-     * Status des utilisateurs
+     * Statuts des utilisateurs
      */
     const DEFAULT_STATUS = "DEFAULT";
     const POSTULATED_STATUS = "POSTULATED";
     const ACCEPTED_STATUS = "ACCEPTED";
     const VERIFICATION_STATUS = "VERIFICATION";
     const DRIVER_STATUS = "DRIVER";
+
+    /**
+     * Renvoie le lien vers l'icone correspondante au statut d'un utilisateur 
+     * (Map Google)
+     * 
+     * @param  string $status Le statut dont on veut connaitre le lien
+     * @return string         Lien de l'icone correspondante au statut ou null
+     *                        si le statut ne possède pas d'icone
+     */
+    public static function getMapIcon(string $status): string
+    {
+        $baseLink = "http://maps.google.com/mapfiles/ms/icons/";
+        $iconExt = ".png";
+        switch ($status) {
+            case self::POSTULATED_STATUS:
+                return $baseLink . "orange-dot" . $iconExt;
+
+            case self::ACCEPTED_STATUS:
+                return $baseLink . "green-dot" . $iconExt;
+
+            case self::DRIVER_STATUS:
+                return $baseLink . "blue-dot" . $iconExt;
+            
+            default:
+                return null;
+        }
+    } 
 
     /**
      * Etapes d'une embauche (Ajout de document)

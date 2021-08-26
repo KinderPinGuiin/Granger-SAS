@@ -157,9 +157,9 @@ class UploadController extends AbstractController
                 || 
                 !$this->driveUploader->upload(
                     $this->getUser(), 
-                    Constants::CV_FOLDER_NAME, 
-                    Constants::CV_FILE_NAME, 
-                    $form->get("cv")->getData()->getPathname()
+                    Constants::LETTER_FOLDER_NAME, 
+                    Constants::LETTER_FILE_NAME, 
+                    $form->get("lettre")->getData()->getPathname()
                 )
             ) {
                 // En cas d'erreur on l'ajoute au formulaire

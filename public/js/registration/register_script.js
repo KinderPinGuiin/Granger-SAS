@@ -8,8 +8,8 @@ document.querySelector(".signup_form").addEventListener("submit", e => {
             let latLng = data.results[0].locations[0].latLng
             e.target.querySelector("input.latitude").value = latLng.lat
             e.target.querySelector("input.longitude").value = latLng.lng
+            e.target.submit()
         },
         failure: err => console.error(err)
     })
-    e.target.submit()
 })
